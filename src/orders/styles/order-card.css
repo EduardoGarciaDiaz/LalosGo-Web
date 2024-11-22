@@ -1,0 +1,35 @@
+.card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+    border-radius: 10px 10px 0 0;
+    font-size: 0.8rem;
+    padding: 10px 15px;
+}
+
+img {
+    border: none;
+    border-radius: 5px;
+}
+
+@media (max-width: 576px) {
+    .card-body {
+        text-align: center;
+    }
+
+    .card-header {
+        text-align: center;
+    }
+
+    .btn {
+        width: 100%;
+    }
+
+    img {
+        margin: 0 auto;
+    }
+}
