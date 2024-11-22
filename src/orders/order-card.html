@@ -17,14 +17,16 @@
             </div>
             <!-- Descripción -->
             <div class="flex-grow-1 text-center text-md-start">
-                <h5 class="mb-3">{{productTitle}}</h5>
-                <button class="btn btn-warning btn-sm mb-3 mb-md-0">Ver artículo</button>
+                <h5 class="mb-1">{{orderCode}}</h5>
+                <p class="mb-3 mt-0">{{orderProducts}}</p>
+                <button class="btn btn-warning btn-sm mb-3 mb-md-0">Ver detalles</button>
             </div>
             <!-- Botones -->
             <div class="text-center text-md-end mt-3 mt-md-0">
                 <button class="btn btn-primary btn-sm rounded-pill mb-2 w-100 w-md-auto">Seguimiento del
-                    producto</button><br>
-                <button class="btn btn-outline-secondary btn-sm rounded-pill w-100 w-md-auto">Cancelar pedido</button>
+                    pedido</button><br>
+                <button id="btn-cancel" class="btn btn-outline-secondary btn-sm rounded-pill w-100 w-md-auto">Cancelar
+                    pedido</button>
             </div>
         </div>
     </div>

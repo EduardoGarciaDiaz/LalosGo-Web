@@ -29,8 +29,9 @@ function loadOrders(orderTemplatePath, ordersContainerId, orders) {
                     .replace('{{deliveryDate}}', order.deliveryDate || 'N/A')
                     .replace('{{total}}', order.total || '$0 MX')
                     .replace('{{status}}', order.status || 'Pendiente')
-                    .replace('{{productTitle}}', order.productTitle || 'Producto desconocido')
-                    .replace('{{productImage}}', order.productImage || 'https://via.placeholder.com/90');
+                    .replace('{{orderCode}}', order.productTitle || 'Pedido desconocido')
+                    .replace('{{productImage}}', order.productImage || 'https://via.placeholder.com/90')
+                    .replace('{{orderProducts}}', order.orderProducts || 'No hay productos en este pedido');
 
                 const orderElement = document.createElement('div');
                 orderElement.innerHTML = orderHTML;
@@ -56,16 +57,18 @@ document.addEventListener('DOMContentLoaded', () => {
             deliveryDate: '08 octubre de 2024',
             total: '$450 MX',
             status: 'Enviado',
-            productTitle: 'Título del producto',
-            productImage: 'https://via.placeholder.com/90'
+            productTitle: 'Pedido 1',
+            productImage: 'https://via.placeholder.com/90',
+            orderProducts: 'Memoria USB, 2x Audífonos inalámbricos, 1x Cargador portátil'
         },
         {
             orderDate: '15 noviembre de 2024',
             deliveryDate: '20 noviembre de 2024',
             total: '$320 MX',
             status: 'Pendiente',
-            productTitle: 'Otro producto interesante',
-            productImage: 'https://via.placeholder.com/90'
+            productTitle: 'Otro pedido interesante',
+            productImage: 'https://via.placeholder.com/90',
+            orderProducts: 'Libro de programación, 2x Mouse inalámbrico, 1x Teclado gamer'
         }
     ];
 
