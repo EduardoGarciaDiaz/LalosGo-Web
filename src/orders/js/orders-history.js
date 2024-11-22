@@ -72,11 +72,26 @@ async function cancelOrder(button) {
             const modal =  button.closest('.modal');
             const modalInstance = bootstrap.Modal.getInstance(modal);
             modalInstance.hide();
+            clearCancelOrderForm(button);
         }
     } else {
         console.error('No se pudo obtener el código del pedido');
     }
 }
+
+function clearCancelOrderForm(button) {
+    const modal = button.closest('.modal');
+    
+    if (modal) {
+        const cancelReasonInput = modal.querySelector('.cancelReason');
+        if (cancelReasonInput) {
+            cancelReasonInput.value = '';
+        }
+    } else {
+        console.error('No se encontró el modal contenedor.');
+    }
+}
+
 
 // Ejemplo de uso al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
