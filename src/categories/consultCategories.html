@@ -14,18 +14,15 @@
 </head>
 <body>
     <div class="container my-5">
-        <!-- Título -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h3">Categorías de Productos</h1>
             <button id="add-category-btn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registryNewCategory">Registrar Categoría</button>
         </div>
         
-        <!-- Barra de búsqueda -->
         <div class="mb-3">
             <input type="text" class="form-control" id="searchBar" placeholder="Buscar categoría...">
         </div>
         
-        <!-- Tabla de Categorías -->
         <table class="table table-bordered">
             <thead class="table-dark">
                 <tr>
@@ -55,7 +52,6 @@
         </table>
     </div>
 
-     <!-- Modal: Registrar Categoría -->
      <div class="modal fade" id="registryNewCategory" tabindex="-1" aria-labelledby="registrarCategoriaLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -64,7 +60,6 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- Formulario para registrar categoría -->
                     <form id="formRegistrarCategoria">
                         <div class="mb-3">
                             <label for="idCategory" class="form-label">Identificador Único</label>
