@@ -47,6 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const headerPath = '/src/shared/navbar/navbar-client.html'; // Ruta fija para prueba
     loadHTML(headerPath, 'header-container');
 
+    const filterPath = '/src/shared/orderFilter/filter-client.html'; // Ruta fija para prueba
+    loadHTML(filterPath, 'filter-container');
+
     const orders = [
         {
             orderDate: '02 octubre de 2024',
