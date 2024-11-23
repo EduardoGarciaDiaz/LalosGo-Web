@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Login 03</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Mulish&display=swap"
+            rel="stylesheet"
+            type='text/css'
+        >
+        <link rel="stylesheet" type="text/css" href="styles/style.css">
+    </head>
+    <body>
+        <div class="form-wrapper">
+            <div class="form-side">
+                <a href="#" title="Logo">
+                    <img src="../assets/icons/header-logo.png" class='logo' alt="Ofin">
+                </a>
+                <form class="my-form">
+                    <div class="form-welcome-row">
+                        <h1>Iniciar sesión</h1>
+                    </div>
+                    <div class="text-field">
+                        <label for="Number">Número de teléfono:
+                            <input
+                                type="tel"
+                                id="email"
+                                name="email"
+                                autocomplete="off"
+                                placeholder="Tu número de teléfono"
+                                required
+                            >
+                        </label>
+                    </div>
+                    <div class="text-field">
+                        <label for="password">Contraseña:
+                            <input
+                                id="password"
+                                type="password"
+                                name="password"
+                                placeholder="Tu contraseña"
+                                title="Minimum 6 characters at 
+                                    least 1 Alphabet, 1 Number and 1 Symbol"
+                                pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{6,}$"
+                                required
+                            >
+                        </label>
+                    </div>
+                    <button type="submit" class="my-form__button">
+                        Login
+                    </button>
+                    <div class="my-form__actions">
+                        <a href="#" title="Create Account">
+                            ¿Todavía no te has registrado?
+                        </a>
+
+                        <a href="#" title="Forgot password">
+                            Olvidé mi contraseña
+                        </a>
+                    </div>
+                </form>
+            </div>
+            <div class="info-side">
+                <img src="assets/mock.png" alt="Mock" class="mockup">
+            </div>
+        </div>
+        <script src="js/script.js"></script>
+    </body>
+</html>
+
