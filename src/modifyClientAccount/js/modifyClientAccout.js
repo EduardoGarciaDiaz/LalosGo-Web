@@ -13,9 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 
-function createClientAccount() {
-    clearErrors();
-
+function modifyClientAccount() {
     let name = document.getElementById('name_label').value;
     let firstLastName = document.getElementById('firstLastName_label').value;
     let secondLastName = document.getElementById('secondLastName_label').value;
@@ -23,7 +21,7 @@ function createClientAccount() {
     let cellPhone = document.getElementById('cellPhone_label').value;
     let password = document.getElementById('password_label').value;
     let email = document.getElementById('email_label').value;
-
+    
     let newClient = {
         name: name,
         firstLastName: firstLastName,
@@ -35,15 +33,16 @@ function createClientAccount() {
     }
 
     if(isValidClientAccountt(newClient)){
-        alert("Cliente creado exitosamente");
+        alert("Cliente modificado exitosamente");
     }
 }
 
 function isValidClientAccountt(newClient){
-    
+    clearErrors();
     let isValid = true
     if(!isClientNameAndLastNameValid(newClient.name)){
         document.getElementById('name_label').classList.add("is-invalid");
+        alert("nombre dle cliente inválido");
         isValid = false;
     }
 
@@ -76,6 +75,7 @@ function isValidClientAccountt(newClient){
         document.getElementById('password_label').classList.add("is-invalid");
         isValid = false;
     }
+
     return isValid;
 }
 
