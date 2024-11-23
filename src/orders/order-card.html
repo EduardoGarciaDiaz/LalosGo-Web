@@ -33,7 +33,8 @@
     </div>
 </div>
 
-<div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModal" aria-hidden="true" role="dialog">
+<div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModal" aria-hidden="true"
+    role="dialog">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -53,15 +54,23 @@
                             </div>
                         </div>
                     </div>
+                    <div class="mb-3 mt-4">
+                        <label for="cancelReason" class="form-label">Motivo de cancelación</label>
+                        <textarea class="form-control cancelReason" id="cancelReason" rows="3" maxlength="150"
+                            placeholder="Explique brevemente el motivo de la cancelación (máximo 150 caracteres)">
+                        </textarea>
+                    </div>
                 </div>
+
             </div>
 
             <div class="border-end"></div>
 
             <div class="modal-footer mt-3">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"
-                    onclick="clearCancelOrderForm()">Regresar</button>
-                <button id="btn-accept" type="button" class="btn btn-primary" onclick="cancelOrder(this)">Aceptar</button>
+                    onclick="clearCancelOrderForm(this)">Regresar</button>
+                <button id="btn-accept" type="button" class="btn btn-primary"
+                    onclick="cancelOrder(this)">Aceptar</button>
             </div>
         </div>
     </div>
