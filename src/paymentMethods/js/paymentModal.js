@@ -1,7 +1,24 @@
-const addPaymentMethodModalElement = document.getElementById('addPaymentMethodModal');
-const addPaymentMethodModal = new bootstrap.Modal(addPaymentMethodModalElement);
+const paymentMethodFormModalElement = document.getElementById('paymentMethodFormModal');
+const paymentMethodFormModal = new bootstrap.Modal(paymentMethodFormModalElement);
+const addPaymentMethodBtn = document.getElementById("add-payment-method-btn");
+const primaryFormBtn = document.getElementById('primary-form-btn');
 
-addPaymentMethodModalElement.addEventListener('shown.bs.modal', () => {
+addPaymentMethodBtn.addEventListener("click", () => {
+    primaryFormBtn.textContent = 'Agregar';
+    if (paymentMethodsNumber >= 3) {
+        alert("Solo puedes registrar 3 métodos de pago");
+        return;
+    }
+
+    primaryFormBtn.onclick = function () {
+        let isEdit = false;
+        let paymentMethodId = null;
+        savePaymentMethod(isEdit, paymentMethodId);
+    }
+    paymentMethodFormModal.show();
+});
+
+paymentMethodFormModalElement.addEventListener('shown.bs.modal', () => {
     const cardNumberInput = document.getElementById('cardNumber');
     cardNumberInput.focus();
 });
