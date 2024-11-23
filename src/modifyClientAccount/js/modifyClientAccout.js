@@ -1,5 +1,6 @@
 const VALID_NAME_LASTNAME  = /^(?!\s)[A-ZÁÉÍÓÚÑ][a-záéíóúñü]+(?: [A-ZÁÉÍÓÚÑ][a-záéíóúñü]+)*$/;
 const VALID_PHONE_NUMER = /^\+?[0-9]{1,3}?[-. ]?(\(?\d{1,4}\)?)?[-. ]?\d{1,4}[-. ]?\d{1,4}[-. ]?\d{1,9}$/;
+const VALID_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const VALID_PASSWORD = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -19,6 +20,7 @@ function modifyClientAccount() {
     let birthday = document.getElementById('birthday_label').value;
     let cellPhone = document.getElementById('cellPhone_label').value;
     let password = document.getElementById('password_label').value;
+    let email = document.getElementById('email_label').value;
     
     let newClient = {
         name: name,
@@ -26,11 +28,12 @@ function modifyClientAccount() {
         secondLastName: secondLastName,
         birthdate: birthday,
         cellPhone: cellPhone,
+        email, email,
         password: password
     }
 
     if(isValidClientAccountt(newClient)){
-        alert("Cliente creado exitosamente");
+        alert("Cliente modificado exitosamente");
     }
 }
 
@@ -60,6 +63,11 @@ function isValidClientAccountt(newClient){
 
     if(!isClientCellPhoneValid(newClient.cellPhone)){
         document.getElementById('cellPhone_label').classList.add("is-invalid");
+        isValid = false;
+    }
+
+    if(!isClientEmailValid(newClient.email)){
+        document.getElementById('email_label').classList.add("is-invalid");
         isValid = false;
     }
 
@@ -99,6 +107,10 @@ function isClientCellPhoneValid (cellPhone){
     return VALID_PHONE_NUMER.test(cellPhone);
 }
 
+function isClientEmailValid (email){
+    return VALID_EMAIL.test(email);
+}
+
 function isClientPasswordValid (password){
     return VALID_PASSWORD.test(password);
 }
@@ -109,5 +121,6 @@ function clearErrors(){
     document.getElementById('secondLastName_label').classList.remove("is-invalid");
     document.getElementById('birthday_label').classList.remove("is-invalid");
     document.getElementById('cellPhone_label').classList.remove("is-invalid");  
+    document.getElementById('email_label').classList.remove("is-invalid");
     document.getElementById('password_label').classList.remove("is-invalid");
 }

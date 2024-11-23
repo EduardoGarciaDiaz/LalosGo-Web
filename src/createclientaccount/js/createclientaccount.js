@@ -1,5 +1,6 @@
 const VALID_NAME_LASTNAME  = /^(?!\s)[A-ZÁÉÍÓÚÑ][a-záéíóúñü]+(?: [A-ZÁÉÍÓÚÑ][a-záéíóúñü]+)*$/;
 const VALID_PHONE_NUMER = /^\+?[0-9]{1,3}?[-. ]?(\(?\d{1,4}\)?)?[-. ]?\d{1,4}[-. ]?\d{1,4}[-. ]?\d{1,9}$/;
+const VALID_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const VALID_PASSWORD = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -13,19 +14,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 function createClientAccount() {
+    clearErrors();
+
     let name = document.getElementById('name_label').value;
     let firstLastName = document.getElementById('firstLastName_label').value;
     let secondLastName = document.getElementById('secondLastName_label').value;
     let birthday = document.getElementById('birthday_label').value;
     let cellPhone = document.getElementById('cellPhone_label').value;
     let password = document.getElementById('password_label').value;
-    
+    let email = document.getElementById('email_label').value;
+
     let newClient = {
         name: name,
         firstLastName: firstLastName,
         secondLastName: secondLastName,
         birthdate: birthday,
         cellPhone: cellPhone,
+        email, email,
         password: password
     }
 
@@ -35,11 +40,10 @@ function createClientAccount() {
 }
 
 function isValidClientAccountt(newClient){
-    clearErrors();
+    
     let isValid = true
     if(!isClientNameAndLastNameValid(newClient.name)){
         document.getElementById('name_label').classList.add("is-invalid");
-        alert("nombre dle cliente inválido");
         isValid = false;
     }
 
@@ -63,11 +67,15 @@ function isValidClientAccountt(newClient){
         isValid = false;
     }
 
+    if(!isClientEmailValid(newClient.email)){
+        document.getElementById('email_label').classList.add("is-invalid");
+        isValid = false;
+    }
+
     if(!isClientPasswordValid(newClient.password)){
         document.getElementById('password_label').classList.add("is-invalid");
         isValid = false;
     }
-
     return isValid;
 }
 
@@ -99,6 +107,10 @@ function isClientCellPhoneValid (cellPhone){
     return VALID_PHONE_NUMER.test(cellPhone);
 }
 
+function isClientEmailValid (email){
+    return VALID_EMAIL.test(email);
+}
+
 function isClientPasswordValid (password){
     return VALID_PASSWORD.test(password);
 }
@@ -109,5 +121,6 @@ function clearErrors(){
     document.getElementById('secondLastName_label').classList.remove("is-invalid");
     document.getElementById('birthday_label').classList.remove("is-invalid");
     document.getElementById('cellPhone_label').classList.remove("is-invalid");  
+    document.getElementById('email_label').classList.remove("is-invalid");
     document.getElementById('password_label').classList.remove("is-invalid");
 }
