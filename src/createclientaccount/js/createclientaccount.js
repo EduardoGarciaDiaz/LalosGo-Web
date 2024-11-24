@@ -1,7 +1,8 @@
-const VALID_NAME_LASTNAME  = /^(?!\s)[A-ZÁÉÍÓÚÑ][a-záéíóúñü]+(?: [A-ZÁÉÍÓÚÑ][a-záéíóúñü]+)*$/;
-const VALID_PHONE_NUMER = /^\+?[0-9]{1,3}?[-. ]?(\(?\d{1,4}\)?)?[-. ]?\d{1,4}[-. ]?\d{1,4}[-. ]?\d{1,9}$/;
+const VALID_FULL_NAME  = /^(?!\s)[A-ZÁÉÍÓÚÑ][a-záéíóúñü]+(?: [A-ZÁÉÍÓÚÑ][a-záéíóúñü]+)*$/;
+const VALID_PHONE_NUMBER = /^\+?[0-9]{1,3}[-. ]?\(?\d{1,4}\)?[-. ]?\d{1,4}[-. ]?\d{1,9}$/;
 const VALID_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const VALID_PASSWORD = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const API_URL = 'http://localhost:3000/api/v1/users';
 
 document.addEventListener("DOMContentLoaded", () => {
     const today = new Date();
@@ -16,43 +17,34 @@ document.addEventListener("DOMContentLoaded", () => {
 function createClientAccount() {
     clearErrors();
 
-    let name = document.getElementById('name_label').value;
-    let firstLastName = document.getElementById('firstLastName_label').value;
-    let secondLastName = document.getElementById('secondLastName_label').value;
-    let birthday = document.getElementById('birthday_label').value;
-    let cellPhone = document.getElementById('cellPhone_label').value;
-    let password = document.getElementById('password_label').value;
-    let email = document.getElementById('email_label').value;
+    let name = document.getElementById('name_label').value.trim();
+    let firstLastName = document.getElementById('firstLastName_label').value.trim();
+    let secondLastName = document.getElementById('secondLastName_label').value.trim();
+    let birthday = document.getElementById('birthday_label').value.trim();
+    let cellPhone = document.getElementById('cellPhone_label').value.trim();
+    let password = document.getElementById('password_label').value.trim();
+    let email = document.getElementById('email_label').value.trim();
 
     let newClient = {
-        name: name,
-        firstLastName: firstLastName,
-        secondLastName: secondLastName,
+        fullname: name + " " + firstLastName + " " + secondLastName,
         birthdate: birthday,
-        cellPhone: cellPhone,
+        phone: cellPhone,
         email, email,
         password: password
     }
 
     if(isValidClientAccountt(newClient)){
-        alert("Cliente creado exitosamente");
+        newClient.password = hashPassword(newClient.password);
+        registerClient(newClient);   
     }
 }
 
 function isValidClientAccountt(newClient){
     
     let isValid = true
-    if(!isClientNameAndLastNameValid(newClient.name)){
+    if(!isClientNameAndLastNameValid(newClient.fullname)){
         document.getElementById('name_label').classList.add("is-invalid");
-        isValid = false;
-    }
-
-    if(!isClientNameAndLastNameValid(newClient.firstLastName)){
         document.getElementById('firstLastName_label').classList.add("is-invalid");
-        isValid = false;
-    }
-
-    if(!isClientNameAndLastNameValid(newClient.secondLastName)){
         document.getElementById('secondLastName_label').classList.add("is-invalid");
         isValid = false;
     }
@@ -62,7 +54,7 @@ function isValidClientAccountt(newClient){
         isValid = false;
     }
 
-    if(!isClientCellPhoneValid(newClient.cellPhone)){
+    if(!isClientCellPhoneValid(newClient.phone)){
         document.getElementById('cellPhone_label').classList.add("is-invalid");
         isValid = false;
     }
@@ -80,7 +72,7 @@ function isValidClientAccountt(newClient){
 }
 
 function isClientNameAndLastNameValid (name){
-    return VALID_NAME_LASTNAME.test(name);
+    return VALID_FULL_NAME.test(name);
 }
 
 function isBirthdateClientValid (birthdate){
@@ -104,7 +96,7 @@ function isBirthdateClientValid (birthdate){
 }
 
 function isClientCellPhoneValid (cellPhone){
-    return VALID_PHONE_NUMER.test(cellPhone);
+    return VALID_PHONE_NUMBER.test(cellPhone);
 }
 
 function isClientEmailValid (email){
@@ -124,3 +116,23 @@ function clearErrors(){
     document.getElementById('email_label').classList.remove("is-invalid");
     document.getElementById('password_label').classList.remove("is-invalid");
 }
+
+function registerClient(newClient){
+    axios
+    .post(`${API_URL}/createClientAccount`, newClient)
+    .then((response) => {
+        alert("El cliente se ha registrado exitosamente");
+    })
+    .catch((error) => {
+        alert("Ha ocurrido un error al registrar el cliente. Inténtelo de nuevo.");
+        alert(error);
+        console.error(error);
+    });
+}
+
+function hashPassword(password) {
+    var hashObj = new jsSHA("SHA-512", "TEXT", {numRounds: 1});
+    hashObj.update(password);
+    var hash = hashObj.getHash("HEX");
+    return hash;
+  }
