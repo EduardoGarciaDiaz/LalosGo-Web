@@ -4,7 +4,7 @@ const VALID_PAYMENT_NETWORKS = ['Visa', 'MasterCard'];
 const VALID_CARD_TYPES = ['Crédito', 'Débito'];
 const CARD_OWNER_REGEX = /^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ\s]{2,100}$/;
 const CARD_NUMBER_REGEX = /^[0-9]{16}$/;
-const CVV_REGEX = /^[0-9]{3}$/;
+const CVV_REGEX = /^[0-9]{3,4}$/;
 const PAYMENT_NETWORKS_REGEX = {
     visa: /^4[0-9]{12}(?:[0-9]{3})?$/,
     masterCard: /^5[1-5][0-9]{14}$/,
@@ -114,7 +114,7 @@ function isValidCvv(cvv) {
     }
 
     if (!CVV_REGEX.test(cvv)) {
-        showErrorMessage('cvv', 'invalidCvv', 'El cvv debe contener 3 dígitos.');
+        showErrorMessage('cvv', 'invalidCvv', 'El cvv debe contener de 3 a 4 dígitos.');
         return false;
     }
 
@@ -130,7 +130,7 @@ function isValidCardType(cardType) {
 }
 
 function isValidCardEmitter(cardEmitter) {
-    if (cardEmitter === '' || cardEmitter === null || cardEmitter === undefined || cardEmitter === 'Seleccione el banco') {
+    if (!cardEmitter || cardEmitter === 'Seleccione el banco') {
         showErrorMessage('bankSelect', 'invalidBank', 'Selecciona un banco emisor.');
         return false;
     }
@@ -138,7 +138,7 @@ function isValidCardEmitter(cardEmitter) {
     return true;
 }
 
-async function savePaymentMethod(isEdit, paymentMethodId) {
+async function savePaymentMethod() {
     clearErrors();
 
     let cardOwner = document.getElementById('cardOwner').value;
@@ -149,7 +149,7 @@ async function savePaymentMethod(isEdit, paymentMethodId) {
     let paymentNetwork = '0';
     let cardType = '0';
 
-    if (cardNumber === '' || cardNumber === null || cardNumber === undefined) {
+    if (!cardNumber) {
         document.getElementById('cardNumber').classList.add("is-invalid");
         const invalidCardNumber = document.getElementById('invalidCardNumber');
         invalidCardNumber.textContent = 'El número de tarjeta debe contener 16 dígitos.';
@@ -171,22 +171,12 @@ async function savePaymentMethod(isEdit, paymentMethodId) {
     if (!isValidPaymentMethod(newPaymentMethod)) {
         return;
     }
-
-    if (isEdit) {
-        if (!paymentMethodId || paymentMethodId === '' || paymentMethodId === null || paymentMethodId === undefined) {
-            alert("No se pudo actualizar el método de pago. Inténtelo de nuevo.");
-            return;
-        }
-        newPaymentMethod._id = paymentMethodId;
-
-        updatePaymentMethod(newPaymentMethod);
-    } else {
-        addPaymentMethod(newPaymentMethod);
-    }
+    
+    addPaymentMethod(newPaymentMethod);
 }
 
 async function calculateCardData(cardNumber) {
-    if (cardNumber !== '' && cardNumber !== null && cardNumber !== undefined) {
+    if (cardNumber) {
         let paymentNetwork = calculatePaymentNetwork(cardNumber);
         let cardType = calculateCardType(cardNumber);
         return { paymentNetwork, cardType };
@@ -220,6 +210,11 @@ function addPaymentMethod(newPaymentMethod) {
     axios
         .post(`${API_URL}/${userId}/payment-methods`, newPaymentMethod)
         .then((response) => {
+            if (!response || !response.data) {
+                alert("No se pudo agregar el método de pago. Inténtelo de nuevo.");
+                return;
+            }
+            
             let paymentMethod = createPaymentMethodCard(response.data.newPaymentMethod);
             const paymentMethodsContainer = document.getElementById('payment-methods-container');
             paymentMethodsContainer.appendChild(paymentMethod);

@@ -16,6 +16,7 @@
     <script src="js/paymentMethodsRegistration.js"></script>
     <script src="js/paymentMethodEdition.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="../utils/modal-utils.js"></script>
 </head>
 
 <body>
@@ -64,7 +65,7 @@
                                             <div id="invalidExpirationDate" class="invalid-feedback"></div>
                                         </div>
                                         <div class="form-floating mb-3">
-                                            <input type="password" maxlength="3" class="form-control" id="cvv" placeholder="***"
+                                            <input type="password" maxlength="4" class="form-control" id="cvv" placeholder="***"
                                                 required>
                                             <label for="cvv">CVV</label>
                                             <div id="invalidCvv" class="invalid-feedback"></div>
@@ -89,25 +90,6 @@
                             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"
                                 onclick="clearPaymentMethodForm()">Cancelar</button>
                             <button type="button" id="primary-form-btn" class="btn btn-primary">Agregar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Delete Payment Method Modal -->
-            <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="confirmationModalLabel">Eliminar método de pago</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body" id="payment-method-to-delete">
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="button" class="btn btn-danger" id="confirm-delete-btn">Eliminar</button>
                         </div>
                     </div>
                 </div>
