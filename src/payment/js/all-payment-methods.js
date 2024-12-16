@@ -11,7 +11,7 @@ function getAllPaymentMethods() {
         .then((response) => {
             let paymentMethods = response.data.userPaymentMethods;
             if (!paymentMethods || paymentMethods.length === 0) {
-                alert('No se encontraron métodos de pago');
+                showToast("No se encontraron métodos de pago", toastTypes.PRIMARY);
                 return;
             }
             paymentMethods.forEach(paymentMethod => {
@@ -21,7 +21,7 @@ function getAllPaymentMethods() {
         })
         .catch((error) => {
             console.error(error);
-            alert('Error al cargar los métodos de pago');
+            showToast("Error al cargar los métodos de pago", toastTypes.WARNING);
         });
 }
 
@@ -166,13 +166,13 @@ async function deletePaymentMethod(paymentMethodId) {
     await axios
         .delete(`${API_URL}/${userId}/payment-methods/${paymentMethodId}`)
         .then((response) => {
-            alert("Método de pago eliminado");
+            showToast("Método de pago eliminado", toastTypes.SUCCESS);
             removePaymentMethodFromUI(paymentMethodId);
             paymentMethodsNumber--;
             return true;
         })
         .catch((error) => {
-            alert("No se pudo eliminar el método de pago. Inténtelo de nuevo.");
+            showToast("No se pudo eliminar el método de pago. Inténtelo de nuevo.", toastTypes.DANGER);
             return false;
         });
 }

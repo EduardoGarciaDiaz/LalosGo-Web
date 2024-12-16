@@ -4,7 +4,7 @@ const VALID_PAYMENT_NETWORKS = ['Visa', 'MasterCard'];
 const VALID_CARD_TYPES = ['Crédito', 'Débito'];
 const CARD_OWNER_REGEX = /^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ\s]{2,100}$/;
 const CARD_NUMBER_REGEX = /^[0-9]{16}$/;
-const CVV_REGEX = /^[0-9]{3,4}$/;
+// const CVV_REGEX = /^[0-9]{3,4}$/;
 const PAYMENT_NETWORKS_REGEX = {
     visa: /^4[0-9]{12}(?:[0-9]{3})?$/,
     masterCard: /^5[1-5][0-9]{14}$/,
@@ -43,9 +43,9 @@ function isValidPaymentMethod(newPaymentMethod) {
         isValid = false;
     }
 
-    if (!isValidCvv(newPaymentMethod.cvv)) {
-        isValid = false;
-    }
+    // if (!isValidCvv(newPaymentMethod.cvv)) {
+    //     isValid = false;
+    // }
 
     if (!isValidPaymentNetwork(newPaymentMethod.paymentNetwork)) {
         showErrorMessage('cardNumber', 'invalidCardNumber', 'Número de tarjeta no válido');
@@ -107,19 +107,19 @@ function isValidExpirationDate(expirationDate) {
     return true;
 }
 
-function isValidCvv(cvv) {
-    if (!cvv) {
-        showErrorMessage('cvv', 'invalidCvv', 'El cvv es obligatorio.');
-        return false;
-    }
+// function isValidCvv(cvv) {
+//     if (!cvv) {
+//         showErrorMessage('cvv', 'invalidCvv', 'El cvv es obligatorio.');
+//         return false;
+//     }
 
-    if (!CVV_REGEX.test(cvv)) {
-        showErrorMessage('cvv', 'invalidCvv', 'El cvv debe contener de 3 a 4 dígitos.');
-        return false;
-    }
+//     if (!CVV_REGEX.test(cvv)) {
+//         showErrorMessage('cvv', 'invalidCvv', 'El cvv debe contener de 3 a 4 dígitos.');
+//         return false;
+//     }
 
-    return true;
-}
+//     return true;
+// }
 
 function isValidPaymentNetwork(paymentNetwork) {
     return VALID_PAYMENT_NETWORKS.includes(paymentNetwork);
@@ -144,7 +144,6 @@ async function savePaymentMethod() {
     let cardOwner = document.getElementById('cardOwner').value;
     let cardNumber = document.getElementById('cardNumber').value;
     let expirationDate = document.getElementById('expirationDate').value;
-    let cvv = document.getElementById('cvv').value;
     let cardEmitter = document.getElementById('bankSelect').value;
     let paymentNetwork = '0';
     let cardType = '0';
@@ -162,7 +161,6 @@ async function savePaymentMethod() {
         cardOwner: cardOwner.trim(),
         cardNumber: cardNumber.trim(),
         expirationDate: expirationDate.trim(),
-        cvv: cvv.trim(),
         cardEmitter: cardEmitter.trim(),
         cardType: cardType.trim(),
         paymentNetwork: paymentNetwork.trim()
@@ -211,29 +209,32 @@ function addPaymentMethod(newPaymentMethod) {
         .post(`${API_URL}/${userId}/payment-methods`, newPaymentMethod)
         .then((response) => {
             if (!response || !response.data) {
-                alert("No se pudo agregar el método de pago. Inténtelo de nuevo.");
+                showToast("No se pudo agregar el método de pago. Inténtelo de nuevo.", toastTypes.DANGER);
                 return;
             }
-            
-            let paymentMethod = createPaymentMethodCard(response.data.newPaymentMethod);
-            const paymentMethodsContainer = document.getElementById('payment-methods-container');
-            paymentMethodsContainer.appendChild(paymentMethod);
-            alert("Método de pago registrado");
+
+            showNewPaymentMethod(response.data.newPaymentMethod);
+            showToast("Método de pago registrado con éxito", toastTypes.SUCCESS);
             paymentMethodFormModal.hide();
             clearPaymentMethodForm();
             paymentMethodsNumber++;
         })
         .catch((error) => {
-            alert("No se pudo agregar el método de pago. Inténtelo de nuevo.");
+            showToast("No se pudo agregar el método de pago. Inténtelo de nuevo.", toastTypes.DANGER);
             console.error(error);
         });
+}
+
+function showNewPaymentMethod(newPaymentMethod) {
+    let paymentMethod = createPaymentMethodCard(newPaymentMethod);
+    const paymentMethodsContainer = document.getElementById('payment-methods-container');
+    paymentMethodsContainer.appendChild(paymentMethod);
 }
 
 function clearErrors() {
     document.getElementById('cardOwner').classList.remove("is-invalid");
     document.getElementById('cardNumber').classList.remove("is-invalid");
     document.getElementById('expirationDate').classList.remove("is-invalid");
-    document.getElementById('cvv').classList.remove("is-invalid");
     document.getElementById('bankSelect').classList.remove("is-invalid");
 }
 
@@ -241,7 +242,6 @@ function clearPaymentMethodForm() {
     document.getElementById('cardOwner').value = '';
     document.getElementById('cardNumber').value = '';
     document.getElementById('expirationDate').value = '';
-    document.getElementById('cvv').value = '';
     document.getElementById('bankSelect').value = '';
 
     clearErrors();
