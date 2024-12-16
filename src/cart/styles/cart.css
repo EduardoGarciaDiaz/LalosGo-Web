@@ -1,5 +1,3 @@
-
-
 .btn-quantity {
     width: 32px;
     height: 32px;
@@ -36,4 +34,17 @@
         width: 80px;
         height: 80px;
     }
+}
+
+.without-products {
+    visibility: visible;
+    font-size: 1.5rem;
+    color: chocolate;
+}
+
+.with-products {
+    visibility: collapse;
+    visibility: hidden;
+    margin: 0;
+    padding: 0;
 }

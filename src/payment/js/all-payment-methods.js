@@ -1,3 +1,5 @@
+const URL_IMAGE_VISA='../assets/images/visa.png';
+const URL_IMAGE_MASTERCARD='../assets/images/mastercard.png';
 var paymentMethodsNumber = 0;
 
 window.onload = function() {
@@ -76,14 +78,17 @@ function createPaymentMethodCard(newPaymentMethod) {
     let cardOwner = newPaymentMethod.cardOwner;
 
     let imageUrl = '';
-    if (paymentNetwork === 'Visa') {
-        imageUrl = 'assets/visa.png';
-    } else if (paymentNetwork === 'MasterCard') {
-        imageUrl = 'assets/mastercard.png';
+    if (paymentNetwork === VALID_PAYMENT_NETWORKS[0]) {
+        imageUrl = URL_IMAGE_VISA;
+    } else if (paymentNetwork === VALID_PAYMENT_NETWORKS[1]) {
+        imageUrl = URL_IMAGE_MASTERCARD;
     }
 
     const paymentMethodContainer = document.createElement('div');
-    paymentMethodContainer.classList.add('payment-methods-container', 'd-flex', 'justify-content-between', 'align-items-center', 'border', 'p-3', 'mb-3');
+    paymentMethodContainer.classList.add(
+        'payment-methods-container', 'd-flex', 'justify-content-between',
+        'align-items-center', 'border', 'ps-3','pe-3', 'pt-1','pb-1', 'mb-3', 'rounded'
+    );
     paymentMethodContainer.id = newPaymentMethod._id;
 
     const cardInfo = document.createElement('div');
@@ -97,16 +102,19 @@ function createPaymentMethodCard(newPaymentMethod) {
     const cardNumberElement = document.createElement('p');
     cardNumberElement.textContent = `**** ${cardNumber.slice(-4)}`;
     cardNumberElement.id = 'card-number';
+    cardNumberElement.classList.add('mb-0');
     cardInfo.appendChild(cardNumberElement);
 
     const cardHolderElement = document.createElement('p');
     cardHolderElement.textContent = cardOwner;
     cardHolderElement.id = 'card-owner';
+    cardHolderElement.classList.add('mb-0');
     cardInfo.appendChild(cardHolderElement);
 
     const expirationDateElement = document.createElement('p');
     expirationDateElement.textContent = `Expira: ${expirationDate}`;
     expirationDateElement.id = 'expiration-date';
+    expirationDateElement.classList.add('mb-0');
     cardInfo.appendChild(expirationDateElement);
 
     paymentMethodContainer.appendChild(cardInfo);
