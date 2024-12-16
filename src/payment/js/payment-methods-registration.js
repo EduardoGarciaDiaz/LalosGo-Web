@@ -4,7 +4,6 @@ const VALID_PAYMENT_NETWORKS = ['Visa', 'MasterCard'];
 const VALID_CARD_TYPES = ['Crédito', 'Débito'];
 const CARD_OWNER_REGEX = /^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ\s]{2,100}$/;
 const CARD_NUMBER_REGEX = /^[0-9]{16}$/;
-// const CVV_REGEX = /^[0-9]{3,4}$/;
 const PAYMENT_NETWORKS_REGEX = {
     visa: /^4[0-9]{12}(?:[0-9]{3})?$/,
     masterCard: /^5[1-5][0-9]{14}$/,
@@ -42,10 +41,6 @@ function isValidPaymentMethod(newPaymentMethod) {
     if (!isValidExpirationDate(newPaymentMethod.expirationDate)) {
         isValid = false;
     }
-
-    // if (!isValidCvv(newPaymentMethod.cvv)) {
-    //     isValid = false;
-    // }
 
     if (!isValidPaymentNetwork(newPaymentMethod.paymentNetwork)) {
         showErrorMessage('cardNumber', 'invalidCardNumber', 'Número de tarjeta no válido');
@@ -106,20 +101,6 @@ function isValidExpirationDate(expirationDate) {
 
     return true;
 }
-
-// function isValidCvv(cvv) {
-//     if (!cvv) {
-//         showErrorMessage('cvv', 'invalidCvv', 'El cvv es obligatorio.');
-//         return false;
-//     }
-
-//     if (!CVV_REGEX.test(cvv)) {
-//         showErrorMessage('cvv', 'invalidCvv', 'El cvv debe contener de 3 a 4 dígitos.');
-//         return false;
-//     }
-
-//     return true;
-// }
 
 function isValidPaymentNetwork(paymentNetwork) {
     return VALID_PAYMENT_NETWORKS.includes(paymentNetwork);
