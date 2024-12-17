@@ -2,7 +2,7 @@ const VALID_FULL_NAME  = /^(?!\s)[A-ZÁÉÍÓÚÑ][a-záéíóúñü]+(?: [A-ZÁ
 const VALID_PHONE_NUMBER = /^\+?[0-9]{1,3}[-. ]?\(?\d{1,4}\)?[-. ]?\d{1,4}[-. ]?\d{1,9}$/;
 const VALID_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const VALID_PASSWORD = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-const API_URL = 'http://localhost:3000/api/v1/users';
+const API_URL = 'http://localhost:3000/api/v1/users/';
 
 document.addEventListener("DOMContentLoaded", () => {
     const today = new Date();
@@ -119,7 +119,7 @@ function clearErrors(){
 
 function registerClient(newClient){
     axios
-    .post(`${API_URL}/createClientAccount`, newClient)
+    .post(`${API_URL}`, newClient)
     .then((response) => {
         alert("El cliente se ha registrado exitosamente");
     })
@@ -135,4 +135,4 @@ function hashPassword(password) {
     hashObj.update(password);
     var hash = hashObj.getHash("HEX");
     return hash;
-  }
+}
