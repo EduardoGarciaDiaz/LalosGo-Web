@@ -10,7 +10,7 @@ const toastTypes = {
     DANGER: 'text-bg-danger',
     WARNING: 'text-bg-warning',
     INFO: 'text-bg-info',
-    LIGHT: 'text-bg-light',
+    LIGHT: 'text-bg-light', 
     DARK: 'text-bg-dark',
 };
 
@@ -33,6 +33,7 @@ function createToast(message, type) {
     toast.style.top = '1rem';
     toast.style.left = '50%';
     toast.style.transform = 'translateX(-50%)';
+    toast.style.zIndex = '1100';
     toast.setAttribute("role", "alert");
     toast.setAttribute("aria-live", "assertive");
     toast.setAttribute("aria-atomic", "true");

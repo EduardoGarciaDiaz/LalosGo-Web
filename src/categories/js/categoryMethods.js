@@ -59,8 +59,7 @@ async function loadCategories() {
             
         })
     }).catch((error) => {
-        console.error("Error al cargar las categorías:", error);
-        categoryContainer.innerHTML = '<p class="text-danger">Error al cargar las categorías. Inténtalo más tarde.</p>';
+       showToast("Ocurrio algo inesperado al cargar las categorías. Verirfique su conexión e inténtelo mas tarde.", toastTypes.DANGER);
     })
     
 }
@@ -163,9 +162,9 @@ async function changeCategoryStatus(categoryToChange){
             }  
         );
         loadCategories();   
-        showToast("Actualización exitosa", response.data.message, true) 
+        showToast(response.data.message, toastTypes.SUCCESS) 
     } catch (error) {
-        showToast("Error", response.data.message, false)  
+        showToast(response.data.message, toastTypes.WARNING)  
     }
 }
 
@@ -193,7 +192,7 @@ async function saveCategory(isEdition) {
                 }
             );                     
             loadCategories();   
-            showToast("Actualización exitosa", response.data.message, true)   
+            showToast(response.data.message, toastTypes.SUCCESS)   
             setTimeout(() => {
                 const bootstrapModal = bootstrap.Modal.getInstance(modalWindowCategory);
                 bootstrapModal.hide(); 
@@ -206,12 +205,12 @@ async function saveCategory(isEdition) {
                 categoryStatus
             });
             createCard(response.data.category)
-            showToast("Registro exitoso", response.data.message, true)            
+            showToast(response.data.message, toastTypes.SUCCESS)            
         }        
         clearModal();            
         
     } catch (error) {
-        showToast("Error", "Ocurrio un error al relaziar la operación, intentelo mas tarde", false)  
+        showToast("Ocurrio un error al relaziar la operación, intentelo mas tarde", toastTypes.WARNING)  
     }
 }
 
@@ -253,11 +252,11 @@ function checkFieldsFormat(){
 }
 
 function searchCategory() {
-    const searchInput = removeAccents(document.getElementById("category-search-bar").value.toLowerCase()); // Obtener texto de búsqueda sin acentos
-    const categories = document.querySelectorAll("#categories-container .col-md-4"); // Selecciona todas las tarjetas
+    const searchInput = removeAccents(document.getElementById("category-search-bar").value.toLowerCase()); 
+    const categories = document.querySelectorAll("#categories-container .col-md-4"); 
 
     categories.forEach(categoryCard => {
-        const categoryName = removeAccents(categoryCard.querySelector(".card-title").textContent.toLowerCase()); // Nombre de la categoría sin acentos
+        const categoryName = removeAccents(categoryCard.querySelector(".card-title").textContent.toLowerCase()); 
         if (categoryName.includes(searchInput)) {
             categoryCard.style.display = "block"; 
         } else {
@@ -283,15 +282,3 @@ function clearModal() {
     modalCategoryName.classList.remove("is-invalid")
 }
 
-function showToast(title, message, isSuccess){
-    toastTitle.innerHTML = title;
-    toastMessage.innerHTML = message
-    if(isSuccess){
-        toastWindow.className = "toast align-items-center text-bg-success border-0"
-    }else{
-        toastWindow.className = "toast align-items-center text-bs-danger-border-subtle border-0"
-    }
-    toastWindow.style.display = 'flex'; 
-    const toast = new bootstrap.Toast(toastWindow);
-    toast.show();
-}
