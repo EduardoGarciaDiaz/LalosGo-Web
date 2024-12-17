@@ -1,0 +1,54 @@
+.search-container {
+    background-color: #f8f9fa;
+    border-radius: 25px;
+    padding: 8px 15px;
+}
+
+.search-container input {
+    border: none;
+    background: transparent;
+    width: 100%;
+    outline: none;
+}
+
+.status-active {
+    color: #28a745;
+}
+
+.status-inactive {
+    color: #dc9f35;
+}
+
+.dropdown:hover {
+    background-color: rgb(195, 195, 195);
+    border-radius: 15px;
+}
+
+.branch-details {
+    font-size: .9em;
+}
+
+.card {
+    min-height: 180px;
+}
+
+.not-searched {
+    display: none;
+}
+
+.searched {
+    display: block;
+}
+
+
+
+@media (max-width: 768px) {
+    .search-section {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .search-container {
+        width: 100%;
+    }
+}

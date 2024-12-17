@@ -15,6 +15,7 @@ window.onload = () => {
 };
 
 function loadProducts() {
+    //TODO: Clear al products from the UI, and then load the recovered products.
     //TODO: Get products from the cart
     let isEmpty = validateEmptyCart();
 }
