@@ -69,17 +69,16 @@ async function createBranch(){
             closingTime,
             address
         })
-        console.log(response)
         if(response.status < 300 && response.status > 199) {
-            showToast("Registro Exitoso", response.data.message, true)  
+            showToast(response.data.message, toastTypes.SUCCESS)
             clearFields()  
         }
         else{
-            showToast("Ocurrio un error", response.data.message, false)
+            showToast(response.data.message, toastTypes.WARNING)
         }
         
     } catch (error) {
-        console.log(error)
+        showToast("Ocurrio algo inesperado al realizar la petición. Revise su conexión a internet e inténtelo mas tarde", toastTypes.WARNING)
     }
 }
 
@@ -293,20 +292,3 @@ function clearFields() {
     branchLocality.value = '';
 }
 
-
-function showToast(title, message, isSuccess){
-    let toastWindow = document.getElementById('success-toast');
-    let toastTitle =  document.getElementById('toast-title');
-    let toastMessage = document.getElementById('toast-message');
-
-    toastTitle.innerHTML = title;
-    toastMessage.innerHTML = message
-    if(isSuccess){
-        toastWindow.className = "toast align-items-center text-bg-success border-0"
-    }else{
-        toastWindow.className = "toast align-items-center text-bs-danger-border-subtle border-0"
-    }
-    toastWindow.style.display = 'flex'; 
-    const toast = new bootstrap.Toast(toastWindow);
-    toast.show();
-}

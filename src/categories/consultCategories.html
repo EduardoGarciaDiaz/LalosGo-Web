@@ -10,6 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="js/categoryMethods.js"></script>
+    <script src="../utils/toast-utils.js"></script>
 </head>
 
 <body>
@@ -19,7 +20,7 @@
         </div>
 
         <div class="d-flex mb-4 col justify-content-center" >
-            <input type="text" class="form-control w-50" id="category-search-bar" placeholder="Buscar una categoría" />
+            <input type="text" class="form-control w-50" id="category-search-bar" placeholder="Buscar una categoría" maxlength="50" />
             <button id="search-category-btn" type="button" class="btn btn-secondary ms-2" onclick="searchCategory()">Buscar</button>
             <button id="add-category-btn" type="button" class="btn btn-primary ms-3" data-bs-toggle="modal" onclick="showModal()" data-bs-target="#register-new-category">Register Category</button>
         </div>
@@ -40,13 +41,13 @@
                 <div class="modal-body">
                     <form id="form-register-category" novalidate>
                         <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="category-id" placeholder="Enter unique identifier" required>
+                            <input type="text" class="form-control" id="category-id" placeholder="Enter unique identifier" maxlength="7" required >
                             <label for="category-id">Unique Identifier: XXXX000</label>
                             <span class="d-none" id="error-category-id"></span>
                         </div>
 
                         <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="category-name" placeholder="Enter category name" required>
+                            <input type="text" class="form-control" id="category-name" placeholder="Enter category name" maxlength="50" required>
                             <label for="category-name">Name</label>
                             <span class="d-none" id="error-category-name"></span>
                         </div>
