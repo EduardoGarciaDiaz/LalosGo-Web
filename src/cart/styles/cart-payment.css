@@ -15,14 +15,13 @@ border-radius: 10px;
 }
 
 .without-payment-methods {
-    visibility: visible;
+    display: block;
     font-size: 1.5rem;
     color: chocolate;
 }
 
 .with-payment-methods {
-    visibility: collapse;
-    visibility: hidden;
+    display: none;
     margin: 0;
     padding: 0;
 }

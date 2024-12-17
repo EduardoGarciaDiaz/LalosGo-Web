@@ -7,11 +7,9 @@ const URL_IMAGE_MASTERCARD='../assets/images/mastercard.png';
 var userId = '6741260fd2f308dfbeb3e9f2';
 
 window.onload = function() {
-    getAllPaymentMethods(true);
+    getAllPaymentMethods();
     loadOrderSummary();
 }
-
-
 
 function getAllPaymentMethods() {
     let withoutPaymentMessage = document.getElementById('payment-methods-message');
@@ -20,10 +18,12 @@ function getAllPaymentMethods() {
         .get(`${API_URL}/${userId}/payment-methods`)
         .then((response) => {
             let paymentMethods = response.data.userPaymentMethods;
+            
             if (!paymentMethods || paymentMethods.length === 0) {
                 withoutPaymentMessage.className = 'without-payment-methods';
                 return;
             }
+
             paymentMethods.forEach(paymentMethod => {
                 addPaymentMethodToContainer(paymentMethod);
             });
@@ -64,7 +64,6 @@ function createPaymentMethodCard(paymentMethod) {
         'p-3', 
         'mb-3'
     );
-    //paymentMethodContainer.id = paymentMethod._id;
 
     const radioAndInfoContainer = document.createElement('div');
     radioAndInfoContainer.classList.add('d-flex', 'align-items-center', 'flex-grow-1');
