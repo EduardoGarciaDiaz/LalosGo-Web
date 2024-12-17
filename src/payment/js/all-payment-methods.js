@@ -1,3 +1,5 @@
+const URL_IMAGE_VISA='../assets/images/visa.png';
+const URL_IMAGE_MASTERCARD='../assets/images/mastercard.png';
 var paymentMethodsNumber = 0;
 
 window.onload = function() {
@@ -10,13 +12,18 @@ function getAllPaymentMethods() {
         .get(`${API_URL}/${userId}/payment-methods`)
         .then((response) => {
             let paymentMethods = response.data.userPaymentMethods;
+            if (!paymentMethods || paymentMethods.length === 0) {
+                showToast("No se encontraron métodos de pago", toastTypes.PRIMARY);
+                return;
+            }
             paymentMethods.forEach(paymentMethod => {
                 addPaymentMethodToContainer(paymentMethod);
                 paymentMethodsNumber++;
             });
         })
         .catch((error) => {
-            alert('Error al cargar los métodos de pago');
+            console.error(error);
+            showToast("Error al cargar los métodos de pago", toastTypes.WARNING);
         });
 }
 
@@ -60,7 +67,7 @@ function addPaymentMethodToContainer(paymentMethod) {
 }
 
 function createPaymentMethodCard(newPaymentMethod) {
-    if (newPaymentMethod === null || newPaymentMethod === undefined) { 
+    if (!newPaymentMethod) { 
         return;
     }
 
@@ -71,14 +78,17 @@ function createPaymentMethodCard(newPaymentMethod) {
     let cardOwner = newPaymentMethod.cardOwner;
 
     let imageUrl = '';
-    if (paymentNetwork === 'Visa') {
-        imageUrl = 'assets/visa.png';
-    } else if (paymentNetwork === 'MasterCard') {
-        imageUrl = 'assets/mastercard.png';
+    if (paymentNetwork === VALID_PAYMENT_NETWORKS[0]) {
+        imageUrl = URL_IMAGE_VISA;
+    } else if (paymentNetwork === VALID_PAYMENT_NETWORKS[1]) {
+        imageUrl = URL_IMAGE_MASTERCARD;
     }
 
     const paymentMethodContainer = document.createElement('div');
-    paymentMethodContainer.classList.add('payment-methods-container', 'd-flex', 'justify-content-between', 'align-items-center', 'border', 'p-3', 'mb-3');
+    paymentMethodContainer.classList.add(
+        'payment-methods-container', 'd-flex', 'justify-content-between',
+        'align-items-center', 'border', 'ps-3','pe-3', 'pt-1','pb-1', 'mb-3', 'rounded'
+    );
     paymentMethodContainer.id = newPaymentMethod._id;
 
     const cardInfo = document.createElement('div');
@@ -92,16 +102,19 @@ function createPaymentMethodCard(newPaymentMethod) {
     const cardNumberElement = document.createElement('p');
     cardNumberElement.textContent = `**** ${cardNumber.slice(-4)}`;
     cardNumberElement.id = 'card-number';
+    cardNumberElement.classList.add('mb-0');
     cardInfo.appendChild(cardNumberElement);
 
     const cardHolderElement = document.createElement('p');
     cardHolderElement.textContent = cardOwner;
     cardHolderElement.id = 'card-owner';
+    cardHolderElement.classList.add('mb-0');
     cardInfo.appendChild(cardHolderElement);
 
     const expirationDateElement = document.createElement('p');
     expirationDateElement.textContent = `Expira: ${expirationDate}`;
     expirationDateElement.id = 'expiration-date';
+    expirationDateElement.classList.add('mb-0');
     cardInfo.appendChild(expirationDateElement);
 
     paymentMethodContainer.appendChild(cardInfo);
@@ -115,85 +128,59 @@ function createPaymentMethodCard(newPaymentMethod) {
     cardImage.id = 'card-image-network';
     cardOptions.appendChild(cardImage);
 
-    const dropdown = document.createElement('div');
-    dropdown.classList.add('dropdown');
-    
-    const dropdownButton = document.createElement('button');
-    dropdownButton.classList.add('btn', 'btn-light', 'ms-5');
-    dropdownButton.type = 'button';
-    dropdownButton.setAttribute('id', 'dropdownMenuButton');
-    dropdownButton.setAttribute('data-bs-toggle', 'dropdown');
-    dropdownButton.setAttribute('aria-expanded', 'false');
-    dropdownButton.innerHTML = '<i class="bi bi-three-dots"></i>';
-    dropdown.appendChild(dropdownButton);
-    
-    const dropdownMenu = document.createElement('ul');
-    dropdownMenu.classList.add('dropdown-menu', 'dropdown-menu-start');
-    dropdownMenu.setAttribute('aria-labelledby', 'dropdownMenuButton');
-    
-    const editOption = document.createElement('li');
-    const editLink = document.createElement('a');
-    editLink.classList.add('dropdown-item');
-    editLink.href = '#';
-    editLink.textContent = 'Editar';
-    editOption.appendChild(editLink);
-    
-    const deleteOption = document.createElement('li');
-    const deleteLink = document.createElement('a');
-    deleteLink.classList.add('dropdown-item');
-    deleteLink.href = '#';
-    deleteLink.textContent = 'Eliminar';
-    deleteOption.appendChild(deleteLink);
+    const deleteBtn = document.createElement('button');
+    deleteBtn.classList.add('btn', 'btn-danger', 'ms-5');
+    deleteBtn.type = 'button';
+    deleteBtn.setAttribute('id', 'deleteBtn');
+    deleteBtn.setAttribute('aria-expanded', 'false');
+    deleteBtn.innerHTML = '<i class="bi bi-trash" title="Eliminar método de pago"></i>';
 
-    dropdownMenu.appendChild(editOption);
-    dropdownMenu.appendChild(deleteOption);
-    
-    dropdown.appendChild(dropdownMenu);
-
-    cardOptions.appendChild(dropdown);
+    cardOptions.appendChild(deleteBtn);
 
     paymentMethodContainer.appendChild(cardOptions);
 
-    deleteLink.addEventListener('click', function(event) {
+    deleteBtn.addEventListener('click', function(event) {
         event.preventDefault();
         showDeleteConfirmation(newPaymentMethod);
-    });
-
-    editLink.addEventListener('click', function(event) {
-        event.preventDefault();
-        editPayment(newPaymentMethod);
     });
 
     return paymentMethodContainer;
 }
 
-function showDeleteConfirmation(paymentMethod) {
-    const modalMessage = document.getElementById('payment-method-to-delete');
-    modalMessage.textContent = `¿Estás seguro que deseas eliminar el método de pago con terminación ${paymentMethod.cardNumber.slice(-4)}?`;
+function showDeleteConfirmation(paymentMethod) {    
+    const MODAL_TITLE = 'Eliminar método de pago';
+    const MODAL_MESSAGE = `¿Estás seguro que deseas eliminar el método de pago con terminación ${paymentMethod.cardNumber.slice(-4)}?`;
+    const MODAL_PRIMARY_BTN_TEXT = 'Eliminar';
 
-    const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
-    confirmationModal.show();
+    const { modalInstance, primaryBtn, secondaryBtn } = createConfirmationModal(
+        MODAL_TITLE, 
+        MODAL_MESSAGE, 
+        modalTypes.DANGER, 
+        MODAL_PRIMARY_BTN_TEXT
+    );
+    modalInstance.show();
 
-    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
-    let paymentMethodId = paymentMethod._id;
+    primaryBtn.onclick = async function() {
+        await deletePaymentMethod(paymentMethod._id);
+        modalInstance.hide();
+    }
 
-    confirmDeleteBtn.onclick = async function() {
-        await deletePaymentMethod(paymentMethodId);
-        confirmationModal.hide();
-    };
+    secondaryBtn.onclick = function() {
+        modalInstance.hide();
+    }
 }
 
 async function deletePaymentMethod(paymentMethodId) {
     await axios
         .delete(`${API_URL}/${userId}/payment-methods/${paymentMethodId}`)
         .then((response) => {
-            alert("Método de pago eliminado");
+            showToast("Método de pago eliminado", toastTypes.SUCCESS);
             removePaymentMethodFromUI(paymentMethodId);
             paymentMethodsNumber--;
             return true;
         })
         .catch((error) => {
-            alert("No se pudo eliminar el método de pago. Inténtelo de nuevo.");
+            showToast("No se pudo eliminar el método de pago. Inténtelo de nuevo.", toastTypes.DANGER);
             return false;
         });
 }

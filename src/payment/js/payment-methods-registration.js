@@ -4,7 +4,6 @@ const VALID_PAYMENT_NETWORKS = ['Visa', 'MasterCard'];
 const VALID_CARD_TYPES = ['Crédito', 'Débito'];
 const CARD_OWNER_REGEX = /^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ\s]{2,100}$/;
 const CARD_NUMBER_REGEX = /^[0-9]{16}$/;
-const CVV_REGEX = /^[0-9]{3}$/;
 const PAYMENT_NETWORKS_REGEX = {
     visa: /^4[0-9]{12}(?:[0-9]{3})?$/,
     masterCard: /^5[1-5][0-9]{14}$/,
@@ -40,10 +39,6 @@ function isValidPaymentMethod(newPaymentMethod) {
     }
 
     if (!isValidExpirationDate(newPaymentMethod.expirationDate)) {
-        isValid = false;
-    }
-
-    if (!isValidCvv(newPaymentMethod.cvv)) {
         isValid = false;
     }
 
@@ -107,20 +102,6 @@ function isValidExpirationDate(expirationDate) {
     return true;
 }
 
-function isValidCvv(cvv) {
-    if (!cvv) {
-        showErrorMessage('cvv', 'invalidCvv', 'El cvv es obligatorio.');
-        return false;
-    }
-
-    if (!CVV_REGEX.test(cvv)) {
-        showErrorMessage('cvv', 'invalidCvv', 'El cvv debe contener 3 dígitos.');
-        return false;
-    }
-
-    return true;
-}
-
 function isValidPaymentNetwork(paymentNetwork) {
     return VALID_PAYMENT_NETWORKS.includes(paymentNetwork);
 }
@@ -130,7 +111,7 @@ function isValidCardType(cardType) {
 }
 
 function isValidCardEmitter(cardEmitter) {
-    if (cardEmitter === '' || cardEmitter === null || cardEmitter === undefined || cardEmitter === 'Seleccione el banco') {
+    if (!cardEmitter || cardEmitter === 'Seleccione el banco') {
         showErrorMessage('bankSelect', 'invalidBank', 'Selecciona un banco emisor.');
         return false;
     }
@@ -138,18 +119,17 @@ function isValidCardEmitter(cardEmitter) {
     return true;
 }
 
-async function savePaymentMethod(isEdit, paymentMethodId) {
+async function savePaymentMethod() {
     clearErrors();
 
     let cardOwner = document.getElementById('cardOwner').value;
     let cardNumber = document.getElementById('cardNumber').value;
     let expirationDate = document.getElementById('expirationDate').value;
-    let cvv = document.getElementById('cvv').value;
     let cardEmitter = document.getElementById('bankSelect').value;
     let paymentNetwork = '0';
     let cardType = '0';
 
-    if (cardNumber === '' || cardNumber === null || cardNumber === undefined) {
+    if (!cardNumber) {
         document.getElementById('cardNumber').classList.add("is-invalid");
         const invalidCardNumber = document.getElementById('invalidCardNumber');
         invalidCardNumber.textContent = 'El número de tarjeta debe contener 16 dígitos.';
@@ -162,7 +142,6 @@ async function savePaymentMethod(isEdit, paymentMethodId) {
         cardOwner: cardOwner.trim(),
         cardNumber: cardNumber.trim(),
         expirationDate: expirationDate.trim(),
-        cvv: cvv.trim(),
         cardEmitter: cardEmitter.trim(),
         cardType: cardType.trim(),
         paymentNetwork: paymentNetwork.trim()
@@ -171,22 +150,12 @@ async function savePaymentMethod(isEdit, paymentMethodId) {
     if (!isValidPaymentMethod(newPaymentMethod)) {
         return;
     }
-
-    if (isEdit) {
-        if (!paymentMethodId || paymentMethodId === '' || paymentMethodId === null || paymentMethodId === undefined) {
-            alert("No se pudo actualizar el método de pago. Inténtelo de nuevo.");
-            return;
-        }
-        newPaymentMethod._id = paymentMethodId;
-
-        updatePaymentMethod(newPaymentMethod);
-    } else {
-        addPaymentMethod(newPaymentMethod);
-    }
+    
+    addPaymentMethod(newPaymentMethod);
 }
 
 async function calculateCardData(cardNumber) {
-    if (cardNumber !== '' && cardNumber !== null && cardNumber !== undefined) {
+    if (cardNumber) {
         let paymentNetwork = calculatePaymentNetwork(cardNumber);
         let cardType = calculateCardType(cardNumber);
         return { paymentNetwork, cardType };
@@ -220,25 +189,33 @@ function addPaymentMethod(newPaymentMethod) {
     axios
         .post(`${API_URL}/${userId}/payment-methods`, newPaymentMethod)
         .then((response) => {
-            let paymentMethod = createPaymentMethodCard(response.data.newPaymentMethod);
-            const paymentMethodsContainer = document.getElementById('payment-methods-container');
-            paymentMethodsContainer.appendChild(paymentMethod);
-            alert("Método de pago registrado");
+            if (!response || !response.data) {
+                showToast("No se pudo agregar el método de pago. Inténtelo de nuevo.", toastTypes.DANGER);
+                return;
+            }
+
+            showNewPaymentMethod(response.data.newPaymentMethod);
+            showToast("Método de pago registrado con éxito", toastTypes.SUCCESS);
             paymentMethodFormModal.hide();
             clearPaymentMethodForm();
             paymentMethodsNumber++;
         })
         .catch((error) => {
-            alert("No se pudo agregar el método de pago. Inténtelo de nuevo.");
+            showToast("No se pudo agregar el método de pago. Inténtelo de nuevo.", toastTypes.DANGER);
             console.error(error);
         });
+}
+
+function showNewPaymentMethod(newPaymentMethod) {
+    let paymentMethod = createPaymentMethodCard(newPaymentMethod);
+    const paymentMethodsContainer = document.getElementById('payment-methods-container');
+    paymentMethodsContainer.appendChild(paymentMethod);
 }
 
 function clearErrors() {
     document.getElementById('cardOwner').classList.remove("is-invalid");
     document.getElementById('cardNumber').classList.remove("is-invalid");
     document.getElementById('expirationDate').classList.remove("is-invalid");
-    document.getElementById('cvv').classList.remove("is-invalid");
     document.getElementById('bankSelect').classList.remove("is-invalid");
 }
 
@@ -246,7 +223,6 @@ function clearPaymentMethodForm() {
     document.getElementById('cardOwner').value = '';
     document.getElementById('cardNumber').value = '';
     document.getElementById('expirationDate').value = '';
-    document.getElementById('cvv').value = '';
     document.getElementById('bankSelect').value = '';
 
     clearErrors();

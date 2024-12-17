@@ -6,7 +6,7 @@ const primaryFormBtn = document.getElementById('primary-form-btn');
 addPaymentMethodBtn.addEventListener("click", () => {
     primaryFormBtn.textContent = 'Agregar';
     if (paymentMethodsNumber >= 3) {
-        alert("Solo puedes registrar 3 métodos de pago");
+        showToast("Solo puedes registrar 3 métodos de pago", toastTypes.WARNING);
         return;
     }
 

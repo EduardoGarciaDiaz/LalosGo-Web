@@ -1,0 +1,50 @@
+.btn-quantity {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    padding: 0;
+    background-color: #FDD836;
+    border: none;
+}
+
+.btn-quantity:hover {
+    background-color: #ffca2c;
+}
+
+.btn-delete {
+    text-decoration: none;
+}
+
+.btn-delete:hover {
+    color: #be1414 !important;
+}
+
+.btn-delete:hover .icon-delete {
+    color: inherit;
+}
+
+.product-img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+
+@media (max-width: 576px) {
+    .product-img {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+.without-products {
+    visibility: visible;
+    font-size: 1.5rem;
+    color: chocolate;
+}
+
+.with-products {
+    visibility: collapse;
+    visibility: hidden;
+    margin: 0;
+    padding: 0;
+}
