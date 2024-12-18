@@ -29,7 +29,7 @@
 
                     <div class="form-floating mb-3">
                         <textarea class="form-control" id="description-product" placeholder="Descripción del producto"
-                            style="height: 100px;" maxlength="1000" required></textarea>
+                            style="height: 100px;" maxlength="1000"  required></textarea>
                         <label for="description-product">Descripción del producto</label>
                         <span class="d-none text-danger" id="error-description-product"></span>
                     </div>
@@ -37,7 +37,7 @@
                     <div class="row ">
                         <div class="col-md-4">
                             <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="code-product" placeholder="Código" maxlength="10" required>
+                                <input type="text" class="form-control" id="code-product" placeholder="Código" maxlength="15" required>
                                 <label for="code-product">Código de producto</label>
                                 <span class="d-none text-danger" id="error-code-product"></span>
                             </div>                            
@@ -45,7 +45,7 @@
                     
                         <div class="col-md-4">
                             <div class="form-floating mb-3">
-                                <input type="number" class="form-control" id="price-product" placeholder="Precio unitario"  required>
+                                <input type="number" class="form-control" id="price-product" placeholder="Precio unitario"   required>
                                 <label for="price-product">Precio unitario</label>
                                 <span class="d-none text-danger" id="error-price-product"></span>
                             </div>
@@ -53,7 +53,7 @@
                     
                         <div class="col-md-4">
                             <div class="form-floating mb-3">
-                                <input type="number" class="form-control" id="weight-product" placeholder="Peso" required>
+                                <input type="number" class="form-control" id="weight-product" placeholder="Peso"  required>
                                 <label for="weight-product">Peso en KG</label>
                                 <span class="d-none text-danger" id="error-weight-product"></span>
                             </div>
@@ -78,18 +78,18 @@
                         </div>
                         <div class="col">
                             <div class="form-floating">
-                                <select class="form-select" id="unit-product" aria-label="Unidad de medida">
+                                <select class="form-select" id="unit-product" aria-label="Unidad de medida" >
                                     <option value="" selected>Seleccione...</option>
-                                    <option value="piece">Pieza</option>
-                                    <option value="kilogram">Kilogramo</option>
-                                    <option value="gram">Gramo</option>
-                                    <option value="liter">Litros</option>
-                                    <option value="milliliter">Mililitros</option>
-                                    <option value="meter">Metros</option>
-                                    <option value="centimeter">Centimetros</option>
-                                    <option value="inch">Pulgadas</option>
-                                    <option value="pack">Paquetes</option>
-                                    <option value="box">Cajas</option>                                    
+                                    <option value="Piece">Pieza</option>
+                                    <option value="Kilogram">Kilogramo</option>
+                                    <option value="Gram">Gramo</option>
+                                    <option value="Liter">Litros</option>
+                                    <option value="Milliliter">Mililitros</option>
+                                    <option value="Meter">Metros</option>
+                                    <option value="Centimeter">Centimetros</option>
+                                    <option value="Inch">Pulgadas</option>
+                                    <option value="Pack">Paquetes</option>
+                                    <option value="Box">Cajas</option>                                    
                                 </select>
                                 <label for="unit-product">Unidad de medida</label>
                                 <span class="d-none text-danger" id="error-unit-product"></span>
@@ -101,7 +101,7 @@
                         <div class="col">
                             <div class="form-floating">
                                 <input type="number" class="form-control" id="limit-product"
-                                    placeholder="Límite por pedido" required>
+                                    placeholder="Límite por pedido"  required>
                                 <label for="limit-product">Límite por pedido</label>
                                 <span class="d-none text-danger" id="error-limit-product"></span>
                             </div>
@@ -143,7 +143,7 @@
 
             <div class="text-end mt-4">
                 <button type="button" class="btn btn-outline-secondary" id="cancel-product">Cancelar</button>
-                <button type="submit" class="btn btn-primary" id="save-product">Guardar</button>
+                <button type="button" class="btn btn-primary" id="save-product" onclick="saveProduct()" >Guardar</button>
             </div>
         </form>
     </div>

@@ -12,10 +12,12 @@ let productLimit
 let productExpirationDate
 let productImg
 let inputImage
+let imageBase64Data
 let branchesList
 
 document.addEventListener("DOMContentLoaded", () => {
-    productDescription = document.getElementById("description-product");
+    productName = document.getElementById("name-product")
+    prodcutDescription = document.getElementById("description-product");
     productCode = document.getElementById("code-product");
     productBarCode = document.getElementById("bar-code-product");
     productPrice = document.getElementById("price-product");
@@ -75,6 +77,66 @@ async function loadBranches() {
     })
 }
 
+
+async function saveProduct(){
+
+    let selectedBranches = getSelectedBranches()
+    try {
+        console.log(222)
+        let response = await axios.post(API_URL + 'products/', {
+            barCode: productCode.value,
+            name: productName.value,
+            description: prodcutDescription.value,
+            unitPrice: productPrice.value,
+            expireDate: productExpirationDate.value,            
+            weight: productWeight.value,
+            productStatus: true,
+            unitMeasure: productUnit.value,
+            category: productCategory.options[productCategory.selectedIndex].id,
+            branches: selectedBranches
+        })
+        if(response.status < 300 && response.status > 199) {
+            showToast(response.data.message, toastTypes.SUCCESS)
+            
+        }
+        else{
+            showToast(response.data.message, toastTypes.WARNING)
+        }
+    } catch (error) {
+        console.log(error)
+        showToast("Ocurrio algo inesperado al realizar la petición. Revise su conexión a internet e inténtelo mas tarde", toastTypes.WARNING)
+    }
+}
+
+function getSelectedBranches() {
+    const selectedBranches = [];
+    const checkboxes = branchesList.querySelectorAll("input[type='checkbox']");
+
+    checkboxes.forEach((checkbox) => {
+        if (checkbox.checked) {
+            const container = checkbox.closest(".checkbox-with-number"); 
+            const label = container.querySelector("label");
+            const numberInput = container.querySelector("input[type='number']");
+
+            selectedBranches.push({
+                id: checkbox.id, 
+                name: label.textContent, 
+                quantity: Number(numberInput.value) || 0, 
+            });
+        }
+    });
+
+    return selectedBranches;
+}
+
+
+
+
+
+
+
+
+
 function generateBarCode(){
     if(productCode.value.trim() !== ""){
         JsBarcode("#bar-code-product", productCode.value.trim())
@@ -91,6 +153,7 @@ function uploadImage(event){
         reader.onload = function(e) {
             productImg.src = e.target.result
             productImg.style.display = "block"
+            imageBase64Data = e.target.result
         }
         reader.readAsDataURL(file)
     }
