@@ -1,0 +1,22 @@
+.card {
+    position: absolute;
+    min-width: 40%;    
+    width: 600px;
+    max-width: 100%;
+}
+
+#addressContainer{
+    display: flex;
+    flex-direction: column;
+    gap: 220px;  
+}
+.card .dropdwn-toggle::after{
+    display: none;
+}
+
+.card .menu-btn{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
