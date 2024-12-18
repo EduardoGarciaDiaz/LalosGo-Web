@@ -1,0 +1,86 @@
+body{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  
+  .container {
+    width: 800px;
+    max-width: 100%;
+    margin: auto;
+    padding-bottom: 40px;
+
+  }
+  
+  header {
+    text-align: left;
+    margin-bottom: 20px;
+  }
+  
+  .logo img {
+    width: auto;
+    height: auto;
+    max-width: 80%;
+  }
+
+  .logo {
+    display: flex;
+    justify-content: center;
+  }
+  
+  
+  main {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  button {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    min-width: 116px; 
+    max-width: 100%; 
+  }
+
+  .buttons{
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+  }
+
+  h2{
+    margin-bottom: 20px;
+  }
+
+  
+  #map {
+    height: 500px; 
+    width: 100%;   
+    margin: 20px auto;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+  }
+  
+#info {
+  margin-top: 10px;
+  font-size: 18px;
+  color: #555;
+}
+
+#EditButtom, #SaveButtom {
+  visibility: collapse;
+  position: absolute;
+}
+
+
