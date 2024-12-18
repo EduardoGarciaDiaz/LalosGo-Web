@@ -6,9 +6,6 @@ const VALID_INTERNAL_NUMBER = /^[a-zA-Z0-9\-\/]{0,10}$/;
 const VALID_EXTERNAL_NUMBER = /^\d{1,5}([a-zA-Z]|\-\d{1,3})?$/;
 const API_URL = 'http://localhost:3000/api/v1/address/';
 
-var latitude;
-var longitude;
-var isEdition = false;
 
 function initMap() {  
     const initialLocation = { lat: 19.541652309248587, lng: -96.9272232055664 };
