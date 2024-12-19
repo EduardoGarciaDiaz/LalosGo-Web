@@ -1,17 +1,14 @@
 :root {
     --primary: #08267C;
-    --primary-light: #6667B0;
-    --violet-light: #4A4B8C;
     --secondary: #1D1D1D;
     --white: #F4F1FF;
     --text: #323760;
-    --info-side-background: #4A4B8C;
+    --info-side-background: #08267C;
 }
 
 body {
-    font-size: 16px;
-    background: var(--info-side-background);
     font-family: Mulish, sans-serif;
+    background: var(--info-side-background);
 }
 
 * {
@@ -26,7 +23,7 @@ body {
 }
 
 .socials-row img {
-    width: 1.5rem;
+    width: 800px;
     height: 1.5rem;
 }
 
