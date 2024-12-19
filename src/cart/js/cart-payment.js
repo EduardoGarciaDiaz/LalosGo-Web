@@ -1,10 +1,15 @@
-const API_URL = 'http://192.168.100.9:3000/api/v1/users';
+const API_URL = 'http://192.168.100.9:3000/api/v1/';
+const CART_STATUS = 'reserved';
 const VALID_PAYMENT_NETWORKS = ['Visa', 'MasterCard'];
 const URL_IMAGE_VISA='../assets/images/visa.png';
 const URL_IMAGE_MASTERCARD='../assets/images/mastercard.png';
+const CVV_REGEX = /^[0-9]{3,4}$/;
+const PAYMENT_METHODS = new Map();
 
 //TODO: Get the user id from the session
 var userId = '6741260fd2f308dfbeb3e9f2';
+var orderId;
+var paymentMethodId;
 
 window.onload = function() {
     getAllPaymentMethods();
@@ -15,7 +20,7 @@ function getAllPaymentMethods() {
     let withoutPaymentMessage = document.getElementById('payment-methods-message');
     withoutPaymentMessage.className = 'with-payment-methods';
     axios
-        .get(`${API_URL}/${userId}/payment-methods`)
+        .get(`${API_URL}users/${userId}/payment-methods`)
         .then((response) => {
             let paymentMethods = response.data.userPaymentMethods;
             
@@ -45,6 +50,8 @@ function createPaymentMethodCard(paymentMethod) {
     if (!paymentMethod) { 
         return;
     }
+
+    PAYMENT_METHODS.set(paymentMethod._id, paymentMethod);
 
     let {cardNumber, expirationDate, paymentNetwork, cardEmitter, cardOwner} = paymentMethod;
 
@@ -116,7 +123,8 @@ function createPaymentMethodCard(paymentMethod) {
     paymentMethodContainer.appendChild(cardOptions);
 
     paymentMethodContainer.addEventListener('click', () => {
-        selectPaymentMethod(paymentMethod._id);
+        paymentMethodId = paymentMethod._id;
+        selectPaymentMethod(paymentMethodId);
     });
 
     return paymentMethodContainer;
@@ -136,7 +144,31 @@ function clearAllSelections() {
 }
 
 function loadOrderSummary() {
-    //TODO: 
+    axios
+        .get(`${API_URL}carts/${userId}/total`, {
+            params: {
+                status: CART_STATUS
+            }
+        })   
+        .then((response) => {
+            let cartSummary = response.data.cartSummary;
+            if (cartSummary === undefined || cartSummary === null) {
+                showToast("Ocurrió un error al recuperar el resumen de su compra", toastTypes.INFO);
+                return;
+            }
+
+            let totalPrice = cartSummary.totalPrice;
+            orderId = cartSummary.orderId;
+
+            let totalPriceSummary = document.getElementsByClassName('total-price-summary')[0];
+            if (totalPriceSummary) {
+                totalPriceSummary.textContent = `$${totalPrice.toFixed(2)}`;
+            }
+        })
+        .catch((error) => {
+            console.error(error);
+            showToast("Error al cargar el resumen de la compra", toastTypes.WARNING);
+        });
 }
 
 function doOrder() {
@@ -145,8 +177,46 @@ function doOrder() {
         return;
     }
 
-    window.location.replace('./finish-cart.html')
-    // TODO:
+    validateOrder();    
+}
+
+function validateOrder() {
+    const paymentMethodFormModalElement = document.getElementById('cvv-form-modal');
+    const paymentMethodFormModal = new bootstrap.Modal(paymentMethodFormModalElement);
+    paymentMethodFormModal.show();
+}
+
+function validateCVV() {
+    let cvv = document.getElementById('cvv').value;
+
+    if (cvv) {
+        cvv = cvv.trim();
+        if (!CVV_REGEX.test(cvv)) {
+            showErrorMessage('cvv', 'invalidCvv', 'El cvv debe contener de 3 a 4 dígitos.');
+            return false;
+        }
+
+        goToFinishCart();
+
+    } else {
+        showErrorMessage('cvv', 'invalidCvv', 'Ingresa el cvv de tu tarjeta.');
+        return false;
+    }
+}
+
+function clearConfirmationCVV() {
+    document.getElementById('cvv').value = '';
+}
+
+function goToFinishCart() {
+    reserveCartProducts();
+    
+}
+
+function showErrorMessage(fieldId, elementId, message) {
+    document.getElementById(fieldId).classList.add("is-invalid");
+    const invalidData = document.getElementById(elementId);
+    invalidData.textContent = message;
 }
 
 function validatePaymentMethod() {
@@ -156,5 +226,85 @@ function validatePaymentMethod() {
 }
 
 function cancelOrder() {
-    //TODO:
+    const MODAL_TITLE = 'Eliminar carrito';
+    const MODAL_MESSAGE = `¿Estás seguro que deseas eliminar el carrito? Se perderán los productos seleccionados`;
+    const MODAL_PRIMARY_BTN_TEXT = 'Eliminar carrito';
+
+    const { modalInstance, primaryBtn, secondaryBtn } = createConfirmationModal(
+        MODAL_TITLE, 
+        MODAL_MESSAGE, 
+        modalTypes.DANGER, 
+        MODAL_PRIMARY_BTN_TEXT
+    );
+    modalInstance.show();
+
+    primaryBtn.onclick = async function() {
+        await deleteCart(orderId);
+        modalInstance.hide();
+        window.location.replace('./cart.html');
+    }
+
+    secondaryBtn.onclick = function() {
+        modalInstance.hide();
+    }
+}
+
+async function deleteCart(orderId) {
+    axios
+    .delete(`${API_URL}carts/${orderId}`, {
+        params: {
+            status: CART_STATUS
+        }
+    })
+    .then((response) => {
+        showToast(response.data.message, toastTypes.SUCCESS);
+    })
+    .catch((error) => {
+        console.log(error);
+        showToast(error.response.data.message, toastTypes.WARNING);
+    });
+}
+
+
+async function reserveCartProducts() {
+    const paymentMethodSelected = paymentMethodId;
+    try {
+        const response = await axios.put(
+            `${API_URL}orders/${orderId}`, 
+            {
+                customer: userId,
+                branch: "6761c816e127220a584bda32",
+                paymentMethod: paymentMethodSelected
+            },
+            {
+                params: {
+                    status: CART_STATUS
+                }
+            }
+        );
+
+        let orderNumber = response.data.order.orderNumber;
+
+        if (!orderNumber) {
+            showToast("Ocurrió un error al realizar la orden", toastTypes.WARNING);
+            return;
+        }
+
+        const params = new URLSearchParams({
+            order: orderNumber
+        });
+
+        window.location.replace(`./finish-cart.html?${params.toString()}`);
+    } catch (error) {
+        console.log(error);
+        if (error.response.status == 409) {
+            showToast("Ha cambiado el inventario de algunos productos, vuelve a revisarlo. Lamentamos los inconvenientes",
+                toastTypes.WARNING);
+            setTimeout(() => {
+                window.location.replace('./cart.html');
+            }, 4000);
+            return false;
+        }
+        showToast(error.response.data.message, toastTypes.WARNING);
+    }
 }
