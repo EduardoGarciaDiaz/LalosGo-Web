@@ -104,14 +104,24 @@ function toggleBranchStatus(branchId) {
 }
 
 function getFormatedBranchAddress(address) {
-    return `${address.street} ${address.number},
-            ${address.cologne},
-            ${address.zipcode},
-            ${address.locality},
-            ${address.federalEntity}`;
+    if (!address) return 'Dirección no disponible';
+
+    const { street, number, cologne, zipcode, locality, federalEntity } = address;
+
+    const formattedAddress = [
+        street && number ? `${street} ${number}` : '',
+        cologne || '',
+        zipcode || '',
+        locality || '',
+        federalEntity || ''
+    ].filter(Boolean).join(', ');
+
+    return formattedAddress;
 }
 
 function getFormatedSchedule(openingTime, closingTime) {
+    if (!openingTime || !closingTime) return 'Horario no disponible';
+
     return `${openingTime} - ${closingTime}`;
 }
 
