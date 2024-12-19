@@ -11,6 +11,8 @@
     <script src="../utils/JsBarcode.code128.min.js"></script>
     <script src="./js/productsForm.js"></script>
     <script src="../utils/toast-utils.js"></script>
+    <script src="../utils/commonRegeexValidations.js"></script>
+    <script src="../utils/modal-utils.js"></script>
 </head>
 
 <body>
@@ -23,13 +25,13 @@
                     <div class="form-floating mb-3">
                         <input type="text" class="form-control" id="name-product" placeholder="Nombre del producto"
                             maxlength="60" required>
-                        <label for="name-product">Nombre</label>
+                        <label for="name-product">Nombre del producto</label>
                         <span class="d-none text-danger" id="error-name-product"></span>
                     </div>
 
                     <div class="form-floating mb-3">
                         <textarea class="form-control" id="description-product" placeholder="Descripción del producto"
-                            style="height: 100px;" maxlength="1000"  required></textarea>
+                            style="height: 100px;" minlength="10" maxlength="1000"  required></textarea>
                         <label for="description-product">Descripción del producto</label>
                         <span class="d-none text-danger" id="error-description-product"></span>
                     </div>
@@ -37,8 +39,8 @@
                     <div class="row ">
                         <div class="col-md-4">
                             <div class="form-floating mb-3">
-                                <input type="text" oninput="numberOnly(this.id)" maxlength="12" class="form-control" id="code-product" placeholder="Código" required>
-                                <label for="code-product">Código de producto (12 numeros)</label>
+                                <input type="text" oninput="numberOnly(this.id)"  maxlength="12" class="form-control" id="code-product" placeholder="Código" required>
+                                <label for="code-product" >Código de producto (12 numeros)</label>
                                 <span class="d-none text-danger" id="error-code-product"></span>
                             </div>                            
                         </div>
@@ -54,7 +56,7 @@
                         <div class="col-md-4">
                             <div class="form-floating mb-3">
                                 <input type="text" oninput="numberOnly(this.id)" class="form-control" id="weight-product" placeholder="Peso" maxlength="3"  required>
-                                <label for="weight-product">Peso en KG</label>
+                                <label for="weight-product">Peso unitario en Gramos</label>
                                 <span class="d-none text-danger" id="error-weight-product"></span>
                             </div>
                         </div>
@@ -102,7 +104,7 @@
                             <div class="form-floating">
                                 <input type="text" oninput="numberOnly(this.id)" class="form-control" id="limit-product"
                                     placeholder="Límite por pedido" maxlength="3"  required>
-                                <label for="limit-product">Límite por pedido</label>
+                                <label for="limit-product">Límite de articulos por pedido</label>
                                 <span class="d-none text-danger" id="error-limit-product"></span>
                             </div>
                         </div>
@@ -143,7 +145,7 @@
             </div>
 
             <div class="text-end mt-4">
-                <button type="button" class="btn btn-outline-secondary" id="cancel-product">Cancelar</button>
+                <button type="button" class="btn btn-outline-secondary" onclick="registryCancelation()" id="cancel-product">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="save-product" onclick="saveProduct()" >Guardar</button>
             </div>
         </form>

@@ -1,7 +1,7 @@
 const API_URL = 'http://127.0.0.1:3000/api/v1/'
 
 let productName
-let prodcutDescription
+let productDescription
 let productCode
 let productBarCode
 let productPrice
@@ -14,10 +14,11 @@ let productImg
 let inputImage
 var imageData = new FormData()
 let branchesList
+let errorImageSpan
 
 document.addEventListener("DOMContentLoaded", () => {
     productName = document.getElementById("name-product")
-    prodcutDescription = document.getElementById("description-product");
+    productDescription = document.getElementById("description-product");
     productCode = document.getElementById("code-product");
     productBarCode = document.getElementById("bar-code-product");
     productPrice = document.getElementById("price-product");
@@ -29,20 +30,21 @@ document.addEventListener("DOMContentLoaded", () => {
     productImg = document.getElementById("image-product");
     inputImage = document.getElementById("image-input")
     branchesList = document.getElementById("branches-list");
-    
+    errorImageSpan = document.getElementById("error-img-product");
+
     productCode.addEventListener("input", generateBarCode)
     inputImage.addEventListener("change", uploadImage)
 
-    
+
 });
 
-window.onload = async function() {
+window.onload = async function () {
     await loadCategories();
     await loadBranches();
 }
 
 async function loadCategories() {
-    axios.get(API_URL+'categories/', {
+    axios.get(API_URL + 'categories/', {
         params: {
             api_key: "00000" //CAMBIAR 
         },
@@ -55,9 +57,9 @@ async function loadCategories() {
             productCategory.appendChild(option)
         })
     }).catch((error) => {
-       showToast("Ocurrio algo inesperado al cargar las categorías. Verirfique su conexión e inténtelo mas tarde.", toastTypes.DANGER);
+        showToast("Ocurrio algo inesperado al cargar las categorías. Verirfique su conexión e inténtelo mas tarde.", toastTypes.DANGER);
     })
-    
+
 }
 
 async function loadBranches() {
@@ -67,7 +69,7 @@ async function loadBranches() {
         }
     }).then((response) => {
         branchesList.innetHTML = ""
-        response.data.branches.forEach(element => {            
+        response.data.branches.forEach(element => {
             const branchCard = createCheckboxWithNumber(element._id, element.name)
             branchesList.appendChild(branchCard)
         });
@@ -78,42 +80,49 @@ async function loadBranches() {
 }
 
 
-async function saveProduct(){
-    if(!checkEmptyFields()){
-        return   
+async function saveProduct() {
+    if (!checkEmptyFields()) {
+        return
+    }
+    if (!checFieldsFormat()) {
+        return
+    }
+    if (!checkImageSelected()) {
+        return
     }
     let selectedBranches = getSelectedBranches()
-    if(!checkBranchesSelected(selectedBranches)){
+    if (!checkBranchesSelected(selectedBranches)) {
         return
     }
 
-    try {        
+    try {
         let response = await axios.post(API_URL + 'products/', {
             barCode: productCode.value,
             name: productName.value,
-            description: prodcutDescription.value,
+            description: productDescription.value,
             unitPrice: productPrice.value,
-            expireDate: productExpirationDate.value,         
+            expireDate: productExpirationDate.value,
             weight: productWeight.value,
             productStatus: true,
             unitMeasure: productUnit.value,
             category: productCategory.options[productCategory.selectedIndex].id,
             branches: selectedBranches
         })
-        if(response.status < 300 && response.status > 199) {
-            
+        if (response.status < 300 && response.status > 199) {
+
             showToast(response.data.message, toastTypes.SUCCESS)
-            
+
+            console.log(response.data)
             let responseImage = await axios.put(`${API_URL}products/${response.data.product._id}`, imageData)
-            if(responseImage.status < 300 && responseImage.status > 199) {            
-                showToast(responseImage.data.message, toastTypes.SUCCESS)                
+            if (responseImage.status < 300 && responseImage.status > 199) {
+                showToast(responseImage.data.message, toastTypes.SUCCESS)
             }
-            else{
+            else {
                 showToast(responseImage.data.message, toastTypes.WARNING)
             }
             clearFields()
         }
-        else{
+        else {
             showToast(response.data.message, toastTypes.WARNING)
         }
     } catch (error) {
@@ -124,8 +133,8 @@ async function saveProduct(){
 
 
 
-function checkEmptyFields(){    
-    let isValid = true; 
+function checkEmptyFields() {
+    let isValid = true;
     const errorMessages = {
         productName: document.getElementById("error-name-product"),
         productDescription: document.getElementById("error-description-product"),
@@ -140,7 +149,7 @@ function checkEmptyFields(){
 
     const productFields = {
         productName: productName.value,
-        productDescription: prodcutDescription.value,
+        productDescription: productDescription.value,
         productCode: productCode.value,
         productPrice: productPrice.value,
         productWeight: productWeight.value,
@@ -151,13 +160,13 @@ function checkEmptyFields(){
     };
 
     for (const key in productFields) {
-        if (productFields[key] === "" || productFields[key] == null) { 
+        if (productFields[key] === "" || productFields[key] == null) {
             errorMessages[key].textContent = "Este campo es obligatorio.";
-            errorMessages[key].classList.remove("is-invalid"); 
+            errorMessages[key].classList.remove("is-invalid");
             errorMessages[key].className = "text-danger"
             isValid = false;
         } else {
-            errorMessages[key].textContent = ""; 
+            errorMessages[key].textContent = "";
             errorMessages[key].classList.add("d-none");
         }
     }
@@ -165,17 +174,117 @@ function checkEmptyFields(){
     return isValid;
 }
 
-function checkBranchesSelected(branches){
+function checFieldsFormat() {
+    let isValid = true
+
+    let productNameError = document.getElementById("error-name-product")
+    let productDescriptionError = document.getElementById("error-description-product")
+    let productCodeError = document.getElementById("error-code-product")
+    let productPriceError = document.getElementById("error-price-product")
+    let productWeightError = document.getElementById("error-weight-product")
+    let productLimitError = document.getElementById("error-limit-product")
+    let productExpirationDateError = document.getElementById("error-expiration-product")
+
+    if (!validateInputWithCommonTextReegex(productName.value) || productName.value.trim().length < 2) {
+        productNameError.textContent = "El nombre del producto debe ser de al menos 2 caracters y solo puede contener letras, numeros y signos de puntuación comunes.";
+        productNameError.classList.add("is-invalid")
+        productNameError.className = "text-danger"
+        isValid = false;
+    } else {
+        productNameError.textContent = "";
+        productNameError.classList.remove("is-invalid")
+        productNameError.className = "d-none"
+    }
+    if (!validateInputWithCommonTextReegex(productDescription.value) || productDescription.value.trim().length < 10) {
+        productDescriptionError.textContent = "La descripción del producto debe contener al menos 10 caracteres y solo puede contener letras, numeros y signos de puntuación comunes.";
+        productDescriptionError.classList.add("is-invalid")
+        productDescriptionError.className = "text-danger"
+        isValid = false;
+    } else {
+        productDescriptionError.textContent = "";
+        productDescriptionError.classList.remove("is-invalid")
+        productDescriptionError.className = "d-none"
+    }
+    if (productCode.value.trim().length !== 12) {
+        productCodeError.textContent = "El código del producto debe ser un número único de 12 digitos.";
+        productCodeError.classList.add("is-invalid")
+        productCodeError.className = "text-danger"
+        isValid = false;
+    } else {
+        productCodeError.textContent = "";
+        productCodeError.classList.remove("is-invalid")
+        productCodeError.className = "d-none"
+    }
+    if (!validateNumberWithDot(productPrice.value) || productPrice.value <= 0) {
+        productPriceError.textContent = "El precio del producto debe ser un número valido (1111.11) de al menos un digito";
+        productPriceError.classList.add("is-invalid")
+        productPriceError.className = "text-danger"
+        isValid = false;
+    } else {
+        productPriceError.textContent = "";
+        productPriceError.classList.remove("is-invalid")
+        productPriceError.className = "d-none"
+    }
+    if (!validateNumberWithDot(productWeight.value) || productWeight.value <= 0) {
+        productWeightError.textContent = "El peso del producto debe ser un número valido (11.11) de al menos un digito";
+        productWeightError.classList.add("is-invalid")
+        productWeightError.className = "text-danger"
+        isValid = false;
+    } else {
+        productWeightError.textContent = "";
+        productWeightError.classList.remove("is-invalid")
+        productWeightError.className = "d-none"
+    }
+    if (!validateEntireNumber(productLimit.value) || productLimit.value <= 0) {
+        productLimitError.textContent = "El limite del producto debe ser un número entero valido (11) de al menos un digito";
+        productLimitError.classList.add("is-invalid")
+        productLimitError.className = "text-danger"
+        isValid = false;
+    } else {
+        productLimitError.textContent = "";
+        productLimitError.classList.remove("is-invalid")
+        productLimitError.className = "d-none"
+    }
+    if (!validateDateIsAfter14Days(productExpirationDate.value)) {
+        productExpirationDateError.textContent = "La fecha de esxpiración debe ser al menos posterior a dos semanas.";
+        productExpirationDateError.classList.add("is-invalid")
+        productExpirationDateError.className = "text-danger"
+        isValid = false;
+    } else {
+        productExpirationDateError.textContent = "";
+        productExpirationDateError.classList.remove("is-invalid")
+        productExpirationDateError.className = "d-none"
+    }
+
+    return isValid
+}
+
+function checkImageSelected() {
+    let isValid = true
+    if (!imageData.has('image')) {
+        isValid = false
+        errorImageSpan.classList.add("is-invalid")
+        errorImageSpan.textContent = "Es necesario agregar una imagen"
+        errorImageSpan.className = "text-danger"
+    } else {
+        errorImageSpan.className = "d-none"
+        errorImageSpan.classList.remove("is-invalid")
+    }
+    return isValid
+}
+
+
+function checkBranchesSelected(branches) {
     let areBranchesSelected = true
     let errorBranchSpan = document.getElementById("error-branch-selected")
-    if(branches.length <= 0){        
+    if (branches.length <= 0) {
         errorBranchSpan.textContent = "Debes seleccionar al menos una sucursal.";
-        errorBranchSpan.classList.remove("is-invalid"); 
+        errorBranchSpan.classList.remove("is-invalid");
         errorBranchSpan.className = "text-danger"
         areBranchesSelected = false
     }
-    else{        
-        errorBranchSpan.textContent = ""; 
+    else {
+        errorBranchSpan.textContent = "";
         errorBranchSpan.classList.add("d-none");
     }
     return areBranchesSelected
@@ -188,14 +297,14 @@ function getSelectedBranches() {
 
     checkboxes.forEach((checkbox) => {
         if (checkbox.checked) {
-            const container = checkbox.closest(".checkbox-with-number"); 
+            const container = checkbox.closest(".checkbox-with-number");
             const label = container.querySelector("label");
-            const numberInput = container.querySelector("input[type='number']");
+            const numberInput = container.querySelector("input[type='text']");
 
             selectedBranches.push({
-                id: checkbox.id, 
-                name: label.textContent, 
-                quantity: Number(numberInput.value) || 0, 
+                id: checkbox.id,
+                name: label.textContent,
+                quantity: Number(numberInput.value) || 0,
             });
         }
     });
@@ -204,44 +313,64 @@ function getSelectedBranches() {
 }
 
 
-function numberOnly(id) {
-    var element = document.getElementById(id);
-    if (element) {  
-        element.value = element.value.replace(/[^0-9]/gi, "");
-    } else {
-        console.error(`No se encontró el elemento con id: ${id}`);
-    }
-}
-
-
-
-function generateBarCode(){
-    if(productCode.value.trim() !== ""){
+function generateBarCode() {
+    if (productCode.value.trim() !== "") {
         JsBarcode("#bar-code-product", productCode.value.trim())
     }
-    else{
-        productBarCode.innerHTML=""
+    else {
+        productBarCode.innerHTML = ""
     }
 }
 
-function uploadImage(event){
+function uploadImage(event) {
     let file = event.target.files[0]
-    if(file){
-        let reader = new FileReader();
-        reader.onload = function(e) {
-            productImg.src = e.target.result
-            productImg.style.display = "block"            
-            
-            imageData.append('image', file)
-            console.log(imageData.get('image')); 
+    if (file) {
+
+        const maxSize = 10 * 1024 * 1024;
+        if (file.size > maxSize) {
+            errorImageSpan.textContent = "El tamaño de la imagen no debe exceder los 10 MB.";
+            errorImageSpan.className = "text-danger"
+            errorImageSpan.classList.add("is-invalid")
+            productImg.src = ""
+            inputImage.value = ""
+            imageData = new FormData()
+            return;
+        } else {
+            errorImageSpan.className = "d-none"
+            errorImageSpan.classList.remove("is-invalid")
         }
+
+        let img = new Image();
+        let reader = new FileReader();
+
+        reader.onload = (e) => {
+            img.src = e.target.result;
+            console.log("4")           
+        };
+
+        img.onload = () => {
+            if (img.width !== 225 || img.height !== 225) {
+                errorImageSpan.textContent = "El tamaño de la imagen debe de ser de 225x225.";
+                errorImageSpan.className = "text-danger"
+                errorImageSpan.classList.add("is-invalid")
+                productImg.src = ""
+                inputImage.value = ""
+                imageData = new FormData()
+            } else {                    
+                errorImageSpan.className = "d-none"
+                errorImageSpan.classList.remove("is-invalid")
+                productImg.src = img.src
+                productImg.style.display = "block"
+                imageData.append('image', file)                    
+            }
+        };
         reader.readAsDataURL(file)
     }
 }
 
 
 function createCheckboxWithNumber(branchId, branchName) {
-    
+
     const container = document.createElement("div");
     container.className = "checkbox-with-number mb-3";
 
@@ -259,17 +388,17 @@ function createCheckboxWithNumber(branchId, branchName) {
     label.textContent = branchName;
 
     const numberInput = document.createElement("input");
-    numberInput.id =  branchId+1
+    numberInput.id = branchId + 1
     numberInput.type = "text";
-    numberInput.oninput = function() {
-        numberOnly(numberInput.id);  
+    numberInput.oninput = function () {
+        numberOnly(numberInput.id);
     };
     numberInput.className = "form-control number-input";
     numberInput.placeholder = "0";
     numberInput.maxLength = 5
     numberInput.disabled = true;
 
-    checkbox.addEventListener("change", function() {
+    checkbox.addEventListener("change", function () {
         if (checkbox.checked) {
             numberInput.disabled = false;
         } else {
@@ -286,31 +415,42 @@ function createCheckboxWithNumber(branchId, branchName) {
 }
 
 
-function clearFields(){
+function clearFields() {
     productImg.src = ""
     inputImage.value = ""
     imageData = new FormData()
-    productName = '';
-    productDescription = '';
-    productCode = '';
-    productBarCode = '';
-    productPrice = '';
-    productWeight = '';
-    productCategory = '';
-    productUnit = '';
-    productLimit = '';
-    productExpirationDate = '';
+    productName.value = '';
+    productDescription.value = '';
+    productCode.value = '';
+    productBarCode.innerHTML = '';
+    productPrice.value = '';
+    productWeight.value = '';
+    productCategory.selectedIndex = 0;
+    productUnit.selectedIndex= 0;
+    productLimit.value = '';
+    productExpirationDate.value = '';
     let checkboxes = branchesList.querySelectorAll('.form-check-input');
     let numberInputs = branchesList.querySelectorAll('.number-input');
     checkboxes.forEach(checkbox => {
         checkbox.checked = false;
     });
     numberInputs.forEach(input => {
-        input.value = 0; 
-        input.disabled = true; 
+        input.value = 0;
+        input.disabled = true;
     });
 
 }
 
 
-
+function registryCancelation(){
+    let { modalInstance, primaryBtn, secondaryBtn } = createConfirmationModal("Cuidado", "¿Estas seguro que deseass cancelar el registro?, esta acción no se puede desahcer.", modalTypes.DANGER, "Confirmar.")
+    modalInstance.show()
+    primaryBtn.onclick = function(){
+        clearFields()        
+        modalInstance.hide()
+        //TODO:GO BACK TO CONSULT PRODUCTS
+    }
+    secondaryBtn.onclick = function() {
+        modalInstance.hide()
+    }
+}
