@@ -9,7 +9,7 @@ window.onload = function() {
 
 function getAllPaymentMethods() {
     axios
-        .get(`${API_URL}/${userId}/payment-methods`)
+        .get(`${API_URL}users/${userId}/payment-methods`)
         .then((response) => {
             let paymentMethods = response.data.userPaymentMethods;
             if (!paymentMethods || paymentMethods.length === 0) {
@@ -172,7 +172,7 @@ function showDeleteConfirmation(paymentMethod) {
 
 async function deletePaymentMethod(paymentMethodId) {
     await axios
-        .delete(`${API_URL}/${userId}/payment-methods/${paymentMethodId}`)
+        .delete(`${API_URL}users/${userId}/payment-methods/${paymentMethodId}`)
         .then((response) => {
             showToast("Método de pago eliminado", toastTypes.SUCCESS);
             removePaymentMethodFromUI(paymentMethodId);

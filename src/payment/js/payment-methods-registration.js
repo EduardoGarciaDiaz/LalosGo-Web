@@ -1,4 +1,4 @@
-const API_URL = 'http://192.168.100.9:3000/api/v1/users';
+const API_URL = 'http://192.168.100.9:3000/api/v1/';
 
 const VALID_PAYMENT_NETWORKS = ['Visa', 'MasterCard'];
 const VALID_CARD_TYPES = ['Crédito', 'Débito'];
@@ -187,7 +187,7 @@ function calculateCardType(cardNumber) {
 
 function addPaymentMethod(newPaymentMethod) {
     axios
-        .post(`${API_URL}/${userId}/payment-methods`, newPaymentMethod)
+        .post(`${API_URL}users/${userId}/payment-methods`, newPaymentMethod)
         .then((response) => {
             if (!response || !response.data) {
                 showToast("No se pudo agregar el método de pago. Inténtelo de nuevo.", toastTypes.DANGER);
