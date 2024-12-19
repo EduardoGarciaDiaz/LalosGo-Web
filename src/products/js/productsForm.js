@@ -12,7 +12,7 @@ let productLimit
 let productExpirationDate
 let productImg
 let inputImage
-let imageBase64Data
+var imageData = new FormData()
 let branchesList
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -79,16 +79,21 @@ async function loadBranches() {
 
 
 async function saveProduct(){
-
+    if(!checkEmptyFields()){
+        return   
+    }
     let selectedBranches = getSelectedBranches()
-    try {
-        console.log(222)
+    if(!checkBranchesSelected(selectedBranches)){
+        return
+    }
+
+    try {        
         let response = await axios.post(API_URL + 'products/', {
             barCode: productCode.value,
             name: productName.value,
             description: prodcutDescription.value,
             unitPrice: productPrice.value,
-            expireDate: productExpirationDate.value,            
+            expireDate: productExpirationDate.value,         
             weight: productWeight.value,
             productStatus: true,
             unitMeasure: productUnit.value,
@@ -96,8 +101,17 @@ async function saveProduct(){
             branches: selectedBranches
         })
         if(response.status < 300 && response.status > 199) {
+            
             showToast(response.data.message, toastTypes.SUCCESS)
             
+            let responseImage = await axios.put(`${API_URL}products/${response.data.product._id}`, imageData)
+            if(responseImage.status < 300 && responseImage.status > 199) {            
+                showToast(responseImage.data.message, toastTypes.SUCCESS)                
+            }
+            else{
+                showToast(responseImage.data.message, toastTypes.WARNING)
+            }
+            clearFields()
         }
         else{
             showToast(response.data.message, toastTypes.WARNING)
@@ -106,6 +120,66 @@ async function saveProduct(){
         console.log(error)
         showToast("Ocurrio algo inesperado al realizar la petición. Revise su conexión a internet e inténtelo mas tarde", toastTypes.WARNING)
     }
+}
+
+
+
+function checkEmptyFields(){    
+    let isValid = true; 
+    const errorMessages = {
+        productName: document.getElementById("error-name-product"),
+        productDescription: document.getElementById("error-description-product"),
+        productCode: document.getElementById("error-code-product"),
+        productPrice: document.getElementById("error-price-product"),
+        productWeight: document.getElementById("error-weight-product"),
+        productCategory: document.getElementById("error-category-product"),
+        productUnit: document.getElementById("error-unit-product"),
+        productLimit: document.getElementById("error-limit-product"),
+        productExpirationDate: document.getElementById("error-expiration-product"),
+    };
+
+    const productFields = {
+        productName: productName.value,
+        productDescription: prodcutDescription.value,
+        productCode: productCode.value,
+        productPrice: productPrice.value,
+        productWeight: productWeight.value,
+        productCategory: productCategory.value,
+        productUnit: productUnit.value,
+        productLimit: productLimit.value,
+        productExpirationDate: productExpirationDate.value,
+    };
+
+    for (const key in productFields) {
+        if (productFields[key] === "" || productFields[key] == null) { 
+            errorMessages[key].textContent = "Este campo es obligatorio.";
+            errorMessages[key].classList.remove("is-invalid"); 
+            errorMessages[key].className = "text-danger"
+            isValid = false;
+        } else {
+            errorMessages[key].textContent = ""; 
+            errorMessages[key].classList.add("d-none");
+        }
+    }
+
+    return isValid;
+}
+
+function checkBranchesSelected(branches){
+    let areBranchesSelected = true
+    let errorBranchSpan = document.getElementById("error-branch-selected")
+    if(branches.length <= 0){        
+        errorBranchSpan.textContent = "Debes seleccionar al menos una sucursal.";
+        errorBranchSpan.classList.remove("is-invalid"); 
+        errorBranchSpan.className = "text-danger"
+        areBranchesSelected = false
+    }
+    else{        
+        errorBranchSpan.textContent = ""; 
+        errorBranchSpan.classList.add("d-none");
+    }
+    return areBranchesSelected
+
 }
 
 function getSelectedBranches() {
@@ -130,10 +204,14 @@ function getSelectedBranches() {
 }
 
 
-
-
-
-
+function numberOnly(id) {
+    var element = document.getElementById(id);
+    if (element) {  
+        element.value = element.value.replace(/[^0-9]/gi, "");
+    } else {
+        console.error(`No se encontró el elemento con id: ${id}`);
+    }
+}
 
 
 
@@ -152,8 +230,10 @@ function uploadImage(event){
         let reader = new FileReader();
         reader.onload = function(e) {
             productImg.src = e.target.result
-            productImg.style.display = "block"
-            imageBase64Data = e.target.result
+            productImg.style.display = "block"            
+            
+            imageData.append('image', file)
+            console.log(imageData.get('image')); 
         }
         reader.readAsDataURL(file)
     }
@@ -179,11 +259,14 @@ function createCheckboxWithNumber(branchId, branchName) {
     label.textContent = branchName;
 
     const numberInput = document.createElement("input");
-    numberInput.type = "number";
+    numberInput.id =  branchId+1
+    numberInput.type = "text";
+    numberInput.oninput = function() {
+        numberOnly(numberInput.id);  
+    };
     numberInput.className = "form-control number-input";
     numberInput.placeholder = "0";
-    numberInput.min = "0";
-    numberInput.max = "999"
+    numberInput.maxLength = 5
     numberInput.disabled = true;
 
     checkbox.addEventListener("change", function() {
@@ -203,7 +286,31 @@ function createCheckboxWithNumber(branchId, branchName) {
 }
 
 
+function clearFields(){
+    productImg.src = ""
+    inputImage.value = ""
+    imageData = new FormData()
+    productName = '';
+    productDescription = '';
+    productCode = '';
+    productBarCode = '';
+    productPrice = '';
+    productWeight = '';
+    productCategory = '';
+    productUnit = '';
+    productLimit = '';
+    productExpirationDate = '';
+    let checkboxes = branchesList.querySelectorAll('.form-check-input');
+    let numberInputs = branchesList.querySelectorAll('.number-input');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    numberInputs.forEach(input => {
+        input.value = 0; 
+        input.disabled = true; 
+    });
 
+}
 
 
 
