@@ -11,21 +11,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const dd = String(today.getDate()).padStart(2, '0');
     const maxDate = `${yyyy}-${mm}-${dd}`;
     document.getElementById("birthday_label").setAttribute("max", maxDate);
-  });
+});
 
 
-function createClientAccount() {
+function modifyClientAccount() {
     clearErrors();
 
-    let name = document.getElementById('name_label').value.trim();
-    let firstLastName = document.getElementById('firstLastName_label').value.trim();
-    let secondLastName = document.getElementById('secondLastName_label').value.trim();
-    let birthday = document.getElementById('birthday_label').value.trim();
-    let cellPhone = document.getElementById('cellPhone_label').value.trim();
-    let password = document.getElementById('password_label').value.trim();
-    let email = document.getElementById('email_label').value.trim();
-
-    let newClient = {
+    let name = document.getElementById('name_label').value;
+    let firstLastName = document.getElementById('firstLastName_label').value;
+    let secondLastName = document.getElementById('secondLastName_label').value;
+    let birthday = document.getElementById('birthday_label').value;
+    let cellPhone = document.getElementById('cellPhone_label').value;
+    let password = document.getElementById('password_label').value;
+    let email = document.getElementById('email_label').value;
+    
+    let dataClientUpdate = {
         fullname: name + " " + firstLastName + " " + secondLastName,
         birthdate: birthday,
         phone: cellPhone,
@@ -33,41 +33,52 @@ function createClientAccount() {
         password: password
     }
 
-    if(isValidClientAccountt(newClient)){
-        newClient.password = hashPassword(newClient.password);
-        registerClient(newClient);   
+    if(isValidClientAccountt(dataClientUpdate)){
+        dataClientUpdate.password = hashPassword(dataClientUpdate.password);
+        modifyClientAccount(dataClientUpdate);
     }
 }
 
-function isValidClientAccountt(newClient){
-    
+function isValidClientAccountt(dataClientUpdate){
+    clearErrors();
     let isValid = true
-    if(!isClientNameAndLastNameValid(newClient.fullname)){
+    if(!isClientNameAndLastNameValid(dataClientUpdate.fullname)){
         document.getElementById('name_label').classList.add("is-invalid");
         document.getElementById('firstLastName_label').classList.add("is-invalid");
         document.getElementById('secondLastName_label').classList.add("is-invalid");
         isValid = false;
     }
 
-    if(!isBirthdateClientValid(newClient.birthdate) || newClient.birthdate === ""){
+    if(!isClientNameAndLastNameValid(dataClientUpdate.firstLastName)){
+        document.getElementById('firstLastName_label').classList.add("is-invalid");
+        isValid = false;
+    }
+
+    if(!isClientNameAndLastNameValid(dataClientUpdate.secondLastName)){
+        document.getElementById('secondLastName_label').classList.add("is-invalid");
+        isValid = false;
+    }
+
+    if(!isBirthdateClientValid(dataClientUpdate.birthdate) || dataClientUpdate.birthdate === ""){
         document.getElementById('birthday_label').classList.add("is-invalid");
         isValid = false;
     }
 
-    if(!isClientCellPhoneValid(newClient.phone)){
+    if(!isClientCellPhoneValid(dataClientUpdate.cellPhone)){
         document.getElementById('cellPhone_label').classList.add("is-invalid");
         isValid = false;
     }
 
-    if(!isClientEmailValid(newClient.email)){
+    if(!isClientEmailValid(dataClientUpdate.email)){
         document.getElementById('email_label').classList.add("is-invalid");
         isValid = false;
     }
 
-    if(!isClientPasswordValid(newClient.password)){
+    if(!isClientPasswordValid(dataClientUpdate.password)){
         document.getElementById('password_label').classList.add("is-invalid");
         isValid = false;
     }
+
     return isValid;
 }
 
@@ -117,14 +128,14 @@ function clearErrors(){
     document.getElementById('password_label').classList.remove("is-invalid");
 }
 
-function registerClient(newClient){
+function modifyClientAccount(dataClientUpdate){
     axios
-    .post(`${API_URL}`, newClient)
+    .put(`${API_URL}${userId}`, dataClientUpdate)
     .then((response) => {
-        alert("El cliente se ha registrado exitosamente");
+        alert("Cuenta actualizada");
     })
     .catch((error) => {
-        alert("Ha ocurrido un error al registrar el cliente. Inténtelo de nuevo.");
+        alert("No se pudo actualizar la cuenta. Inténtelo de nuevo.");
         alert(error);
         console.error(error);
     });
