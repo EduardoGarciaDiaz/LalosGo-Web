@@ -1,0 +1,27 @@
+.payment-methods-container {
+border-radius: 10px;
+}
+
+.payment-methods-container:hover {
+    cursor: pointer;
+}
+
+.radio-selector {
+    transform: scale(1.5);
+}
+
+.radio-selector:hover {
+    cursor: pointer;
+}
+
+.without-payment-methods {
+    display: block;
+    font-size: 1.5rem;
+    color: chocolate;
+}
+
+.with-payment-methods {
+    display: none;
+    margin: 0;
+    padding: 0;
+}

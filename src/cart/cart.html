@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Carrito de compras">
+    <title>LalosGo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./styles/cart.css">
+    <script src="./js/product-item.js"></script>
+    <script src="./js/cart.js"></script>
+</head>
+
+<body>
+    <div class="container py-4">
+        <h2 class="mb-4">Carrito</h2>
+        <button class="btn btn-link" onclick="clearCart()">Vaciar carrito</button>
+        <div class="row g-4">
+            <!-- Products List -->
+            <div class="col-lg-8">
+                <div class="card border-0">
+                    <div class="card-body" id="cart-items">
+                        <p id="products-message" class="text-center">Sin Productos Agregados.
+                            Agrega productos al carrito para realizar tu pedido</p>
+                        <!-- Product Item -->
+                        <div class="card-container p-3 card border-1 shadow-sm mb-3">
+                            <div class="card-body p-0">
+                                <div class="row align-items-center g-3">
+                                    <!-- Product Image -->
+                                    <div class="col-auto">
+                                        <img src="https://www.claudeusercontent.com/api/placeholder/100/100"
+                                            alt="Blink Camera" class="product-img rounded">
+                                    </div>
+
+                                    <!-- Product Details -->
+                                    <div class="col">
+                                        <div class="row align-items-center mb-3">
+                                            <div class="col-12 col-sm">
+                                                <h5 class="fs-6 mb-2 mb-sm-1">Blink Outdoor 4: Cámara de seguridad
+                                                    inalámbrica</h5>
+                                                <p class="small text-muted mb-2 mb-sm-0">Con dos años de duración de la
+                                                    batería, detección de movimiento mejorada</p>
+                                            </div>
+                                            <div class="col-auto">
+                                                <span class="h5 mb-0 text-primary">$300.00</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex align-items-center justify-content-end gap-5">
+                                            <button class="btn-delete btn btn-link text-danger p-0">
+                                                <i class="icon-delete fas fa-trash me-1"></i>
+                                                Eliminar
+                                            </button>
+                                            
+                                            <div class="d-flex align-items-center gap-2">
+                                                <button class="btn-quantity">-</button>
+                                                <span class="mx-2">10</span>
+                                                <button class="btn-quantity">+</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title mb-4">Resumen de compra</h4>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Total</span>
+                            <span class="h5 mb-0">$900.00</span>
+                        </div>
+                        <hr>
+
+                        <div class="mb-4">
+                            <h6 class="mb-3">Sucursal</h6>
+                            <div class="d-flex gap-2">
+                                <i class="fas fa-truck mt-1"></i>
+                                <div>
+                                    <p class="mb-1">Calle Guadalupe Victoria</p>
+                                    <p class="mb-1">Xalapa, Enríquez</p>
+                                    <p class="mb-0">91010</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h6 class="mb-3">Envío</h6>
+                            <div class="d-flex gap-2">
+                                <i class="fas fa-home mt-1"></i>
+                                <div>
+                                    <p class="mb-1">Calle Guadalupe </p>
+                                    <p class="mb-1">Xalapa, Enríquez</p>
+                                    <p class="mb-0">91010</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <p class="mb-2">Tiempo aproximado de entrega</p>
+                            <p class="fw-bold mb-0">Su pedido llegará en 25 minutos</p>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary w-100 mt-2" onclick="goToPayment()">Proceder al pago</button>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,7 +1,9 @@
-const VALID_NAME_LASTNAME  = /^(?!\s)[A-ZÁÉÍÓÚÑ][a-záéíóúñü]+(?: [A-ZÁÉÍÓÚÑ][a-záéíóúñü]+)*$/;
-const VALID_PHONE_NUMER = /^\+?[0-9]{1,3}?[-. ]?(\(?\d{1,4}\)?)?[-. ]?\d{1,4}[-. ]?\d{1,4}[-. ]?\d{1,9}$/;
+const VALID_FULL_NAME  = /^(?!\s)[A-ZÁÉÍÓÚÑ][a-záéíóúñü]+(?: [A-ZÁÉÍÓÚÑ][a-záéíóúñü]+)*$/;
+const VALID_PHONE_NUMBER = /^\+?[0-9]{1,3}[-. ]?\(?\d{1,4}\)?[-. ]?\d{1,4}[-. ]?\d{1,9}$/;
 const VALID_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const VALID_PASSWORD = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const VALID_USERNAME = /^[a-zA-Z][a-zA-Z0-9._]{1,11}[a-zA-Z0-9]$/;
+const API_URL = 'http://localhost:3000/api/v1/users/';
 
 document.addEventListener("DOMContentLoaded", () => {
     const today = new Date();
@@ -12,57 +14,51 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("birthday_label").setAttribute("max", maxDate);
   });
 
-
 function createClientAccount() {
     clearErrors();
+    let username = document.getElementById('username_label').value.trim();
+    let fullname = document.getElementById('fullName_label').value.trim();
+    let birthdate = document.getElementById('birthday_label').value.trim();
+    let phone = document.getElementById('cellPhone_label').value.trim();
+    let password = document.getElementById('password_label').value.trim();
+    let email = document.getElementById('email_label').value.trim();
 
-    let name = document.getElementById('name_label').value;
-    let firstLastName = document.getElementById('firstLastName_label').value;
-    let secondLastName = document.getElementById('secondLastName_label').value;
-    let birthday = document.getElementById('birthday_label').value;
-    let cellPhone = document.getElementById('cellPhone_label').value;
-    let password = document.getElementById('password_label').value;
-    let email = document.getElementById('email_label').value;
-
-    let newClient = {
-        name: name,
-        firstLastName: firstLastName,
-        secondLastName: secondLastName,
-        birthdate: birthday,
-        cellPhone: cellPhone,
-        email, email,
-        password: password
-    }
+    var newClient = {
+        username: username,
+        fullname: fullname,
+        birthdate: birthdate,
+        phone: phone,
+        password: password,
+        email: email,
+      };
 
     if(isValidClientAccountt(newClient)){
-        alert("Cliente creado exitosamente");
+        sessionStorage.setItem('actionType', 'CreateClientAccount');
+        sessionStorage.setItem('creationAccountData', JSON.stringify(newClient));
+        window.location.href = "http://127.0.0.1:5500/src/RegisterDeliveryAddress/registerDeliveryAddress.html";
     }
 }
 
 function isValidClientAccountt(newClient){
     
-    let isValid = true
-    if(!isClientNameAndLastNameValid(newClient.name)){
-        document.getElementById('name_label').classList.add("is-invalid");
+    let isValid = true;
+
+    if(!isClientUsernameValid(newClient.username)){
+        document.getElementById('username_label').classList.add("is-invalid");
+        isValid = false; 
+    }
+
+    if(!isClientNameAndLastNameValid(newClient.fullname)){
+        document.getElementById('fullName_label').classList.add("is-invalid");
         isValid = false;
     }
 
-    if(!isClientNameAndLastNameValid(newClient.firstLastName)){
-        document.getElementById('firstLastName_label').classList.add("is-invalid");
-        isValid = false;
-    }
-
-    if(!isClientNameAndLastNameValid(newClient.secondLastName)){
-        document.getElementById('secondLastName_label').classList.add("is-invalid");
-        isValid = false;
-    }
-
-    if(!isBirthdateClientValid(newClient.birthdate) || newClient.birthdate === ""){
+    if (!newClient.birthdate || !isBirthdateClientValid(newClient.birthdate)) {
         document.getElementById('birthday_label').classList.add("is-invalid");
         isValid = false;
     }
 
-    if(!isClientCellPhoneValid(newClient.cellPhone)){
+    if(!isClientCellPhoneValid(newClient.phone)){
         document.getElementById('cellPhone_label').classList.add("is-invalid");
         isValid = false;
     }
@@ -76,12 +72,18 @@ function isValidClientAccountt(newClient){
         document.getElementById('password_label').classList.add("is-invalid");
         isValid = false;
     }
+
     return isValid;
 }
 
-function isClientNameAndLastNameValid (name){
-    return VALID_NAME_LASTNAME.test(name);
+function isClientNameAndLastNameValid (fullname){
+    return VALID_FULL_NAME.test(fullname);
 }
+
+function isClientUsernameValid(username) {
+    return VALID_USERNAME.test(username);
+}
+
 
 function isBirthdateClientValid (birthdate){
     const today = new Date();
@@ -104,7 +106,7 @@ function isBirthdateClientValid (birthdate){
 }
 
 function isClientCellPhoneValid (cellPhone){
-    return VALID_PHONE_NUMER.test(cellPhone);
+    return VALID_PHONE_NUMBER.test(cellPhone);
 }
 
 function isClientEmailValid (email){
@@ -116,9 +118,7 @@ function isClientPasswordValid (password){
 }
 
 function clearErrors(){
-    document.getElementById('name_label').classList.remove("is-invalid");
-    document.getElementById('firstLastName_label').classList.remove("is-invalid");
-    document.getElementById('secondLastName_label').classList.remove("is-invalid");
+    document.getElementById('fullName_label').classList.remove("is-invalid");
     document.getElementById('birthday_label').classList.remove("is-invalid");
     document.getElementById('cellPhone_label').classList.remove("is-invalid");  
     document.getElementById('email_label').classList.remove("is-invalid");
