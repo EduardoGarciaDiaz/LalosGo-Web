@@ -119,7 +119,7 @@ let addresses = [
       //Esta URL se debe cambiar al final por la de la página de registro de dirección
       window.location.href = "http://127.0.0.1:5500/src/RegisterDeliveryAddress/registerDeliveryAddress.html";
     } else {
-      showToast("No se pueden agregar más de tres direcciones", "text-bg-danger");
+      showToast("No se pueden agregar más de tres direcciones", toastTypes.DANGER);
     }
   });
   

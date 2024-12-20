@@ -2,6 +2,7 @@ const VALID_FULL_NAME  = /^(?!\s)[A-ZÁÉÍÓÚÑ][a-záéíóúñü]+(?: [A-ZÁ
 const VALID_PHONE_NUMBER = /^\+?[0-9]{1,3}[-. ]?\(?\d{1,4}\)?[-. ]?\d{1,4}[-. ]?\d{1,9}$/;
 const VALID_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const VALID_PASSWORD = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const VALID_USERNAME = /^[a-zA-Z][a-zA-Z0-9._]{1,11}[a-zA-Z0-9]$/;
 const API_URL = 'http://localhost:3000/api/v1/users/';
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -13,43 +14,48 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("birthday_label").setAttribute("max", maxDate);
   });
 
-
 function createClientAccount() {
     clearErrors();
-
-    let name = document.getElementById('name_label').value.trim();
-    let firstLastName = document.getElementById('firstLastName_label').value.trim();
-    let secondLastName = document.getElementById('secondLastName_label').value.trim();
-    let birthday = document.getElementById('birthday_label').value.trim();
-    let cellPhone = document.getElementById('cellPhone_label').value.trim();
+    let username = document.getElementById('username_label').value.trim();
+    let fullname = document.getElementById('fullName_label').value.trim();
+    let birthdate = document.getElementById('birthday_label').value.trim();
+    let phone = document.getElementById('cellPhone_label').value.trim();
     let password = document.getElementById('password_label').value.trim();
     let email = document.getElementById('email_label').value.trim();
 
-    let newClient = {
-        fullname: name + " " + firstLastName + " " + secondLastName,
-        birthdate: birthday,
-        phone: cellPhone,
-        email, email,
-        password: password
-    }
+    var newClient = {
+        username: username,
+        fullname: fullname,
+        birthdate: birthdate,
+        phone: phone,
+        password: password,
+        email: email,
+      };
 
     if(isValidClientAccountt(newClient)){
         newClient.password = hashPassword(newClient.password);
-        registerClient(newClient);   
+        sessionStorage.setItem('actionType', 'CreateClientAccount');
+        sessionStorage.setItem('creationAccountData', JSON.stringify(newClient));
+        window.location.href = "http://127.0.0.1:5500/src/RegisterDeliveryAddress/registerDeliveryAddress.html";
+       // registerClient(newClient);   
     }
 }
 
 function isValidClientAccountt(newClient){
     
-    let isValid = true
+    let isValid = true;
+
+    if(!isClientUsernameValid(newClient.username)){
+        document.getElementById('username_label').classList.add("is-invalid");
+        isValid = false; 
+    }
+
     if(!isClientNameAndLastNameValid(newClient.fullname)){
-        document.getElementById('name_label').classList.add("is-invalid");
-        document.getElementById('firstLastName_label').classList.add("is-invalid");
-        document.getElementById('secondLastName_label').classList.add("is-invalid");
+        document.getElementById('fullName_label').classList.add("is-invalid");
         isValid = false;
     }
 
-    if(!isBirthdateClientValid(newClient.birthdate) || newClient.birthdate === ""){
+    if (!newClient.birthdate || !isBirthdateClientValid(newClient.birthdate)) {
         document.getElementById('birthday_label').classList.add("is-invalid");
         isValid = false;
     }
@@ -68,12 +74,18 @@ function isValidClientAccountt(newClient){
         document.getElementById('password_label').classList.add("is-invalid");
         isValid = false;
     }
+
     return isValid;
 }
 
-function isClientNameAndLastNameValid (name){
-    return VALID_FULL_NAME.test(name);
+function isClientNameAndLastNameValid (fullname){
+    return VALID_FULL_NAME.test(fullname);
 }
+
+function isClientUsernameValid(username) {
+    return VALID_USERNAME.test(username);
+}
+
 
 function isBirthdateClientValid (birthdate){
     const today = new Date();
@@ -108,9 +120,7 @@ function isClientPasswordValid (password){
 }
 
 function clearErrors(){
-    document.getElementById('name_label').classList.remove("is-invalid");
-    document.getElementById('firstLastName_label').classList.remove("is-invalid");
-    document.getElementById('secondLastName_label').classList.remove("is-invalid");
+    document.getElementById('fullName_label').classList.remove("is-invalid");
     document.getElementById('birthday_label').classList.remove("is-invalid");
     document.getElementById('cellPhone_label').classList.remove("is-invalid");  
     document.getElementById('email_label').classList.remove("is-invalid");
@@ -118,16 +128,20 @@ function clearErrors(){
 }
 
 function registerClient(newClient){
-    axios
-    .post(`${API_URL}`, newClient)
-    .then((response) => {
+    try {
+        const response = axios.post(`${API_URL}`, newClient);
+        //Cambiar este  los alerts por toast
         alert("El cliente se ha registrado exitosamente");
-    })
-    .catch((error) => {
-        alert("Ha ocurrido un error al registrar el cliente. Inténtelo de nuevo.");
-        alert(error);
+    } catch(error) {
+        if(error.response){
+            alert("Error: " + error.response.data.message);
+        }else if (error.request){
+            alert("No se ha recibido respuesta del servidor");
+        }else {
+            alert("Ha ocurrido un error inesperado. Inténtelo de nuevo.");
+        }
         console.error(error);
-    });
+    }
 }
 
 function hashPassword(password) {
