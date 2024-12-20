@@ -3,3 +3,14 @@
         width: 20%
     }
 }
+
+.carousel-container{
+    left: 50%;
+    margin-left:-50vw;
+    position: relative;
+    width: 100vw;
+}
+
+#carouselExample {
+    margin-top: -1rem;
+}
