@@ -9,12 +9,7 @@ addPaymentMethodBtn.addEventListener("click", () => {
         showToast("Solo puedes registrar 3 métodos de pago", toastTypes.WARNING);
         return;
     }
-
-    primaryFormBtn.onclick = function () {
-        let isEdit = false;
-        let paymentMethodId = null;
-        savePaymentMethod(isEdit, paymentMethodId);
-    }
+    
     paymentMethodFormModal.show();
 });
 
