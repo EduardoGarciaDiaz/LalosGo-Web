@@ -33,8 +33,7 @@ function createClientAccount() {
       };
 
     if(isValidClientAccountt(newClient)){
-        newClient.password = hashPassword(newClient.password);
-        sessionStorage.setItem('actionType', 'ViewAddress');
+        sessionStorage.setItem('actionType', 'CreateClientAccount');
         sessionStorage.setItem('creationAccountData', JSON.stringify(newClient));
         window.location.href = "http://127.0.0.1:5500/src/RegisterDeliveryAddress/registerDeliveryAddress.html";
     }
@@ -124,11 +123,4 @@ function clearErrors(){
     document.getElementById('cellPhone_label').classList.remove("is-invalid");  
     document.getElementById('email_label').classList.remove("is-invalid");
     document.getElementById('password_label').classList.remove("is-invalid");
-}
-
-function hashPassword(password) {
-    var hashObj = new jsSHA("SHA-512", "TEXT", {numRounds: 1});
-    hashObj.update(password);
-    var hash = hashObj.getHash("HEX");
-    return hash;
 }
