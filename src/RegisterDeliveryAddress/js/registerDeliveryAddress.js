@@ -6,32 +6,54 @@ const VALID_INTERNAL_NUMBER = /^[a-zA-Z0-9\-\/]{2,10}$/;
 const VALID_EXTERNAL_NUMBER = /^\d{2,5}([a-zA-Z]|\-\d{2,3})?$/;
 var ACTION_TYPE = sessionStorage.getItem('actionType');
 var creationAccountData = JSON.parse(sessionStorage.getItem('creationAccountData'));
+var deliveryAddressData = JSON.parse(sessionStorage.getItem('deliveryAddressData'));
 const API_URL = 'http://localhost:3000/api/v1/';
 
 function initMap() {  
-    const initialLocation = { lat: 19.541652309248587, lng: -96.9272232055664 };
+    const initialLocation = { lat: 19.541186809084778, lng: -96.92744610055618 };
+
+    if(deliveryAddressData){
+        initialLocation.lat = deliveryAddressData.latitude;
+        initialLocation.lng = deliveryAddressData.longitude;
+    }
+
     map = new google.maps.Map(document.getElementById("map"), {
         center: initialLocation,
         zoom: 18, 
     });
 
+    marker = new google.maps.Marker({
+        position: initialLocation,
+        map: map,
+    });
+
     geocoder = new google.maps.Geocoder();
 
-    map.addListener("click", (event) => {
-        const clickedLocation = event.latLng; 
-        if (marker) {
-            marker.setMap(null); 
-        }
-        marker = new google.maps.Marker({
-            position: clickedLocation,
-            map: map,
+
+    //Si la acción es editar o mostrar dirección, se llenan los campos con la información de la dirección
+    if(ACTION_TYPE === 'EditDeliveryAddress' || ACTION_TYPE === 'ShowDeliveryAddress'){
+        const customLocation = new google.maps.LatLng(initialLocation.lat, initialLocation.lng);
+        getAddressFromCoordinates(customLocation);
+    }
+
+    //Si la acción es mostrar dirección, se deshabilita la acción de seleccionar en el mapa
+    if(ACTION_TYPE !== 'ShowDeliveryAddress'){
+            map.addListener("click", (event) => {
+            const clickedLocation = event.latLng; 
+            if (marker) {
+                marker.setMap(null); 
+            }
+            marker = new google.maps.Marker({
+                position: clickedLocation,
+                map: map,
+            });
+
+            latitude = clickedLocation.lat();
+            longitude = clickedLocation.lng();
+
+            getAddressFromCoordinates(clickedLocation);
         });
-
-        latitude = clickedLocation.lat();
-        longitude = clickedLocation.lng();
-
-        getAddressFromCoordinates(clickedLocation);
-    });
+    }
 }
 
 function getAddressFromCoordinates(coordinates) {
@@ -105,9 +127,8 @@ function getAddressFromCoordinates(coordinates) {
 
     //Falta obtener el Id del usuario 
     //Falta obtener el id de la dirección 
-    //Verificar que la URL está bien 
-    //Cambiar el titulo de agregar a editar
 
+    //pendiente de revisar
     async function editDeliveryAddress(newDeliveryAddress){
         await axios
         .put(`${API_URL}${localStorage.getItem('id')}`, newDeliveryAddress)
@@ -121,6 +142,8 @@ function getAddressFromCoordinates(coordinates) {
         });
     }
 
+
+    //pendiente de revisar
    async function registerNewDeliveryAddress(newDeliveryAddress){
         await axios
         .post(`${API_URL}`, newDeliveryAddress)
@@ -143,6 +166,7 @@ function getAddressFromCoordinates(coordinates) {
             .post(`${API_URL}/users/`, creationAccountData)
             .then((response) => {
                 showToast("Se ha registrado la cuenta", toastTypes.SUCCESS);
+                sessionStorage.removeItem('creationAccountData');
                 return true;
             }).catch((error) => {
                 showToast("Error al crear la cuenta. Inténtelo de nuevo.", toastTypes.DANGER);

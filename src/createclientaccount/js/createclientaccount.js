@@ -34,10 +34,9 @@ function createClientAccount() {
 
     if(isValidClientAccountt(newClient)){
         newClient.password = hashPassword(newClient.password);
-        sessionStorage.setItem('actionType', 'CreateClientAccount');
+        sessionStorage.setItem('actionType', 'ViewAddress');
         sessionStorage.setItem('creationAccountData', JSON.stringify(newClient));
         window.location.href = "http://127.0.0.1:5500/src/RegisterDeliveryAddress/registerDeliveryAddress.html";
-       // registerClient(newClient);   
     }
 }
 
@@ -125,23 +124,6 @@ function clearErrors(){
     document.getElementById('cellPhone_label').classList.remove("is-invalid");  
     document.getElementById('email_label').classList.remove("is-invalid");
     document.getElementById('password_label').classList.remove("is-invalid");
-}
-
-function registerClient(newClient){
-    try {
-        const response = axios.post(`${API_URL}`, newClient);
-        //Cambiar este  los alerts por toast
-        alert("El cliente se ha registrado exitosamente");
-    } catch(error) {
-        if(error.response){
-            alert("Error: " + error.response.data.message);
-        }else if (error.request){
-            alert("No se ha recibido respuesta del servidor");
-        }else {
-            alert("Ha ocurrido un error inesperado. Inténtelo de nuevo.");
-        }
-        console.error(error);
-    }
 }
 
 function hashPassword(password) {

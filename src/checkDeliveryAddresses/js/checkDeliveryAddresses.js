@@ -10,8 +10,8 @@ let addresses = [
       postalCode: "91100",
       country: "México",
       contact: "Sugey Alarcón Hernández - 2282755817",
-      longitude: -96.919444,
-      latitude: 19.543611
+      longitude: 10.726054378965815,
+      latitude: 59.923359432938874    
     },
     {
         street: "Cuauhtla #10",
@@ -36,6 +36,7 @@ let addresses = [
   ];
 
   const ADDRESS_LIMIT = 3;
+  const DELIVERY_ADDRESS_WINDOW = "http://127.0.0.1:5500/src/RegisterDeliveryAddress/registerDeliveryAddress.html";
   // Elemento contenedor de tarjetas
   const addressContainer = document.getElementById("addressContainer");
   
@@ -74,16 +75,21 @@ let addresses = [
   
   // Consultar dirección
   function viewAddress(index) {
-    alert(`Detalles de la dirección:\n${JSON.stringify(addresses[index], null, 2)}`);
+    sessionStorage.setItem('actionType', 'ShowDeliveryAddress');
+    sessionStorage.setItem('deliveryAddressData', JSON.stringify(addresses[index]));
+    window.location.href = DELIVERY_ADDRESS_WINDOW;
   }
   
   // Editar dirección
   function editAddress(index) {
-    const newStreet = prompt("Ingrese nueva calle:", addresses[index].street);
+    sessionStorage.setItem('actionType', 'EditDeliveryAddress');
+    sessionStorage.setItem('deliveryAddressData', JSON.stringify(addresses[index]));
+    window.location.href = DELIVERY_ADDRESS_WINDOW;
+    /*const newStreet = prompt("Ingrese nueva calle:", addresses[index].street);
     if (newStreet) {
       addresses[index].street = newStreet;
       renderAddresses();
-    }
+    }*/
   }
   
   // Eliminar dirección
@@ -114,10 +120,13 @@ let addresses = [
   }
   
 
-    document.getElementById("CreateAddressButtom").addEventListener("click", () => {
+  document.getElementById("CreateAddressButtom").addEventListener("click", () => {
     if(addresses.length < ADDRESS_LIMIT){
+      sessionStorage.removeItem("deliveryAddressData");
+      sessionStorage.setItem('actionType', 'CreateClientAccount');
+
       //Esta URL se debe cambiar al final por la de la página de registro de dirección
-      window.location.href = "http://127.0.0.1:5500/src/RegisterDeliveryAddress/registerDeliveryAddress.html";
+      window.location.href = DELIVERY_ADDRESS_WINDOW;
     } else {
       showToast("No se pueden agregar más de tres direcciones", toastTypes.DANGER);
     }
