@@ -12,10 +12,13 @@ let modalProductPrice
 let modalProductDescription
 let modalProductWeigth
 let modalProductUnit
+let modalProductStock
 let modalProductLimit
 let modalProdcutQuantity
 let modalLessBtn
 let modalMoreBtn
+
+let USER_ID = '6765c5403928381d4b030044' //Sacar del SINGLETON
 
 
 
@@ -27,6 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
     modalProductDescription = document.getElementById('product-description')
     modalProductWeigth = document.getElementById('product-weigth')
     modalProductUnit = document.getElementById('product-unitMeasure')
+    modalProductStock = document.getElementById('product-stock')
     modalProductLimit = document.getElementById('product-limit')
     modalProdcutQuantity = document.getElementById('product-quantity-input')
     modalMoreBtn = document.getElementById('more-btn')
@@ -46,11 +50,11 @@ async function loadProductsFromBranch(branchToConsult){
             if (!categories.some(category => category._id === element.product.category._id)) {
                 categories.push(element.product.category);
             }
-            products.push(element.product)
+            products.push(element)
         });
         categories.forEach(element => {
             let categorySection = createCategorySection(element)
-            let productsOfCategory = products.filter(product => product.category._id === element._id)
+            let productsOfCategory = products.filter(productBranch => productBranch.product.category._id === element._id)
             productsOfCategory.forEach(proElement => {
                 let productCard = createProductCard(proElement)
                 let categoryContainer = categorySection.getElementsByClassName("d-flex overflow-auto")[0];
@@ -68,7 +72,6 @@ async function loadProductsFromBranch(branchToConsult){
         }
 
     } catch (error) {
-        console.log(error)
         showToast("Ocurrio algo inesperado al realizar la petición. Revise su conexión a internet e inténtelo mas tarde", toastTypes.WARNING)   
     }
 }
@@ -92,14 +95,14 @@ function createCategorySection(category){
     return categorySection
 }
 
-function createProductCard(product) {
+function createProductCard(element) {
     const card = document.createElement("div");
-    card.id = product._id;
+    card.id = element.product._id;
     card.className = "card mx-2";
     card.style.minWidth = "200px";
 
     const img = document.createElement("img");
-    img.src = product.image;
+    img.src = element.product.image;
     img.className = "card-img-top";
     img.alt = "Error al cargar la imagen";
 
@@ -108,11 +111,11 @@ function createProductCard(product) {
 
     const cardTitle = document.createElement("h5");
     cardTitle.className = "card-title";
-    cardTitle.textContent = product.name;
+    cardTitle.textContent = element.product.name;
 
     const cardText = document.createElement("p");
     cardText.className = "card-text";
-    cardText.textContent = `$ ${product.unitPrice} MXN`;
+    cardText.textContent = `$ ${element.product.unitPrice} MXN`;
 
     const buttonsContainer = document.createElement("div")
     buttonsContainer.className = "d-grid gap-1" 
@@ -127,11 +130,11 @@ function createProductCard(product) {
 
 
     detailsButton.addEventListener("click", () => {
-        seeDetailsOfProduct(product)
+        seeDetailsOfProduct(element)
     })
 
     button.addEventListener("click", () =>{
-        showToast(`CLick en carrito`, toastTypes.SUCCESS)
+        addProductToCart(element.product, 1)
     })
 
     
@@ -149,16 +152,59 @@ function createProductCard(product) {
 }
 
 
-function seeDetailsOfProduct(product){
-    currentProductInModal = product
-    modalProductName.innerHTML = product.name
-    modalProductPrice.innerHTML = `<strong>$ ${product.unitPrice} MXN</strong>`;
-    modalProductDescription.innerHTML = product.description;
-    modalProductWeigth.innerHTML = `<strong>Peso:</strong> ${product.weight} gramos`;
-    modalProductUnit.innerHTML = `<strong>Unidad de medida:</strong> ${product.unitMeasure}`;
-    modalProductLimit.innerHTML = `<strong>Cantidad máxima por pedido:</strong> ${product.limit}`;    
+async function addProductToCart(product, number) {
+    try {
+        const response = await axios.post(API_URL + 'carts', {
+            userId: USER_ID,
+            productForCart: {
+                _id: product._id,
+                quantity: number ?? 1,
+                price: Number(product.unitPrice) * Number(number)
+            },
+            branchId: branch._id
+        });
+
+        if (response.status >= 200 && response.status < 300) {
+            showToast(response.data.message, toastTypes.SUCCESS);
+        } else {
+            showToast(response.data.message, toastTypes.WARNING);
+        }
+    } catch (error) {
+        showToast(error.response.data.message || "Error en el servidor", toastTypes.ERROR);
+    }
+}
+
+function addProductToCartFromModal(){
+    if(currentProductInModal.product.limit < modalProdcutQuantity.value){        
+        showToast("La cantida debe ser menor al limite por pedido", toastTypes.ERROR);
+    }else if( modalProdcutQuantity.value > 0){
+        addProductToCart(currentProductInModal.product, modalProdcutQuantity.value)
+    }else{
+        showToast("La cantidad debe ser mayor a 0", toastTypes.ERROR);
+    }
+}
+
+function increaseQuantity(){
+    modalProdcutQuantity.value =  Number(modalProdcutQuantity.value)+1
+}
+function deacreaseQuantity(){
+    let quantity =  Number(modalProdcutQuantity.value)
+    if(quantity > 0){
+        modalProdcutQuantity.value = quantity-1
+    }
+}
+
+function seeDetailsOfProduct(element){
+    currentProductInModal = element
+    modalProductName.innerHTML = element.product.name
+    modalProductPrice.innerHTML = `<strong>$ ${element.product.unitPrice} MXN</strong>`;
+    modalProductDescription.innerHTML = element.product.description;
+    modalProductWeigth.innerHTML = `<strong>Peso:</strong> ${element.product.weight} gramos`;
+    modalProductUnit.innerHTML = `<strong>Unidad de medida:</strong> ${element.product.unitMeasure}`;
+    modalProductStock.innerHTML = `<strong>Cantidad disponible en tienda:</strong> ${element.quantity}`;
+    modalProductLimit.innerHTML = `<strong>Cantidad máxima por pedido:</strong> ${element.product.limit}`;    
     modalProdcutQuantity.value = 1
-    modalProductImage.src = product.image
+    modalProductImage.src = element.product.image
     showModal()
 }
 

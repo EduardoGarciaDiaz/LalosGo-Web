@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="../utils/toast-utils.js"></script>
     <script src="./js/consultProductsClient.js"></script>
+    <script src="../utils/commonRegeexValidations.js"></script>
 </head>
 
 <body>
@@ -64,7 +65,8 @@
                             
                             <ul class="list-group mb-3" id="product-details">
                                 <li id="product-weigth" class="list-group-item"></li>
-                                <li id="product-unitMeasure" class="list-group-item"></li>                                
+                                <li id="product-unitMeasure" class="list-group-item"></li>
+                                <li id="product-stock" class="list-group-item"></li>                                
                                 <li id="product-limit" class="list-group-item"></li>
                             </ul>
                             
@@ -74,13 +76,13 @@
 
                             <h6>Elige la cantidad a comprar</h6>
                             <div class="input-group mb-3 gap-1" id="product-quantity">
-                                <button id="less-btn" class="btn btn-outline-secondary" type="button">-</button>
-                                <input id="product-quantity-input" type="text" class="form-control text-center"  aria-label="Cantidad">
-                                <button id="more-btn"  class="btn btn-outline-secondary" type="button">+</button>
+                                <button id="less-btn" class="btn btn-outline-secondary" onclick="deacreaseQuantity()" type="button">-</button>
+                                <input id="product-quantity-input"  oninput="numberOnly(this.id)" type="text" class="form-control text-center"  aria-label="Cantidad">
+                                <button id="more-btn"  class="btn btn-outline-secondary" onclick="increaseQuantity()" type="button">+</button>
                             </div>
     
                             <div class="modal-footer d-flex justify-content-end">
-                                <button class="btn btn-primary" id="add-to-cart">Agregar al carrito</button>
+                                <button class="btn btn-primary" onclick="addProductToCartFromModal()" id="add-to-cart">Agregar al carrito</button>
                             </div>
                         </div>
                     </div>

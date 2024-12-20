@@ -112,8 +112,6 @@ async function saveProduct() {
         if (response.status < 300 && response.status > 199) {
 
             showToast(response.data.message, toastTypes.SUCCESS)
-
-            console.log(response.data)
             let responseImage = await axios.put(`${API_URL}products/${response.data.product._id}`, imageData)
             if (responseImage.status < 300 && responseImage.status > 199) {
                 showToast(responseImage.data.message, toastTypes.SUCCESS)
