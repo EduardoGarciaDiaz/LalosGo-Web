@@ -1,0 +1,35 @@
+.banner-image-css {
+    width: 400px;
+    height: 300px;
+    background-size: contain;
+    margin-right: 15%;
+    max-width: 400px; 
+    max-height: 400px;
+    background-repeat: no-repeat;
+    align-content: center;
+    border-color: transparent;
+}
+.flex-grow-1 {
+    margin-left: 10%;
+}
+
+.banner-title{
+    margin-top: 5%;
+    color: #08267C;
+}
+
+.banner-description {
+    color: rgb(255, 255, 255);
+    font-size: larger;
+}
+
+.banner-btn{
+    color: black;
+    font-size: medium;
+}
+
+
+
+
+
+

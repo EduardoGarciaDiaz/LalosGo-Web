@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página principañ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./styles/consultProdcutsClient.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="../utils/toast-utils.js"></script>
+    <script src="./js/consultProductsClient.js"></script>
+</head>
+
+<body>
+    <section class="container-fluid p-0 ">
+        <div id="banner-carousel" class="carousel slide" data-bs-ride="carousel"  >
+            <div class="carousel-inner">
+                <iframe src="./resources/banner-bargains.html" class="w-100 carousel-item active" scrolling="no" style="height: 400px;"></iframe>
+                <iframe src="./resources/banner-blackFridat.html" class="w-100 carousel-item" scrolling="no" style="height: 400px;"></iframe>
+                <iframe src="./resources/banner-credit-cards.html" class="w-100 carousel-item" scrolling="no" style="height: 400px;"></iframe>
+            </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#banner-carousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#banner-carousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </section>
+
+
+    <!-- Store Selector Section -->
+    <section class="container mt-4">
+        <div class="d-flex justify-content-center">
+            <p id="store-message" class="me-2">Estás consultando la sucursal:</p>
+            <div id="store-button" class="btn btn-outline-primary">Sucursal Principal</button>
+        </div>
+    </section>
+
+ 
+
+
+    <div id="productsDetailsModal" class="modal fade" tabindex="-1" aria-labelledby="products-details-label" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="products-details-label">Detalles del producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+    
+                <div class="modal-body p-4">
+                    <div class="row">
+                        <div class="col-md-4 rounded bg-light d-flex justify-content-center align-items-center">
+                            <img  alt="Bacardi Raspberry" class="img-fluid" id="product-image">
+                        </div>
+    
+                        <div class="col-md-8">
+                            <h2 id="product-name"></h2>
+                            <p id="product-price"></p>
+                            <p id="product-description"> </p>
+                            
+                            <ul class="list-group mb-3" id="product-details">
+                                <li id="product-weigth" class="list-group-item"></li>
+                                <li id="product-unitMeasure" class="list-group-item"></li>                                
+                                <li id="product-limit" class="list-group-item"></li>
+                            </ul>
+                            
+                            <div>
+                                
+                            </div>
+
+                            <h6>Elige la cantidad a comprar</h6>
+                            <div class="input-group mb-3 gap-1" id="product-quantity">
+                                <button id="less-btn" class="btn btn-outline-secondary" type="button">-</button>
+                                <input id="product-quantity-input" type="text" class="form-control text-center"  aria-label="Cantidad">
+                                <button id="more-btn"  class="btn btn-outline-secondary" type="button">+</button>
+                            </div>
+    
+                            <div class="modal-footer d-flex justify-content-end">
+                                <button class="btn btn-primary" id="add-to-cart">Agregar al carrito</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

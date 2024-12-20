@@ -103,6 +103,7 @@ async function saveProduct() {
             unitPrice: productPrice.value,
             expireDate: productExpirationDate.value,
             weight: productWeight.value,
+            limit: productLimit.value,
             productStatus: true,
             unitMeasure: productUnit.value,
             category: productCategory.options[productCategory.selectedIndex].id,
@@ -126,7 +127,6 @@ async function saveProduct() {
             showToast(response.data.message, toastTypes.WARNING)
         }
     } catch (error) {
-        console.log(error)
         showToast("Ocurrio algo inesperado al realizar la petición. Revise su conexión a internet e inténtelo mas tarde", toastTypes.WARNING)
     }
 }
