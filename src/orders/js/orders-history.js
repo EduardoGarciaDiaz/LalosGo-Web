@@ -1,23 +1,3 @@
-// Función para cargar un archivo HTML en un contenedor
-function loadHTML(filePath, containerId) {
-    fetch(filePath)
-        .then(response => {
-            if (!response.ok) throw new Error(`Error al cargar ${filePath}: ${response.statusText}`);
-            return response.text();
-        })
-        .then(html => {
-            document.getElementById(containerId).innerHTML = html;
-        })
-        .catch(error => {
-            console.error('Error al cargar archivo HTML:', error);
-            const container = document.getElementById(containerId);
-            if (container) {
-                container.innerHTML = `<p class="text-danger">Error al cargar contenido. Intente nuevamente más tarde.</p>`;
-            }
-        });
-}
-
-// Función para cargar y renderizar órdenes
 function loadOrders(orderTemplatePath, ordersContainerId, orders) {
     const container = document.getElementById(ordersContainerId);
     const loading = document.getElementById('loading');
@@ -92,18 +72,11 @@ function clearCancelOrderForm(button) {
     }
 }
 
-
-// Ejemplo de uso al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
-    const headerPath = '/src/shared/navbar/navbar-client.html';
     const filterPath = '/src/shared/orderFilter/filter-client.html';
     const ordersContainerId = 'orders-container';
 
-    // Cargar encabezado y filtros
-    loadHTML(headerPath, 'header-container');
     loadHTML(filterPath, 'filter-container');
-
-    // Simulación de datos de órdenes
     const orders = [
         {
             orderDate: '02 octubre de 2024',
