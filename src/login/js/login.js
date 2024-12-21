@@ -5,7 +5,7 @@ const VALID_USERNAME = /^(?![_-])[a-zA-Z0-9_-]{3,16}(?<![_-])$/;
 const API_URL = 'http://localhost:3000/api/v1/auth/';
 
 
-function login(event){
+function login(event) {
     event.preventDefault();
     let username = document.getElementById("username").value;
     let password = document.getElementById("password").value;
@@ -16,54 +16,57 @@ function login(event){
         password: password
     }
 
-    if(loginIsValid(loginData))
-    {
+    if (loginIsValid(loginData)) {
         getLogin(loginData);
-    } else{
+    } else {
         showToast("Usuario y/o Contraseña incorrectos", toastTypes.DANGER);
     }
 }
 
-async function getLogin(loginData){
-    try{
+async function getLogin(loginData) {
+    try {
         const response = await axios.post(`${API_URL}`, loginData);
         const role = response.data.role;
         sessionStorage.setItem('Singleton', JSON.stringify(response.data));
-        if(role === 'Customer'){
+        if (role === 'Customer') {
             //Mandar a la pantlla principal
-        }else if(role === 'Manager'){
-        } else if (role === 'Delivery Person'){
+        } else if (role === 'Manager') {
+            //Mandar a la pantalla de manager
+        } else if (role === 'Delivery Person') {
             //Mandar a la pantalla de delivery person
-        } else if(role === 'Sales Executive'){
+        } else if (role === 'Sales Executive') {
             //Mandar a la pantalla de sales executive
             window.location.href = '/src/orders/orders-history.html';
-        } else {
+        } else if (role === 'Administrator') {
+            //Mandar a la pantalla de administrador 
+        }
+        else {
             showToast("No hemos podido enviarlo a la pantalla principal. Inténtelo de nuevo", toastTypes.WARNING);
         }
-    }catch (error){
+    } catch (error) {
         console.error(error);
         alert(error)
         showToast("Error al iniciar sesión", toastTypes.DANGER);
     }
 }
 
-function loginIsValid(login){
+function loginIsValid(login) {
     let isValid = true;
-    
-    if(!usernameValidation(login.username)){
+
+    if (!usernameValidation(login.username)) {
         isValid = false;
     }
 
-    if(!passwordValidation(login.password)){
+    if (!passwordValidation(login.password)) {
         isValid = false;
     }
     return isValid
 }
 
-function usernameValidation(username){
+function usernameValidation(username) {
     return VALID_USERNAME.test(username);
 }
 
-function passwordValidation(password){
+function passwordValidation(password) {
     return VALID_PASSWORD.test(password);
 }
