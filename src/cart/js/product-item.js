@@ -11,7 +11,7 @@ function createProductCard(product) {
             <div class="row align-items-center g-3">
                 <!-- Product Image -->
                 <div class="col-auto">
-                    <img src="../assets/images/visa.png" 
+                    <img src="${productDetails.image || '../assets/images/default-img-product.jpg'}" 
                         alt="${productDetails.name || DEFAULT_TEXT}" 
                         class="product-img rounded">
                 </div>

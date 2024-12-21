@@ -1,5 +1,3 @@
-const API_URL = 'http://192.168.100.9:3000/api/v1/';
-
 const VALID_PAYMENT_NETWORKS = ['Visa', 'MasterCard'];
 const VALID_CARD_TYPES = ['Crédito', 'Débito'];
 const CARD_OWNER_REGEX = /^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ\s]{2,100}$/;
@@ -8,9 +6,6 @@ const PAYMENT_NETWORKS_REGEX = {
     visa: /^4[0-9]{12}(?:[0-9]{3})?$/,
     masterCard: /^5[1-5][0-9]{14}$/,
 };
-
-//TODO: Get the user id from the session
-var userId = '6741260fd2f308dfbeb3e9f2';
 
 document.addEventListener("DOMContentLoaded", () => {
     const today = new Date();
