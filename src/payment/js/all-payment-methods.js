@@ -1,8 +1,10 @@
 const URL_IMAGE_VISA='../assets/images/visa.png';
 const URL_IMAGE_MASTERCARD='../assets/images/mastercard.png';
 var paymentMethodsNumber = 0;
+var userId;
 
 window.onload = function() {
+    userId = getInstance().id;
     getAllPaymentMethods();
     loadBanksOnComboBox();
 }

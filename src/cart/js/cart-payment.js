@@ -1,4 +1,3 @@
-const API_URL = 'http://192.168.100.9:3000/api/v1/';
 const CART_STATUS = 'reserved';
 const VALID_PAYMENT_NETWORKS = ['Visa', 'MasterCard'];
 const URL_IMAGE_VISA='../assets/images/visa.png';
@@ -6,12 +5,13 @@ const URL_IMAGE_MASTERCARD='../assets/images/mastercard.png';
 const CVV_REGEX = /^[0-9]{3,4}$/;
 const PAYMENT_METHODS = new Map();
 
-//TODO: Get the user id from the session
-var userId = '6741260fd2f308dfbeb3e9f2';
+var userId;
 var orderId;
+var branchId;
 var paymentMethodId;
 
 window.onload = function() {
+    userId = getInstance().id;
     getAllPaymentMethods();
     loadOrderSummary();
 }
@@ -159,6 +159,7 @@ function loadOrderSummary() {
 
             let totalPrice = cartSummary.totalPrice;
             orderId = cartSummary.orderId;
+            branchId = cartSummary.branchId;
 
             let totalPriceSummary = document.getElementsByClassName('total-price-summary')[0];
             if (totalPriceSummary) {
@@ -168,6 +169,7 @@ function loadOrderSummary() {
         .catch((error) => {
             console.error(error);
             showToast("Error al cargar el resumen de la compra", toastTypes.WARNING);
+            window.location.replace('./cart.html'); //TODO: Redirect to orders page
         });
 }
 
@@ -210,7 +212,6 @@ function clearConfirmationCVV() {
 
 function goToFinishCart() {
     reserveCartProducts();
-    
 }
 
 function showErrorMessage(fieldId, elementId, message) {
@@ -273,7 +274,7 @@ async function reserveCartProducts() {
             `${API_URL}orders/${orderId}`, 
             {
                 customer: userId,
-                branch: "6761c816e127220a584bda32",
+                branch: branchId,
                 paymentMethod: paymentMethodSelected
             },
             {
@@ -286,7 +287,7 @@ async function reserveCartProducts() {
         let orderNumber = response.data.order.orderNumber;
 
         if (!orderNumber) {
-            showToast("Ocurrió un error al realizar la orden", toastTypes.WARNING);
+            showToast("Ocurrió un error al realizar la orden", toastTypes.ERROR);
             return;
         }
 
