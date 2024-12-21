@@ -67,16 +67,14 @@
     </main>
 
     <div class="buttons">
-        <button class="btn btn-primary" type="submit" id="SaveButtom" onclick="registerDeliveryAccount()">
+        <button class="btn btn-primary" type="submit" id="SaveButtom" onclick="registerDeliveryAddress(event)">
           Guardar
-        </button>
-        <button class="btn btn-primary" type="submit"  id="EditButtom" onclick="editDeliveryAccout()">
-          Editar
         </button>
     </div>
   </div>
-
+  
+  <script src="../utils/toast-utils.js"></script>
   <script src="./js/registerDeliveryAddress.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCQ_3NBIwxEhcuRkcEGHTa3B1DzYObNFyE&callback=initMap" async defer></script>
+  <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCQ_3NBIwxEhcuRkcEGHTa3B1DzYObNFyE&callback=initMap" async defer></script>
 </body>
 </html>
