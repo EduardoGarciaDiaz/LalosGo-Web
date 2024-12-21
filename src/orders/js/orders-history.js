@@ -1,4 +1,3 @@
-// Función para cargar y renderizar órdenes
 function loadOrders(orderTemplatePath, ordersContainerId, orders) {
     const container = document.getElementById(ordersContainerId);
     const loading = document.getElementById('loading');

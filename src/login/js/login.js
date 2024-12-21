@@ -29,14 +29,14 @@ async function getLogin(loginData){
         const response = await axios.post(`${API_URL}`, loginData);
         const role = response.data.role;
         sessionStorage.setItem('Singleton', JSON.stringify(response.data));
-        if(role === 'customer'){
+        if(role === 'Customer'){
             //Mandar a la pantlla principal
         }else if(role === 'Manager'){
-            //Mandar a la pantalla de manager
         } else if (role === 'Delivery Person'){
             //Mandar a la pantalla de delivery person
         } else if(role === 'Sales Executive'){
             //Mandar a la pantalla de sales executive
+            window.location.href = '/src/orders/orders-history.html';
         } else {
             showToast("No hemos podido enviarlo a la pantalla principal. Inténtelo de nuevo", toastTypes.WARNING);
         }
