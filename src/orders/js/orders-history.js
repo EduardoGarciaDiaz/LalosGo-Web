@@ -73,18 +73,11 @@ function clearCancelOrderForm(button) {
     }
 }
 
-
-// Ejemplo de uso al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
-    const headerPath = '/src/shared/navbar/navbar-client.html';
     const filterPath = '/src/shared/orderFilter/filter-client.html';
     const ordersContainerId = 'orders-container';
 
-    // Cargar encabezado y filtros
-    loadHTML(headerPath, 'header-container');
     loadHTML(filterPath, 'filter-container');
-
-    // Simulación de datos de órdenes
     const orders = [
         {
             orderDate: '02 octubre de 2024',

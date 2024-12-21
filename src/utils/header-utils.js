@@ -1,5 +1,4 @@
 const CONTAINER_ID = 'header-container';
-const USER_ROLE = sessionStorage.getItem('role');
 
 function loadHTML(filePath, elementId) {
     fetch(filePath)
@@ -23,7 +22,10 @@ function loadHTML(filePath, elementId) {
 function loadHeaderByRole() {
     let headerPath;
 
-    switch (userRole) {
+    let singleton = sessionStorage.getItem('Singleton');
+    let role = singleton ? JSON.parse(singleton).role : 'default';
+    
+    switch (role) {
         case 'Administrator':
             headerPath = '/src/shared/navbar/navbar-admin.html';
             break;
@@ -43,5 +45,10 @@ function loadHeaderByRole() {
             break;
     }
 
-    loadHTML(headerPath, containerId);
+    loadHTML(headerPath, CONTAINER_ID);
 }
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadHeaderByRole();
+});
