@@ -7,7 +7,6 @@ function login(event) {
     let username = document.getElementById("username").value;
     let password = document.getElementById("password").value;
 
-    alert(username);
     const loginData = {
         username: username,
         password: password
@@ -22,28 +21,35 @@ function login(event) {
 
 async function getLogin(loginData) {
     try {
-        const response = await axios.post(`${API_URL}/auth`, loginData);
+        const response = await axios.post(`${API_URL}auth/`, loginData);
         const role = response.data.role;
         let user = getInstance(response.data);
-        if (role === 'Customer') {
-            window.location.href = 'http://127.0.0.1:5500/src/products/consultProductClient.html'
-        } else if (role === 'Manager') {
-            //Mandar a la pantalla de manager
-        } else if (role === 'Delivery Person') {
-            //Mandar a la pantalla de delivery person
-        } else if (role === 'Sales Executive') {
-            //Mandar a la pantalla de sales executive
-            window.location.href = '/src/orders/orders-history.html';
-        } else if (role === 'Administrator') {
-            //Mandar a la pantalla de administrador 
-        }
-        else {
-            showToast("No hemos podido enviarlo a la pantalla principal. Inténtelo de nuevo", toastTypes.WARNING);
+        if(user.status === 'Active'){
+            if (role === 'Customer') {
+                //Mandar a la pantlla principal
+                window.location.href = "http://127.0.0.1:5500/src/modifyClientAccount/modifyClientAccount.html";
+            } else if (role === 'Manager') {
+                //Mandar a la pantalla de manager
+            } else if (role === 'Delivery Person') {
+                //Mandar a la pantalla de delivery person
+            } else if (role === 'Sales Executive') {
+                //Mandar a la pantalla de sales executive
+                window.location.href = '/src/orders/orders-history.html';
+            } else if (role === 'Administrator') {
+                //Mandar a la pantalla de administrador 
+                window.location.href = '/src/employees/employees.html';
+            } else {
+                showToast("No hemos podido enviarlo a la pantalla principal. Inténtelo de nuevo", toastTypes.WARNING);
+            }
+        }else{ 
+            showToast("La cuenta está inactiva", toastTypes.DANGER);
         }
     } catch (error) {
-        console.error(error);
-        alert(error)
-        showToast("Error al iniciar sesión", toastTypes.DANGER);
+        if (error.response && error.response.status === 401) {
+            showToast("Credenciales incorrectas. Verifique su usuario y contraseña.", toastTypes.DANGER);
+        } else {
+            showToast("Error al iniciar sesión. Inténtelo más tarde.", toastTypes.DANGER);
+        }
     }
 }
 

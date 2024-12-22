@@ -1,8 +1,9 @@
 const VALID_FULL_NAME  = /^(?!\s)[A-ZÁÉÍÓÚÑ][a-záéíóúñü]+(?: [A-ZÁÉÍÓÚÑ][a-záéíóúñü]+)*$/;
 const VALID_PHONE_NUMBER = /^\+?[0-9]{1,3}[-. ]?\(?\d{1,4}\)?[-. ]?\d{1,4}[-. ]?\d{1,9}$/;
 const VALID_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const VALID_PASSWORD = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-const API_URL = 'http://localhost:3000/api/v1/users/';
+const VALID_USERNAME = /^[a-zA-Z][a-zA-Z0-9._]{1,11}[a-zA-Z0-9]$/;
+var SINGLETON;
+
 
 document.addEventListener("DOMContentLoaded", () => {
     const today = new Date();
@@ -11,79 +12,91 @@ document.addEventListener("DOMContentLoaded", () => {
     const dd = String(today.getDate()).padStart(2, '0');
     const maxDate = `${yyyy}-${mm}-${dd}`;
     document.getElementById("birthday_label").setAttribute("max", maxDate);
+
+    SINGLETON = getInstance();
+    alert(SINGLETON.id);
+    fillClientData();
+
 });
 
+function fillClientData(){
+    const formatteDate = SINGLETON.birthdate.substring(0, 10);
+    document.getElementById('fullName_label').value = SINGLETON.fullname;
+    document.getElementById('username_label').value = SINGLETON.username;
+    document.getElementById('cellPhone_label').value = SINGLETON.phone;
+    document.getElementById('birthday_label').value = formatteDate;
+    document.getElementById('email_label').value = SINGLETON.email;
+}
 
-function modifyClientAccount() {
+async function modifyClientAccount() {
     clearErrors();
+    let username = document.getElementById('username_label').value.trim();
+    let fullname = document.getElementById('fullName_label').value.trim();
+    let birthdate = document.getElementById('birthday_label').value.trim();
+    let phone = document.getElementById('cellPhone_label').value.trim();
+    let email = document.getElementById('email_label').value.trim();
 
-    let name = document.getElementById('name_label').value;
-    let firstLastName = document.getElementById('firstLastName_label').value;
-    let secondLastName = document.getElementById('secondLastName_label').value;
-    let birthday = document.getElementById('birthday_label').value;
-    let cellPhone = document.getElementById('cellPhone_label').value;
-    let password = document.getElementById('password_label').value;
-    let email = document.getElementById('email_label').value;
-    
-    let dataClientUpdate = {
-        fullname: name + " " + firstLastName + " " + secondLastName,
-        birthdate: birthday,
-        phone: cellPhone,
-        email, email,
-        password: password
+    var dataClientUpdate = {
+        username: username,
+        fullname: fullname,
+        birthdate: birthdate,
+        phone: phone,
+        email: email,
     }
 
     if(isValidClientAccountt(dataClientUpdate)){
-        dataClientUpdate.password = hashPassword(dataClientUpdate.password);
-        modifyClientAccount(dataClientUpdate);
+        await modifyClientAccount(dataClientUpdate);
+    }
+}
+
+async function modifyClientAccount(dataClientUpdate){
+    try{
+        const response = await axios.put(`${API_URL}users/${SINGLETON.id}`, dataClientUpdate);
+        if(response.status === 200 && response.data){
+            showToast("Se ha modificado la cuenta correctamente", toastTypes.SUCCESS);
+            return true;
+        }else {
+            throw new Error("Error al modificar la cuenta. Inténtelo de nuevo.");
+        }
+    }catch(error) {
+        showToast("Ha ocurrido un error", toastTypes.DANGER);
+        alert(error);
+        throw error;   
     }
 }
 
 function isValidClientAccountt(dataClientUpdate){
-    clearErrors();
-    let isValid = true
+    
+    let isValid = true;
+
+    if(!isClientUsernameValid(dataClientUpdate.username)){
+        document.getElementById('username_label').classList.add("is-invalid");
+        isValid = false; 
+    }
+
     if(!isClientNameAndLastNameValid(dataClientUpdate.fullname)){
-        document.getElementById('name_label').classList.add("is-invalid");
-        document.getElementById('firstLastName_label').classList.add("is-invalid");
-        document.getElementById('secondLastName_label').classList.add("is-invalid");
+        document.getElementById('fullName_label').classList.add("is-invalid");
         isValid = false;
     }
 
-    if(!isClientNameAndLastNameValid(dataClientUpdate.firstLastName)){
-        document.getElementById('firstLastName_label').classList.add("is-invalid");
-        isValid = false;
-    }
-
-    if(!isClientNameAndLastNameValid(dataClientUpdate.secondLastName)){
-        document.getElementById('secondLastName_label').classList.add("is-invalid");
-        isValid = false;
-    }
-
-    if(!isBirthdateClientValid(dataClientUpdate.birthdate) || dataClientUpdate.birthdate === ""){
+    if (!dataClientUpdate.birthdate || !isBirthdateClientValid(dataClientUpdate.birthdate)) {
         document.getElementById('birthday_label').classList.add("is-invalid");
         isValid = false;
     }
 
-    if(!isClientCellPhoneValid(dataClientUpdate.cellPhone)){
+    if(!isClientCellPhoneValid(dataClientUpdate.phone)){
         document.getElementById('cellPhone_label').classList.add("is-invalid");
         isValid = false;
     }
-
-    if(!isClientEmailValid(dataClientUpdate.email)){
-        document.getElementById('email_label').classList.add("is-invalid");
-        isValid = false;
-    }
-
-    if(!isClientPasswordValid(dataClientUpdate.password)){
-        document.getElementById('password_label').classList.add("is-invalid");
-        isValid = false;
-    }
-
     return isValid;
 }
 
 function isClientNameAndLastNameValid (name){
     return VALID_FULL_NAME.test(name);
+}
+
+function isClientUsernameValid(username) {
+    return VALID_USERNAME.test(username);
 }
 
 function isBirthdateClientValid (birthdate){
@@ -114,36 +127,9 @@ function isClientEmailValid (email){
     return VALID_EMAIL.test(email);
 }
 
-function isClientPasswordValid (password){
-    return VALID_PASSWORD.test(password);
-}
-
 function clearErrors(){
-    document.getElementById('name_label').classList.remove("is-invalid");
-    document.getElementById('firstLastName_label').classList.remove("is-invalid");
-    document.getElementById('secondLastName_label').classList.remove("is-invalid");
+    document.getElementById('username_label').classList.remove("is-invalid");
+    document.getElementById('fullName_label').classList.remove("is-invalid");
     document.getElementById('birthday_label').classList.remove("is-invalid");
-    document.getElementById('cellPhone_label').classList.remove("is-invalid");  
-    document.getElementById('email_label').classList.remove("is-invalid");
-    document.getElementById('password_label').classList.remove("is-invalid");
-}
-
-function modifyClientAccount(dataClientUpdate){
-    axios
-    .put(`${API_URL}${userId}`, dataClientUpdate)
-    .then((response) => {
-        alert("Cuenta actualizada");
-    })
-    .catch((error) => {
-        alert("No se pudo actualizar la cuenta. Inténtelo de nuevo.");
-        alert(error);
-        console.error(error);
-    });
-}
-
-function hashPassword(password) {
-    var hashObj = new jsSHA("SHA-512", "TEXT", {numRounds: 1});
-    hashObj.update(password);
-    var hash = hashObj.getHash("HEX");
-    return hash;
+    document.getElementById('cellPhone_label').classList.remove("is-invalid");
 }

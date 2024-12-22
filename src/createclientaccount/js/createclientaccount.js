@@ -1,7 +1,7 @@
 const VALID_FULL_NAME  = /^(?!\s)[A-ZÁÉÍÓÚÑ][a-záéíóúñü]+(?: [A-ZÁÉÍÓÚÑ][a-záéíóúñü]+)*$/;
 const VALID_PHONE_NUMBER = /^\+?[0-9]{1,3}[-. ]?\(?\d{1,4}\)?[-. ]?\d{1,4}[-. ]?\d{1,9}$/;
 const VALID_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const VALID_PASSWORD = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const VALID_PASSWORD = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&_])[A-Za-z\d@$!%*?&_]{8,}$/;
 const VALID_USERNAME = /^[a-zA-Z][a-zA-Z0-9._]{1,11}[a-zA-Z0-9]$/;
 const API_URL = 'http://localhost:3000/api/v1/users/';
 
@@ -118,6 +118,7 @@ function isClientPasswordValid (password){
 }
 
 function clearErrors(){
+    document.getElementById('username_label').classList.remove("is-invalid");
     document.getElementById('fullName_label').classList.remove("is-invalid");
     document.getElementById('birthday_label').classList.remove("is-invalid");
     document.getElementById('cellPhone_label').classList.remove("is-invalid");  
