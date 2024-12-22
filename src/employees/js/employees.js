@@ -1,7 +1,27 @@
 const API_URL = 'http://127.0.0.1:3000/api/v1/';
-const employeesContainer = document.getElementById('employees-container');
 
 window.onload = function () {
+    document.getElementById('add-employee-btn').addEventListener('click', goToAddEmployee);
+    const searchBtn = document.getElementById('search-btn');
+    const searchInput = document.getElementById('search-input');
+    searchInput.addEventListener('keydown', (event) => {
+
+
+        if (event.key === 'Enter') {
+            searchEmployees(searchInput.value.trim());
+        }
+    });
+
+    searchInput.addEventListener('input', () => {
+        if (searchInput.value === '') {
+            showAllEmployees();
+        }
+    });
+
+    searchBtn.addEventListener('click', () => {
+        searchEmployees(searchInput.value.trim());
+    });
+
     loadEmployees();
 }
 
@@ -11,13 +31,16 @@ function loadEmployees() {
 }
 
 function clearAllEmployees() {
+    let employeesContainer = document.getElementById('employees-container');
     employeesContainer.innerHTML = '';
 }
 
 function getAllEmployees() {
+    let employeesContainer = document.getElementById('employees-container');
+    let token = getInstance().token;
     axios
         .get(`${API_URL}employees/`, {
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            headers: { 'Authorization': `Bearer ${token}` }
         })
         .then((response) => {
             let employees = response.data.employees;
@@ -34,34 +57,18 @@ function getAllEmployees() {
         })
         .catch((error) => {
             console.error(error);
-            showToast(error.response.data.message, toastTypes.WARNING);
+            const message = error.response?.data?.message || "Error al cargar los empleados";
+            showToast(message, toastTypes.WARNING);
         });
 }
 
-const searchInput = document.getElementById('search-input');
-searchInput.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') {
-        searchEmployees(searchInput.value.trim());
-    }
-});
-
-searchInput.addEventListener('input', () => {
-    if (searchInput.value === '') {
-        showAllEmployees();
-    }
-});
-
-const searchBtn = document.getElementById('search-btn');
-searchBtn.addEventListener('click', () => {
-    searchEmployees(searchInput.value.trim());
-});
-
 function searchEmployees(inputValue) {
+    let employeesContainer = document.getElementById('employees-container');
     if (inputValue !== undefined && inputValue) {
         const searchTerm = inputValue.toLowerCase();
 
         Array.from(employeesContainer.children).forEach(employeeCard => {
-            const employeeName = employeeName.querySelector('.employee-name').textContent.toLowerCase();
+            const employeeName = employeeCard.querySelector('.employee-name').textContent.toLowerCase();
 
             if (employeeName.includes(searchTerm)) {
                 employeeCard.classList.remove('not-searched');
@@ -75,6 +82,7 @@ function searchEmployees(inputValue) {
 }
 
 function showAllEmployees() {
+    let employeesContainer = document.getElementById('employees-container');
     Array.from(employeesContainer.children).forEach(employeeCard => {
         employeeCard.classList.remove('not-searched', 'searched');
     });
@@ -124,23 +132,26 @@ function createEmployeeCard(employeeData) {
     infoDiv.appendChild(usernameParagraph);
 
     const roleParagraph = document.createElement('p');
-    roleParagraph.classList.add('mb-1', 'strong');
-    roleParagraph.textContent = `Cargo: ${data.role}`;
+    roleParagraph.classList.add('mb-1');
+    roleParagraph.textContent = `Cargo: ${employeeData.employee.role}`;
     infoDiv.appendChild(roleParagraph);
 
     const hiredDateParagraph = document.createElement('p');
     hiredDateParagraph.classList.add('mb-1');
-    hiredDateParagraph.textContent = `Fecha de ingreso: '${employeeData.hiredDate}`;
+    hiredDateParagraph.textContent = `Fecha de ingreso: '${new Date(employeeData.employee.hiredDate).toLocaleDateString()}`;
+    infoDiv.appendChild(hiredDateParagraph);
 
     const branchNameParagraph = document.createElement('p');
     branchNameParagraph.classList.add('mb-3');
+    branchNameParagraph.textContent = `Sucursal: ${employeeData.employee.branch.name}`;
+    infoDiv.appendChild(branchNameParagraph);
 
     const statusParagraph = document.createElement('p');
 
     const statusSpan = document.createElement('span');
     statusSpan.classList.add(`status-${employeeData.status ? 'active' : 'inactive'}`, 'badge', 'bg-primary');
     statusSpan.textContent = employeeData.status ? 'Activo' : 'Inactivo';
-    statusP.appendChild(statusSpan);
+    statusParagraph.appendChild(statusSpan);
     infoDiv.appendChild(statusParagraph);
 
     const dropdownDiv = document.createElement('div');
@@ -189,7 +200,6 @@ function createEmployeeCard(employeeData) {
     return containerDiv;
 }
 
-document.getElementById('add-employee-btn').addEventListener('click', goToAddEmployee);
 function goToAddEmployee() {
     // Redirect to add employee page
 }
