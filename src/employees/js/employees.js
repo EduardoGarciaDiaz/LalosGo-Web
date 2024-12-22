@@ -56,7 +56,6 @@ function getAllEmployees() {
             });
         })
         .catch((error) => {
-            console.error(error);
             const message = error.response?.data?.message || "Error al cargar los empleados";
             showToast(message, toastTypes.WARNING);
         });
@@ -103,7 +102,6 @@ function toggleEmployeeStatus(employeeId) {
                 loadEmployees();
             })
             .catch((error) => {
-                console.error(error);
                 showToast(error.response.data.message, toastTypes.WARNING);
             });
     }
