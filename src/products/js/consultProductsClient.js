@@ -1,9 +1,11 @@
 const API_URL = 'http://127.0.0.1:3000/api/v1/'
 
+let branchId
 let branch
 let categories = []
 let products = []
 let currentProductInModal
+let branchNameLabel
 
 let productsDetaildModal
 let modalProductImage
@@ -18,11 +20,12 @@ let modalProdcutQuantity
 let modalLessBtn
 let modalMoreBtn
 
-let USER_ID = '6765c5403928381d4b030044' //Sacar del SINGLETON
+
+let USER_ID
+let currentAddress = null
 
 
-
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     productsDetaildModal = document.getElementById('productsDetailsModal')
     modalProductImage = document.getElementById('product-image')
     modalProductName = document.getElementById('product-name')
@@ -35,49 +38,89 @@ document.addEventListener("DOMContentLoaded", () => {
     modalProdcutQuantity = document.getElementById('product-quantity-input')
     modalMoreBtn = document.getElementById('more-btn')
     modalLessBtn = document.getElementById('less-btn')
+    branchNameLabel = document.getElementById("store-label")
+
+    USER_ID = getInstance().id
+    
+    await getUserAddress()
+    if (currentAddress!=null) {
+        branchId = await getNearestBranch(currentAddress)
+    }
+    if(branchId){
+        await loadProductsFromNearestBranch(branchId)
+    }
+
 })
 
-window.onload = async function() {
-    await loadProductsFromBranch("67622562af767f5440a56cfc")
+async function getUserAddress() {
+    try {
+        const response = await axios.get(`${API_URL}users/${USER_ID}/addresses`);
+        response.data.addresses.forEach(element => {
+            if (element.isCurrentAddress) {
+                currentAddress = element;
+            }
+        });
+    } catch (error) {
+        showToast(error.response.data?.message || "Error al obtener la dirección", toastTypes.WARNING);
+    }
 }
 
-async function loadProductsFromBranch(branchToConsult){
+
+async function getNearestBranch(asddressData) {
     try {
-       let response = await axios.get(`${API_URL}products/${branchToConsult}`)
-       if (response.status < 300 && response.status > 199) {
-        branch = response.data.branch
-        response.data.branch.branchProducts.forEach(element => {
-            if (!categories.some(category => category._id === element.product.category._id)) {
-                categories.push(element.product.category);
-            }
-            products.push(element)
-        });
-        categories.forEach(element => {
-            let categorySection = createCategorySection(element)
-            let productsOfCategory = products.filter(productBranch => productBranch.product.category._id === element._id)
-            productsOfCategory.forEach(proElement => {
-                let productCard = createProductCard(proElement)
-                let categoryContainer = categorySection.getElementsByClassName("d-flex overflow-auto")[0];
-                if (categoryContainer) {
-                    categoryContainer.appendChild(productCard);
+        let response = await axios.get(`${API_URL}branches/`, {
+            params: {
+                location: {
+                    latitude: asddressData.latitude,
+                    longitude: asddressData.longitude,
+                    type: asddressData.type
                 }
+            }
+        })
+        return response.data.branches
+    } catch (error) {        
+        showToast(error.response.data.message, toastTypes.WARNING)
+    }
+}
+
+async function loadProductsFromNearestBranch(branchToConsult) {
+    try {
+        let response = await axios.get(`${API_URL}products/${branchToConsult}`)
+        if (response.status < 300 && response.status > 199) {
+            branch = response.data.branch
+            branchNameLabel.innerHTML = branch.name
+            response.data.branch.branchProducts.forEach(element => {
+                if (!categories.some(category => category._id === element.product.category._id)) {
+                    categories.push(element.product.category);
+                }
+                products.push(element)
             });
-            document.body.appendChild(categorySection)
-        });
-        showToast(response.data.message, toastTypes.SUCCESS)
-              
+            categories.forEach(element => {
+                let categorySection = createCategorySection(element)
+                let productsOfCategory = products.filter(productBranch => productBranch.product.category._id === element._id)
+                productsOfCategory.forEach(proElement => {
+                    let productCard = createProductCard(proElement)
+                    let categoryContainer = categorySection.getElementsByClassName("d-flex overflow-auto")[0];
+                    if (categoryContainer) {
+                        categoryContainer.appendChild(productCard);
+                    }
+                });
+                document.body.appendChild(categorySection)
+            });
+            showToast(response.data.message, toastTypes.SUCCESS)
+
         }
         else {
             showToast(response.data.message, toastTypes.WARNING)
         }
 
     } catch (error) {
-        showToast("Ocurrio algo inesperado al realizar la petición. Revise su conexión a internet e inténtelo mas tarde", toastTypes.WARNING)   
+        showToast("Ocurrio algo inesperado al realizar la petición. Revise su conexión a internet e inténtelo mas tarde", toastTypes.WARNING)
     }
 }
 
 
-function createCategorySection(category){
+function createCategorySection(category) {
     const categorySection = document.createElement("div")
     categorySection.id = category._id
     categorySection.className = "container-fluid mt-4"
@@ -118,7 +161,7 @@ function createProductCard(element) {
     cardText.textContent = `$ ${element.product.unitPrice} MXN`;
 
     const buttonsContainer = document.createElement("div")
-    buttonsContainer.className = "d-grid gap-1" 
+    buttonsContainer.className = "d-grid gap-1"
 
     const detailsButton = document.createElement("button");
     detailsButton.className = "btn btn-outline-dark btn-sm";
@@ -133,11 +176,11 @@ function createProductCard(element) {
         seeDetailsOfProduct(element)
     })
 
-    button.addEventListener("click", () =>{
+    button.addEventListener("click", () => {
         addProductToCart(element.product, 1)
     })
 
-    
+
     buttonsContainer.appendChild(button);
     buttonsContainer.appendChild(detailsButton);
 
@@ -174,27 +217,27 @@ async function addProductToCart(product, number) {
     }
 }
 
-function addProductToCartFromModal(){
-    if(currentProductInModal.product.limit < modalProdcutQuantity.value){        
+function addProductToCartFromModal() {
+    if (currentProductInModal.product.limit < modalProdcutQuantity.value) {
         showToast("La cantida debe ser menor al limite por pedido", toastTypes.ERROR);
-    }else if( modalProdcutQuantity.value > 0){
+    } else if (modalProdcutQuantity.value > 0) {
         addProductToCart(currentProductInModal.product, modalProdcutQuantity.value)
-    }else{
+    } else {
         showToast("La cantidad debe ser mayor a 0", toastTypes.ERROR);
     }
 }
 
-function increaseQuantity(){
-    modalProdcutQuantity.value =  Number(modalProdcutQuantity.value)+1
+function increaseQuantity() {
+    modalProdcutQuantity.value = Number(modalProdcutQuantity.value) + 1
 }
-function deacreaseQuantity(){
-    let quantity =  Number(modalProdcutQuantity.value)
-    if(quantity > 0){
-        modalProdcutQuantity.value = quantity-1
+function deacreaseQuantity() {
+    let quantity = Number(modalProdcutQuantity.value)
+    if (quantity > 0) {
+        modalProdcutQuantity.value = quantity - 1
     }
 }
 
-function seeDetailsOfProduct(element){
+function seeDetailsOfProduct(element) {
     currentProductInModal = element
     modalProductName.innerHTML = element.product.name
     modalProductPrice.innerHTML = `<strong>$ ${element.product.unitPrice} MXN</strong>`;
@@ -202,21 +245,21 @@ function seeDetailsOfProduct(element){
     modalProductWeigth.innerHTML = `<strong>Peso:</strong> ${element.product.weight} gramos`;
     modalProductUnit.innerHTML = `<strong>Unidad de medida:</strong> ${element.product.unitMeasure}`;
     modalProductStock.innerHTML = `<strong>Cantidad disponible en tienda:</strong> ${element.quantity}`;
-    modalProductLimit.innerHTML = `<strong>Cantidad máxima por pedido:</strong> ${element.product.limit}`;    
+    modalProductLimit.innerHTML = `<strong>Cantidad máxima por pedido:</strong> ${element.product.limit}`;
     modalProdcutQuantity.value = 1
     modalProductImage.src = element.product.image
     showModal()
 }
 
-function showModal() {           
+function showModal() {
     let modal = new bootstrap.Modal(productsDetaildModal)
-    modal.show() 
+    modal.show()
 }
 
-function clearModal(){
+function clearModal() {
     currentProductInModal = null
-    modalProductName.value =""
-    modalProductDescription.value = "" 
+    modalProductName.value = ""
+    modalProductDescription.value = ""
     modalProductWeigth.value = ``
     modalProductUnit.value = ``
     modalProductLimit.value = ``

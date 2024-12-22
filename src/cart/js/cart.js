@@ -1,21 +1,21 @@
-const API_URL = 'http://127.0.0.1:3000/api/v1/';
 const CART_STATUS = 'reserved';
 const SHIPPING_COST = 50.00;
 const DEFAULT_ERROR_MESSAGE = 'Ocurrió un error al procesar la solicitud';
 
-//TODO: Get the user id from the session
-var userId = '6741260fd2f308dfbeb3e9f2';
-
+var user;
+var userId;
 var cartItems;
 var productsMessage;
 var clearBtn;
 var orderId;
+var branchId;
 
 window.onload = () => {
     cartItems = document.getElementById('cart-items')
     productsMessage = document.getElementById('products-message');    
     clearBtn = document.querySelector('.clear-cart-btn');
-
+    user = getInstance();
+    userId = user.id;
     loadProducts();
 };
 
@@ -40,6 +40,7 @@ function getProductsFromCart() {
             }
 
             orderId = cart._id;
+            branchId = cart.branchId;
 
             showToast(response.data.message, toastTypes.SUCCESS);
 

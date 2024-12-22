@@ -83,7 +83,7 @@
                         <div class="modal-footer mt-3">
                             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"
                                 onclick="clearPaymentMethodForm()">Cancelar</button>
-                            <button type="button" id="primary-form-btn" class="btn btn-primary">Agregar</button>
+                            <button type="button" id="primary-form-btn" class="btn btn-primary" onclick="savePaymentMethod()">Agregar</button>
                         </div>
                 </div>
             </div>
@@ -94,6 +94,8 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
     <script src="js/payment-modal.js"></script>
+    <script src="../global/global.js"></script>
+    <script src="../global/singleton.js"></script>
 </body>
 
 </html>

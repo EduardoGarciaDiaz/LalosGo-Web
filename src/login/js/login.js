@@ -1,9 +1,6 @@
 const VALID_PASSWORD = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 const VALID_USERNAME = /^(?![_-])[a-zA-Z0-9_-]{3,16}(?<![_-])$/;
 
-//Cambiar la URL del API
-const API_URL = 'http://localhost:3000/api/v1/auth/';
-
 
 function login(event) {
     event.preventDefault();
@@ -25,11 +22,11 @@ function login(event) {
 
 async function getLogin(loginData) {
     try {
-        const response = await axios.post(`${API_URL}`, loginData);
+        const response = await axios.post(`${API_URL}/auth`, loginData);
         const role = response.data.role;
-        sessionStorage.setItem('Singleton', JSON.stringify(response.data));
+        let user = getInstance(response.data);
         if (role === 'Customer') {
-            //Mandar a la pantlla principal
+            window.location.href = 'http://127.0.0.1:5500/src/products/consultProductClient.html'
         } else if (role === 'Manager') {
             //Mandar a la pantalla de manager
         } else if (role === 'Delivery Person') {

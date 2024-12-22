@@ -110,7 +110,8 @@ function getAddressFromCoordinates(coordinates) {
                 internalNumber: interior_number,
                 type: "Point",
                 latitude: latitude,
-                longitude: longitude
+                longitude: longitude, 
+                isCurrentAddress: true
             }
 
             if(ACTION_TYPE === 'RegisterDeliveryAddress'){
@@ -118,7 +119,8 @@ function getAddressFromCoordinates(coordinates) {
             }else if(ACTION_TYPE ==='EditDeliveryAddress'){
                 editDeliveryAddress(newDeliveryAddress);
             } else if(ACTION_TYPE === 'CreateClientAccount'){
-                if(await registerClientAccount(newDeliveryAddress)) {
+                let succes = await registerClientAccount(newDeliveryAddress)
+                if(succes) {
                     window.location.href = "http://127.0.0.1:5500/src/login/login.html"
                 }
             }
@@ -149,6 +151,7 @@ function getAddressFromCoordinates(coordinates) {
         .post(`${API_URL}`, newDeliveryAddress)
         .then((response) => {
             console.log(response.data);
+            
             alert("Dirección registrada correctamente");
         })
         .catch((error) => {
@@ -157,25 +160,24 @@ function getAddressFromCoordinates(coordinates) {
         });
     }
 
-    async function registerClientAccount(newDeliveryAddress){
-        if(creationAccountData) {
-            creationAccountData.client = {
-                addresses: [newDeliveryAddress]
-            };
-            await axios
-            .post(`${API_URL}/users/`, creationAccountData)
-            .then((response) => {
+    async function registerClientAccount(newDeliveryAddress) {
+        try {
+            if (creationAccountData) {
+                creationAccountData.client = {
+                    addresses: [newDeliveryAddress],
+                };
+    
+                const response = await axios.post(`${API_URL}/users/`, creationAccountData);
                 showToast("Se ha registrado la cuenta", toastTypes.SUCCESS);
                 sessionStorage.removeItem('creationAccountData');
                 return true;
-            }).catch((error) => {
-                showToast("Error al crear la cuenta. Inténtelo de nuevo.", toastTypes.DANGER);
-                alert(error);
-                return false;
-            });
-        } else {
+            }
+        } catch (error) {
+            showToast(error.response.data.message, toastTypes.DANGER);
+            return false;
         }
     }
+    
 
     function isExternalNumberValid(exterior_number){
         return  VALID_EXTERNAL_NUMBER.test(exterior_number);

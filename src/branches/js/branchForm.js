@@ -1,5 +1,10 @@
 const API_URL = 'http://127.0.0.1:3000/api/v1/'
 
+let maplet
+let marker
+let geocoder
+let branchCoordinates
+
 let branchName
 let branchOpeningTime
 let branchClosingTime
@@ -11,6 +16,7 @@ let branchColony
 let branchState
 let branchTown
 let branchLocality
+let completeAddress
 
 document.addEventListener("DOMContentLoaded", () => {
     branchName = document.getElementById("branch-name")
@@ -23,8 +29,108 @@ document.addEventListener("DOMContentLoaded", () => {
     branchCP = document.getElementById("branch-postalcode")
     branchState = document.getElementById("branch-state")
     branchTown =  document.getElementById("branch-municipality")
-    branchLocality = document.getElementById("branch-locality")
+    branchLocality = document.getElementById("branch-locality")  
+    completeAddress = document.getElementById("complete-address")  
+   
 } )
+
+async function initMap() {  
+    const initialLocation = { lat: 19.541186809084778, lng: -96.92744610055618 };
+
+    map = await new google.maps.Map(document.getElementById("branch-map"), {
+        center: initialLocation,
+        zoom: 18, 
+    });
+
+    marker = new google.maps.Marker({
+        position: initialLocation,
+        map: map,
+    });
+
+    geocoder = new google.maps.Geocoder();
+
+    const input = document.getElementById("search-input");
+    const searchBox = await new google.maps.places.SearchBox(input);
+
+    map.addListener("click", (event) => {
+        const clickedLocation = event.latLng; 
+        marker.setPosition(clickedLocation);
+        geocoder.geocode({ location: clickedLocation }, (results, status) => {
+            if (status === "OK" && results[0]) {
+                getAddressFromCoordinates(clickedLocation)
+            } else {
+                showToast("No se encontró dirección para esta ubicación.", toastTypes.WARNING);
+            }
+        });
+        branchCoordinates = [clickedLocation.lat(), clickedLocation.lng()];
+    });    
+    map.addListener("bounds_changed", () => {
+        searchBox.setBounds(map.getBounds());
+      });
+      searchBox.addListener("places_changed", () => {
+        const places = searchBox.getPlaces();
+
+        if (places.length === 0) {
+          return;
+        }
+        const place = places[0];
+        if (!place.geometry || !place.geometry.location) {
+          console.error("No se encontraron detalles de ubicación.");
+          return;
+        }
+        map.setCenter(place.geometry.location);
+        map.setZoom(18);
+        marker.setPosition(place.geometry.location);
+           branchCoordinates = [place.geometry.location.lat(), place.geometry.location.lng()];
+        });     
+
+}
+
+
+function getAddressFromCoordinates(coordinates) {
+    geocoder.geocode({ location: coordinates }, (results, status) => {
+        if (status === "OK") {
+            if (results[0]) {
+                const addressComponents = results[0].address_components;
+
+                const street = addressComponents.find(component => component.types.includes("route")
+                )?.long_name;
+
+                const streetNumber = addressComponents.find(component => component.types.includes("street_number")
+                )?.long_name;
+                
+                const postalCode = addressComponents.find(component => component.types.includes("postal_code")
+                )?.long_name;
+
+                const federativeEntity = addressComponents.find(component => component.types.includes("administrative_area_level_1")
+                )?.long_name;
+
+                const neighborhood = addressComponents.find(component => component.types.includes("political")
+                )?.long_name;
+
+                const locality = addressComponents.find(component => component.types.includes("locality")
+                )?.long_name;
+
+                const municipality = addressComponents.find(component => component.types.includes("sublocality")
+                )?.long_name;
+
+                let address = results[0].formatted_address
+
+
+                branchStreet.value = street;
+                branchCP.value = postalCode;
+                branchState.value = federativeEntity;
+                branchColony.value = neighborhood;
+                branchLocality.value = locality;
+                branchOutNumber.value = streetNumber ?? 0;
+                branchTown.value = locality
+                completeAddress.innerHTML = address
+                
+            } 
+        } 
+    });
+}
+
 
 async function saveBranch(isEdition) {
     event.preventDefault();
@@ -48,7 +154,7 @@ async function createBranch(){
     let closingTime = branchClosingTime.value
     let location = {
         type:"Point",
-        coordinates: [19.541915036343163, -96.92727810184944]
+        coordinates: branchCoordinates ?? [19.541915036343163, -96.92727810184944]
     }
     let address = {
         street: branchStreet.value,
