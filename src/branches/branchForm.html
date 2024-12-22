@@ -21,7 +21,8 @@
                 <h3 class="text-center mb-4">Nueva sucursal</h3>
                 <form>
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="branch-name" placeholder="Nombre comercial" maxlength="30" required>
+                        <input type="text" class="form-control" id="branch-name" placeholder="Nombre comercial"
+                            maxlength="30" required>
                         <label for="branch-name">Nombre comercial</label>
                         <span class="d-none" id="error-branch-name"></span>
                     </div>
@@ -40,84 +41,89 @@
                     </div>
 
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="branch-street" placeholder="Calle" maxlength="50" required>
+                        <input type="text" class="form-control" id="branch-street" placeholder="Calle" maxlength="50"
+                            required>
                         <label for="branch-street">Calle</label>
                         <span class="d-none" id="error-branch-street"></span>
                     </div>
 
                     <div class="row">
                         <div class="form-floating mb-3 col">
-                            <input type="text" class="form-control" id="branch-extnumber" placeholder="Número exterior" maxlength="4" required>
+                            <input type="text" class="form-control" id="branch-extnumber" placeholder="Número exterior"
+                                maxlength="4" required>
                             <label for="branch-extnumber">Número exterior</label>
                             <span class="d-none" id="error-branch-extnumber"></span>
                         </div>
                         <div class="form-floating mb-3 col">
-                            <input type="text" class="form-control" id="branch-intnumber" placeholder="Número interior" maxlength="4" required>
+                            <input type="text" class="form-control" id="branch-intnumber" placeholder="Número interior"
+                                maxlength="4" required>
                             <label for="branch-intnumber">Número interior</label>
                             <span class="d-none" id="error-branch-intnumber"></span>
                         </div>
                     </div>
 
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="branch-postalcode" placeholder="Código postal" maxlength="5" required>
+                        <input type="text" class="form-control" id="branch-postalcode" placeholder="Código postal" disabled
+                            maxlength="5" required>
                         <label for="branch-postalcode">Código postal</label>
                         <span class="d-none" id="error-branch-postalcode"></span>
                     </div>
 
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="branch-colony" placeholder="Colonia" maxlength="30" required>
+                        <input type="text" class="form-control" id="branch-colony" placeholder="Colonia" maxlength="30" disabled
+                            required>
                         <label for="branch-colony">Colonia</label>
                         <span class="d-none" id="error-branch-colony"></span>
                     </div>
 
                     <!-- Datos de ubicación -->
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="branch-state" placeholder="Entidad federativa"  required>
+                        <input type="text" class="form-control" id="branch-state" placeholder="Entidad federativa" disabled
+                            required>
                         <label for="branch-state">Entidad federativa</label>
                         <span class="d-none" id="error-branch-state"></span>
                     </div>
 
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="branch-municipality" placeholder="Municipio">
+                        <input type="text" class="form-control" id="branch-municipality" placeholder="Municipio" disabled>
                         <label for="branch-municipality">Municipio</label>
                         <span class="d-none" id="error-branch-municipality"></span>
                     </div>
 
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="branch-locality" placeholder="Localidad" >
+                        <input type="text" class="form-control" id="branch-locality" placeholder="Localidad" disabled>
                         <label for="branch-locality">Localidad</label>
                         <span class="d-none" id="error-branch-locality"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-control mb-2">Selecciona la dirección en el mapa</label>
-                        <div id="branch-map" class="border rounded bg-light"
-                            style="height: 250px; display: flex; justify-content: center; align-items: center;">
-                            <span class="text-muted">Mapa aquí</span>
+                        <h5 class="mb-2">Selecciona la dirección en el mapa </h5>
+                        <div id="search-box" class="form-floating mb-3">
+                            <input type="text" class="form-control" id="search-input" placeholder="Localidad">
+                            <label for="branch-locality">Buscar ciudad, colonia o dirección</label>
                         </div>
+                        <div id="branch-map" class="border rounded bg-light"
+                            style="height: 550px; display: flex; justify-content: center; align-items: center;">
+
+                        </div>
+                        <h6 id="complete-address"></h6>
                         <span class="d-none" id="error-branch-map"></span>
                     </div>
 
                     <div class="d-flex justify-content-end gap-2">
                         <button type="button" class="btn btn-light" id="branch-cancel">Cancelar</button>
-                        <button type="button" class="btn btn-primary" onclick="saveBranch(false)" id="branch-save">Guardar</button>
+                        <button type="button" class="btn btn-primary" onclick="saveBranch(false)"
+                            id="branch-save">Guardar</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <div id="success-toast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-            <div class="toast-body">
-                <strong id="toast-title"></strong>
-                <br>
-                <span id="toast-message"></span>
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-    </div>
 
 </body>
+
+<script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCQ_3NBIwxEhcuRkcEGHTa3B1DzYObNFyE&callback=initMap&libraries=places"
+    async defer></script>
 
 </html>

@@ -156,6 +156,10 @@ function loadOrderSummary() {
                 showToast("Ocurrió un error al recuperar el resumen de su compra", toastTypes.INFO);
                 return;
             }
+            
+            let clientAddress = cartSummary.clientAddresses.find(address => address.isCurrentAddress);
+            let branchAddress = cartSummary.branchAddress;
+            loadAddressData(clientAddress, branchAddress);
 
             let totalPrice = cartSummary.totalPrice;
             orderId = cartSummary.orderId;
@@ -169,8 +173,36 @@ function loadOrderSummary() {
         .catch((error) => {
             console.error(error);
             showToast("Error al cargar el resumen de la compra", toastTypes.WARNING);
-            window.location.replace('./cart.html'); //TODO: Redirect to orders page
+            window.location.replace('./cart.html');
         });
+}
+
+function loadAddressData(clientAddress, branchAddress) {
+    let clientAddressP = document.getElementById('client-address');
+    let branchAddressP = document.getElementById('branch-address');
+    
+    if (clientAddress && branchAddress) {    
+        clientAddressP.textContent = formatAddress(clientAddress);
+        branchAddressP.textContent = formatAddress(branchAddress);
+    } else {
+        showToast("No se pudo cargar la dirección", toastTypes.WARNING);
+    }    
+}
+
+function formatAddress(address) {
+    if (!address) return 'Dirección no disponible';
+
+    const { street, number, cologne, zipcode, locality, federalEntity } = address;
+
+    const formattedAddress = [
+        street && number ? `${street} ${number}` : '',
+        cologne || '',
+        zipcode || '',
+        locality || '',
+        federalEntity || ''
+    ].filter(Boolean).join(', ');
+
+    return formattedAddress;
 }
 
 function doOrder() {

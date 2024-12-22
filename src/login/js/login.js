@@ -37,6 +37,7 @@ async function getLogin(loginData) {
                 window.location.href = '/src/orders/orders-history.html';
             } else if (role === 'Administrator') {
                 //Mandar a la pantalla de administrador 
+                window.location.href = '/src/employees/employees.html';
             } else {
                 showToast("No hemos podido enviarlo a la pantalla principal. Inténtelo de nuevo", toastTypes.WARNING);
             }
@@ -44,9 +45,11 @@ async function getLogin(loginData) {
             showToast("La cuenta está inactiva", toastTypes.DANGER);
         }
     } catch (error) {
-        console.error(error);
-        alert(error)
-        showToast("Error al iniciar sesión", toastTypes.DANGER);
+        if (error.response && error.response.status === 401) {
+            showToast("Credenciales incorrectas. Verifique su usuario y contraseña.", toastTypes.DANGER);
+        } else {
+            showToast("Error al iniciar sesión. Inténtelo más tarde.", toastTypes.DANGER);
+        }
     }
 }
 

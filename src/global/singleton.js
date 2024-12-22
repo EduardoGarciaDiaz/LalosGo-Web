@@ -13,10 +13,10 @@ function getInstance(newUser) {
             showToast("No se ha iniciado sesión", toastTypes.ERROR);
             return;
         }
-
         return user;
     } catch (error) {
         alert("Error al obtener la información del usuario");
+        clearSession();
     }
 }
 

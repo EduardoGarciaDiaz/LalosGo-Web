@@ -74,7 +74,6 @@ async function loadBranches() {
             branchesList.appendChild(branchCard)
         });
     }).catch((error) => {
-        console.log(error)
         showToast("Ocurrio algo inesperado al cargar las sucursales. Verirfique su conexión e inténtelo mas tarde", toastTypes.DANGER)
     })
 }

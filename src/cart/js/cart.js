@@ -40,9 +40,12 @@ function getProductsFromCart() {
             }
 
             orderId = cart._id;
-            branchId = cart.branchId;
+            branchId = cart.branch._id;
 
             showToast(response.data.message, toastTypes.SUCCESS);
+
+            let clientAddress = cart.customer.client.addresses.find(address => address.isCurrentAddress);
+            loadAddressData(clientAddress, cart.branch.address);
 
             cart.orderProducts.forEach(product => {
                 const productCard = createProductCard(product);
@@ -57,6 +60,34 @@ function getProductsFromCart() {
             console.log(error);
             showToast(DEFAULT_ERROR_MESSAGE, toastTypes.WARNING);
         });
+}
+
+function loadAddressData(clientAddress, branchAddress) {
+    let clientAddressP = document.getElementById('client-address');
+    let branchAddressP = document.getElementById('branch-address');
+    
+    if (clientAddress && branchAddress) {    
+        clientAddressP.textContent = formatAddress(clientAddress);
+        branchAddressP.textContent = formatAddress(branchAddress);
+    } else {
+        showToast("No se pudo cargar la dirección", toastTypes.WARNING);
+    }    
+}
+
+function formatAddress(address) {
+    if (!address) return 'Dirección no disponible';
+
+    const { street, number, cologne, zipcode, locality, federalEntity } = address;
+
+    const formattedAddress = [
+        street && number ? `${street} ${number}` : '',
+        cologne || '',
+        zipcode || '',
+        locality || '',
+        federalEntity || ''
+    ].filter(Boolean).join(', ');
+
+    return formattedAddress;
 }
 
 function clearCartUI() {
@@ -176,7 +207,7 @@ async function validateAvailability(productId, newQuantity) {
             {
                 productId: productId,
                 quantity: newQuantity,
-                branchId: "6761c816e127220a584bda32" //TODO: Get the ID from session
+                branchId: branchId 
             },
             {
                 params: {
