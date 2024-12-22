@@ -14,7 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("birthday_label").setAttribute("max", maxDate);
 
     SINGLETON = getInstance();
-    alert(SINGLETON.id);
     fillClientData();
 
 });
@@ -28,7 +27,7 @@ function fillClientData(){
     document.getElementById('email_label').value = SINGLETON.email;
 }
 
-async function modifyClientAccount() {
+function modifyClientAccount() {
     clearErrors();
     let username = document.getElementById('username_label').value.trim();
     let fullname = document.getElementById('fullName_label').value.trim();
@@ -43,13 +42,12 @@ async function modifyClientAccount() {
         phone: phone,
         email: email,
     }
-
     if(isValidClientAccountt(dataClientUpdate)){
-        await modifyClientAccount(dataClientUpdate);
+        updateClientAccount(dataClientUpdate);
     }
 }
 
-async function modifyClientAccount(dataClientUpdate){
+async function updateClientAccount(dataClientUpdate){
     try{
         const response = await axios.put(`${API_URL}users/${SINGLETON.id}`, dataClientUpdate);
         if(response.status === 200 && response.data){
@@ -60,7 +58,6 @@ async function modifyClientAccount(dataClientUpdate){
         }
     }catch(error) {
         showToast("Ha ocurrido un error", toastTypes.DANGER);
-        alert(error);
         throw error;   
     }
 }
