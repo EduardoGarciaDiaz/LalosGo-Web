@@ -6,11 +6,9 @@ window.onload = () => {
 };
 
 function goToAllOrders() {
-    //TODO: window.location.replace("../my-orders.html");
-    window.location.replace("./cart.html");
+    window.location.replace("/src/orders/orders-history.html");
 }
 
 function goToHome() {
-    //TODO: window.location.replace("../my-orders.html");
     window.location.replace("../products/consultProductClient.html");
 }

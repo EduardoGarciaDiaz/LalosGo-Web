@@ -2,6 +2,7 @@ const DEFAULT_TEXT = "0";
 
 function createProductCard(product) {
     const productDetails = product.product;
+    const productLimit = product.product.limit;
     const cardContainer = document.createElement('div');
     cardContainer.className = 'card-container p-3 card border-1 shadow-sm mb-3';
     cardContainer.setAttribute('product-id', product.product._id); 
@@ -59,15 +60,30 @@ function createProductCard(product) {
         let quantity = parseInt(quantitySpan.textContent);
         if (quantity > 1) {
             quantitySpan.textContent = quantity - 1;
+        } else {
+            minusBtn.disabled = true;
+        }
+
+        if (quantity === productLimit) {
+            plusBtn.disabled = false;
         }
 
         updatePrices();
     });
 
     plusBtn.addEventListener('click', () => {
-        //TODO: Validate availability of products
         let quantity = parseInt(quantitySpan.textContent);
-        quantitySpan.textContent = quantity + 1;
+
+        if (quantity < productLimit) {
+            quantitySpan.textContent = quantity + 1;
+            if (quantity > 0) {
+                minusBtn.disabled = false;
+            }
+            if (quantity+1 === productLimit) {
+                plusBtn.disabled = true;
+                showToast(`El limite para este producto es ${productLimit}`, toastTypes.INFO);
+            }
+        }
 
         updatePrices();
     });
