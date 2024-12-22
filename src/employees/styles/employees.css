@@ -10,3 +10,28 @@
     width: 100%;
     outline: none;
 }
+.employee-card {
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    max-width: 350px;
+}
+
+.employee-card .card-title {
+    font-weight: bold;
+}
+
+.employee-card .badge {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.6rem;
+}
+
+.employee-card button {
+    border: none;
+    background: transparent;
+    color: #6c757d;
+    cursor: pointer;
+}
+
+.employee-card button:hover {
+    color: #495057;
+}
