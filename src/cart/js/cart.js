@@ -1,6 +1,5 @@
 const CART_STATUS = 'reserved';
 const SHIPPING_COST = 50.00;
-const DEFAULT_ERROR_MESSAGE = 'Ocurrió un error al procesar la solicitud';
 
 var user;
 var userId;
@@ -12,7 +11,7 @@ var branchId;
 
 window.onload = () => {
     cartItems = document.getElementById('cart-items')
-    productsMessage = document.getElementById('products-message');    
+    productsMessage = document.getElementById('products-message');
     clearBtn = document.querySelector('.clear-cart-btn');
     user = getInstance();
     userId = user.id;
@@ -31,7 +30,7 @@ function getProductsFromCart() {
                 status: CART_STATUS
             }
         })
-        .then ((response) => {
+        .then((response) => {
             let cart = response.data.cart;
 
             if (cart === undefined || cart === null || cart.orderProducts.length === 0) {
@@ -58,20 +57,21 @@ function getProductsFromCart() {
         })
         .catch((error) => {
             console.log(error);
-            showToast(DEFAULT_ERROR_MESSAGE, toastTypes.WARNING);
+            const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
+            showToast(errorMessage, toastTypes.DANGER);
         });
 }
 
 function loadAddressData(clientAddress, branchAddress) {
     let clientAddressP = document.getElementById('client-address');
     let branchAddressP = document.getElementById('branch-address');
-    
-    if (clientAddress && branchAddress) {    
+
+    if (clientAddress && branchAddress) {
         clientAddressP.textContent = formatAddress(clientAddress);
         branchAddressP.textContent = formatAddress(branchAddress);
     } else {
         showToast("No se pudo cargar la dirección", toastTypes.WARNING);
-    }    
+    }
 }
 
 function formatAddress(address) {
@@ -97,13 +97,13 @@ function clearCartUI() {
             Agrega productos al carrito para realizar tu pedido
         </p>
     `;
-    
+
     cartItems.innerHTML = emptyCartTemplate;
-    
+
     if (clearBtn) {
         clearBtn.disabled = true;
     }
-    
+
     const totalPrice = document.getElementById('total-price');
     const totalPriceProducts = document.getElementById('total-price-products');
     if (totalPrice) totalPrice.textContent = '$0.00';
@@ -137,14 +137,15 @@ async function goToPayment() {
     try {
         const items = Array.from(cartItems.querySelectorAll('.card-container'));
         let allProductsAvailable = true;
-        
+
         for (const item of items) {
             const productId = item.getAttribute('product-id');
             const quantity = parseInt(item.querySelector('.quantity').textContent);
-            
+
             const isAvailable = await validateAvailability(productId, quantity);
             if (!isAvailable) {
-                allProductsAvailable = false;            }
+                allProductsAvailable = false;
+            }
         }
 
         if (allProductsAvailable) {
@@ -174,7 +175,8 @@ function deleteProductsFromCart() {
         })
         .catch((error) => {
             console.log(error);
-            showToast(error.response.data.message, toastTypes.WARNING);
+            const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
+            showToast(errorMessage, toastTypes.DANGER);
         });
 }
 
@@ -203,11 +205,11 @@ function updatePrices() {
 async function validateAvailability(productId, newQuantity) {
     try {
         const response = await axios.patch(
-            `${API_URL}carts/${orderId}`, 
+            `${API_URL}carts/${orderId}`,
             {
                 productId: productId,
                 quantity: newQuantity,
-                branchId: branchId 
+                branchId: branchId
             },
             {
                 params: {
@@ -242,7 +244,8 @@ async function validateAvailability(productId, newQuantity) {
         return hasStock;
     } catch (error) {
         console.log(error);
-        showToast(error.response.data.message, toastTypes.WARNING);
+        const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
+        showToast(errorMessage, toastTypes.DANGER);
         return false;
     }
 }

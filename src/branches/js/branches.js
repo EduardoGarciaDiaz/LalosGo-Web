@@ -1,4 +1,3 @@
-const API_URL = 'http://127.0.0.1:3000/api/v1/';
 const branchesContainer = document.getElementById('branches-container');
 
 window.onload = function () {
@@ -11,7 +10,9 @@ function loadBranches() {
 }
 
 function clearAllBranches() {
-    branchesContainer.innerHTML = '';
+    if (branchesContainer) {
+        branchesContainer.innerHTML = '';
+    }
 }
 
 function getAllBranches() {
@@ -29,14 +30,20 @@ function getAllBranches() {
                 return;
             }
 
-            branches.forEach(branch => {
-                const branchCard = createBranchCard(branch)
-                branchesContainer.appendChild(branchCard)
+            branches.sort((a, b) => {
+                return b.branchStatus - a.branchStatus;
             });
+
+            branches.forEach(branch => {
+                const branchCard = createBranchCard(branch);
+                branchesContainer.appendChild(branchCard);
+            });
+
         })
         .catch((error) => {
+            const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
+            showToast(errorMessage, toastTypes.DANGER);
             console.error(error);
-            showToast(error.response.data.message, toastTypes.WARNING);
         });
 }
 
@@ -64,7 +71,7 @@ function searchBranches(inputValue) {
 
         Array.from(branchesContainer.children).forEach(branchCard => {
             const branchName = branchCard.querySelector('.branch-name').textContent.toLowerCase();
-            
+
             if (branchName.includes(searchTerm)) {
                 branchCard.classList.remove('not-searched');
                 branchCard.classList.add('searched');
@@ -72,7 +79,7 @@ function searchBranches(inputValue) {
                 branchCard.classList.remove('searched');
                 branchCard.classList.add('not-searched');
             }
-        }); 
+        });
     }
 }
 
@@ -98,7 +105,8 @@ function toggleBranchStatus(branchId) {
             })
             .catch((error) => {
                 console.error(error);
-                showToast(error.response.data.message, toastTypes.WARNING);
+                const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
+                showToast(errorMessage, toastTypes.DANGER);
             });
     }
 }
@@ -155,7 +163,7 @@ function createBranchCard(branchData) {
     const statusP = document.createElement('p');
     statusP.classList.add('branch-status', 'branch-details', 'mb-0');
     statusP.textContent = 'Estado: ';
-    
+
     const statusSpan = document.createElement('span');
     statusSpan.classList.add(`status-${branchData.branchStatus ? 'active' : 'inactive'}`);
     statusSpan.textContent = branchData.branchStatus ? 'Activo' : 'Inactivo';
@@ -185,7 +193,7 @@ function createBranchCard(branchData) {
     editA.classList.add('dropdown-item');
     editA.href = '#';
     editA.textContent = 'Editar';
-    editA.onclick = () => editBranch(branchData._id);
+    editA.onclick = () => goToEditBranch(branchData._id);
     editLi.appendChild(editA);
 
     const toggleLi = document.createElement('li');
@@ -210,10 +218,15 @@ function createBranchCard(branchData) {
 }
 
 document.getElementById('add-branch-btn').addEventListener('click', goToAddBranch);
+
 function goToAddBranch() {
     window.location.href = './branchForm.html';
 }
 
-function editBranch() {
-    // Implement edit branch
+function goToEditBranch(branchId) {
+    const params = new URLSearchParams({
+        branchId: branchId
+    });
+
+    window.location.href = `/src/branches/branchForm.html?${params.toString()}`;
 }

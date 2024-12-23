@@ -1,10 +1,10 @@
-const API_URL = 'http://127.0.0.1:3000/api/v1/'
-
 let maplet
 let marker
 let geocoder
 let branchCoordinates
 
+let btnSave
+let branchPageTitle
 let branchName
 let branchOpeningTime
 let branchClosingTime
@@ -24,22 +24,37 @@ document.addEventListener("DOMContentLoaded", () => {
     branchClosingTime = document.getElementById("branch-closetime")
     branchStreet = document.getElementById("branch-street")
     branchOutNumber = document.getElementById("branch-extnumber")
-    branchInsideNumber= document.getElementById("branch-intnumber")
+    branchInsideNumber = document.getElementById("branch-intnumber")
     branchColony = document.getElementById("branch-colony")
     branchCP = document.getElementById("branch-postalcode")
     branchState = document.getElementById("branch-state")
-    branchTown =  document.getElementById("branch-municipality")
-    branchLocality = document.getElementById("branch-locality")  
-    completeAddress = document.getElementById("complete-address")  
-   
-} )
+    branchTown = document.getElementById("branch-municipality")
+    branchLocality = document.getElementById("branch-locality")
+    completeAddress = document.getElementById("complete-address")
+    btnSave = document.getElementById("branch-save-btn")
+    branchPageTitle = document.getElementById("branch-page-title")
 
-async function initMap() {  
-    const initialLocation = { lat: 19.541186809084778, lng: -96.92744610055618 };
+    branchId = getBranchIdFromUrl();
+
+    if (branchId !== undefined && branchId) {
+        branchPageTitle.innerHTML = "Modificar sucursal";
+        getBranch();
+        btnSave.addEventListener("click", () => saveBranch(true));
+    } else {
+        branchPageTitle.innerHTML = "Nueva sucursal";
+        btnSave.addEventListener("click", () => saveBranch(false));
+    }
+});
+
+async function initMap(loadedLocation) {
+    var initialLocation = { lat: 19.541186809084778, lng: -96.92744610055618 };
+    if (loadedLocation) {
+        initialLocation = loadedLocation;
+    }
 
     map = await new google.maps.Map(document.getElementById("branch-map"), {
         center: initialLocation,
-        zoom: 18, 
+        zoom: 18,
     });
 
     marker = new google.maps.Marker({
@@ -53,7 +68,7 @@ async function initMap() {
     const searchBox = await new google.maps.places.SearchBox(input);
 
     map.addListener("click", (event) => {
-        const clickedLocation = event.latLng; 
+        const clickedLocation = event.latLng;
         marker.setPosition(clickedLocation);
         geocoder.geocode({ location: clickedLocation }, (results, status) => {
             if (status === "OK" && results[0]) {
@@ -63,29 +78,27 @@ async function initMap() {
             }
         });
         branchCoordinates = [clickedLocation.lat(), clickedLocation.lng()];
-    });    
+    });
     map.addListener("bounds_changed", () => {
         searchBox.setBounds(map.getBounds());
-      });
-      searchBox.addListener("places_changed", () => {
+    });
+    searchBox.addListener("places_changed", () => {
         const places = searchBox.getPlaces();
 
         if (places.length === 0) {
-          return;
+            return;
         }
         const place = places[0];
         if (!place.geometry || !place.geometry.location) {
-          console.error("No se encontraron detalles de ubicación.");
-          return;
+            console.error("No se encontraron detalles de ubicación.");
+            return;
         }
         map.setCenter(place.geometry.location);
         map.setZoom(18);
         marker.setPosition(place.geometry.location);
-           branchCoordinates = [place.geometry.location.lat(), place.geometry.location.lng()];
-        });     
-
+        branchCoordinates = [place.geometry.location.lat(), place.geometry.location.lng()];
+    });
 }
-
 
 function getAddressFromCoordinates(coordinates) {
     geocoder.geocode({ location: coordinates }, (results, status) => {
@@ -98,7 +111,7 @@ function getAddressFromCoordinates(coordinates) {
 
                 const streetNumber = addressComponents.find(component => component.types.includes("street_number")
                 )?.long_name;
-                
+
                 const postalCode = addressComponents.find(component => component.types.includes("postal_code")
                 )?.long_name;
 
@@ -116,7 +129,6 @@ function getAddressFromCoordinates(coordinates) {
 
                 let address = results[0].formatted_address
 
-
                 branchStreet.value = street;
                 branchCP.value = postalCode;
                 branchState.value = federativeEntity;
@@ -125,35 +137,34 @@ function getAddressFromCoordinates(coordinates) {
                 branchOutNumber.value = streetNumber ?? 0;
                 branchTown.value = locality
                 completeAddress.innerHTML = address
-                
-            } 
-        } 
+
+            }
+        }
     });
 }
 
-
 async function saveBranch(isEdition) {
     event.preventDefault();
-    if(!checkEmptyFields()){
+    if (!checkEmptyFields()) {
+        return
+    }
+    if (!checkFieldFormats()) {
+        return
+    }
 
-        return
-    }
-    if(!checkFieldFormats()){
-        return
-    }
-    if(isEdition){
+    if (isEdition) {
         await editBranch()
-    }else{
-       await  createBranch()
+    } else {
+        await createBranch()
     }
 }
 
-async function createBranch(){
+async function createBranch() {
     let name = branchName.value
     let openingTime = branchOpeningTime.value
     let closingTime = branchClosingTime.value
     let location = {
-        type:"Point",
+        type: "Point",
         coordinates: branchCoordinates ?? [19.541915036343163, -96.92727810184944]
     }
     let address = {
@@ -169,22 +180,24 @@ async function createBranch(){
     }
 
     try {
-        let response = await axios.post(API_URL + 'branches/',{
+        let response = await axios.post(API_URL + 'branches/', {
             name,
             openingTime,
             closingTime,
             address
         })
-        if(response.status < 300 && response.status > 199) {
+        if (response.status < 300 && response.status > 199) {
             showToast(response.data.message, toastTypes.SUCCESS)
-            clearFields()  
+            clearFields()
         }
-        else{
+        else {
             showToast(response.data.message, toastTypes.WARNING)
         }
-        
+
     } catch (error) {
-        showToast("Ocurrio algo inesperado al realizar la petición. Revise su conexión a internet e inténtelo mas tarde", toastTypes.WARNING)
+        const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
+        showToast(errorMessage, toastTypes.DANGER);
+        return;
     }
 }
 
@@ -192,7 +205,7 @@ async function createBranch(){
 
 function checkEmptyFields() {
     let areValidFields = true;
-    
+
     let errorBranchName = document.getElementById("error-branch-name");
     let errorBranchOpenTime = document.getElementById("error-branch-opentime");
     let errorBranchCloseTime = document.getElementById("error-branch-closetime");
@@ -338,7 +351,7 @@ function checkFieldFormats() {
         branchCP.classList.remove("is-invalid");
     }
 
-   const timeRegex = /^([01]?[0-9]|2[0-3]):([0-5][0-9])$/;
+    const timeRegex = /^([01]?[0-9]|2[0-3]):([0-5][0-9])$/;
     if (!timeRegex.test(branchOpeningTime.value)) {
         areValidFormats = false;
         branchOpeningTime.classList.add("is-invalid");
@@ -383,7 +396,6 @@ function checkFieldFormats() {
     return areValidFormats;
 }
 
-
 function clearFields() {
     branchName.value = '';
     branchOpeningTime.value = '';
@@ -397,4 +409,3 @@ function clearFields() {
     branchTown.value = '';
     branchLocality.value = '';
 }
-

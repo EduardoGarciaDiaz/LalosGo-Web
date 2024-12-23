@@ -35,7 +35,7 @@ function getAllPaymentMethods() {
         })
         .catch((error) => {
             console.error(error);
-            showToast("Error al cargar los métodos de pago", toastTypes.WARNING);
+            showToast("Error al cargar los métodos de pago", toastTypes.DANGER);
         });
 }
 
@@ -172,7 +172,7 @@ function loadOrderSummary() {
         })
         .catch((error) => {
             console.error(error);
-            showToast("Error al cargar el resumen de la compra", toastTypes.WARNING);
+            showToast("Error al cargar el resumen de la compra", toastTypes.DANGER);
             window.location.replace('./cart.html');
         });
 }
@@ -294,7 +294,8 @@ async function deleteCart(orderId) {
     })
     .catch((error) => {
         console.log(error);
-        showToast(error.response.data.message, toastTypes.WARNING);
+        const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
+        showToast(errorMessage, toastTypes.DANGER);
     });
 }
 

@@ -116,6 +116,7 @@ function deleteItemFromCart(productId) {
         })
         .catch((error) => {
             console.log(error);
-            showToast(error.response.data.message, toastTypes.WARNING);
+            const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
+            showToast(errorMessage, toastTypes.DANGER);
         });
 }
