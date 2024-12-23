@@ -8,7 +8,7 @@
 #addressContainer{
     display: flex;
     flex-direction: column;
-    gap: 220px;  
+    gap: 150px;  
 }
 .card .dropdwn-toggle::after{
     display: none;
@@ -16,7 +16,7 @@
 
 .card .menu-btn{
     position: absolute;
-    top: 10px;
+    top: 5px;
     right: 10px;
 }
 

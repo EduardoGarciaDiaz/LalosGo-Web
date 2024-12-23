@@ -51,6 +51,8 @@ async function updateClientAccount(dataClientUpdate){
     try{
         const response = await axios.put(`${API_URL}users/${SINGLETON.id}`, dataClientUpdate);
         if(response.status === 200 && response.data){
+            updateSession(dataClientUpdate);
+            SINGLETON = getInstance();
             showToast("Se ha modificado la cuenta correctamente", toastTypes.SUCCESS);
             return true;
         }else {
