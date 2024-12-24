@@ -4,8 +4,11 @@ let branchId
 let branch
 let categories = []
 let products = []
+let userAddresses = {}
 let currentProductInModal
 let branchNameLabel
+let addressesComboBox
+let currentAddresLabel
 
 let productsDetaildModal
 let modalProductImage
@@ -20,6 +23,7 @@ let modalProdcutQuantity
 let modalLessBtn
 let modalMoreBtn
 
+let previousComboBoxSelection
 
 let USER_ID
 let currentAddress = null
@@ -38,15 +42,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     modalProdcutQuantity = document.getElementById('product-quantity-input')
     modalMoreBtn = document.getElementById('more-btn')
     modalLessBtn = document.getElementById('less-btn')
+
     branchNameLabel = document.getElementById("store-label")
+    currentAddresLabel = document.getElementById("user-address")
+    addressesComboBox = document.getElementById("address-select")
+
+    addressesComboBox.addEventListener('focus', function (event){
+        previousComboBoxSelection = event.target.value
+    })
+    addressesComboBox.addEventListener('change', confirmChangeOfAddres)
+
+
+    $("#footer").load("/src/shared/footer.html")
 
     USER_ID = getInstance().id
-    
+
     await getUserAddress()
-    if (currentAddress!=null) {
+    if (currentAddress != null) {
         branchId = await getNearestBranch(currentAddress)
     }
-    if(branchId){
+    if (branchId) {
         await loadProductsFromNearestBranch(branchId)
     }
 
@@ -56,12 +71,70 @@ async function getUserAddress() {
     try {
         const response = await axios.get(`${API_URL}users/${USER_ID}/addresses`);
         response.data.addresses.forEach(element => {
+            const latLongKey = `${element.latitude},${element.longitude}`;
+            userAddresses[latLongKey] = element;
+            const formattedAddress = formatAddress(element);            
+
+            const option = document.createElement('option');
+            option.value = latLongKey;
+            option.textContent = formattedAddress;
+            addressesComboBox.appendChild(option)
+
             if (element.isCurrentAddress) {
+                currentAddresLabel.innerHTML = formattedAddress
                 currentAddress = element;
             }
+
         });
     } catch (error) {
-        showToast(error.response.data?.message || "Error al obtener la dirección", toastTypes.WARNING);
+        console.log(error)
+        showToast(error.response.data.message || "Error al obtener la dirección", toastTypes.WARNING);
+    }
+}
+
+
+function formatAddress(address) {
+    const {
+        street,
+        number,
+        internalNumber,
+        cologne,
+        zipcode,
+        locality,
+        federalEntity
+    } = address;
+
+    let formattedAddress = `${street} ${number}`;
+    if (internalNumber) {
+        formattedAddress += `, Int. ${internalNumber}`;
+    }
+    formattedAddress += `, ${cologne}, ${locality}, ${federalEntity}, C.P. ${zipcode}`;
+
+    return formattedAddress;
+}
+
+function confirmChangeOfAddres(event) {
+   let selectValue = event.target.value
+   if(selectValue != ""){
+    let { modalInstance, primaryBtn, secondaryBtn } = createConfirmationModal("Cuidado", "¿Estas seguro que quieres cambiar la dirección de envio?, los productos en tu carrito se podrian perder.", modalTypes.DANGER, "Confirmar.")
+    modalInstance.show()
+    primaryBtn.onclick = function(){
+        updateCurrentAddress(userAddresses[selectValue])
+    }
+    secondaryBtn.onclick = function() {
+        modalInstance.hide()
+    }
+   }
+}
+
+async function updateCurrentAddress(newAddress){
+    try {
+        let response = await axios.put(`${API_URL}users/${USER_ID}/addresses`,{
+            address: newAddress
+        })
+        showToast(response.data.message, toastTypes.SUCCESS)
+    } catch (error) {
+        showToast(error.response.data.message, toastTypes.WARNING)
     }
 }
 
@@ -78,7 +151,7 @@ async function getNearestBranch(asddressData) {
             }
         })
         return response.data.branches
-    } catch (error) {        
+    } catch (error) {
         showToast(error.response.data.message, toastTypes.WARNING)
     }
 }
@@ -105,7 +178,7 @@ async function loadProductsFromNearestBranch(branchToConsult) {
                         categoryContainer.appendChild(productCard);
                     }
                 });
-                document.body.appendChild(categorySection)
+                document.getElementById("main-container").appendChild(categorySection)
             });
             showToast(response.data.message, toastTypes.SUCCESS)
 
