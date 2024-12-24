@@ -23,11 +23,12 @@ async function getLogin(loginData) {
     try {
         const response = await axios.post(`${API_URL}auth/`, loginData);
         const role = response.data.role;
+        clearSession();
         let user = getInstance(response.data);
         if(user.status === 'Active'){
             if (role === 'Customer') {
                 //Mandar a la pantlla principal
-                window.location.href = "http://127.0.0.1:5500/src/modifyClientAccount/modifyClientAccount.html";
+                window.location.href = "http://127.0.0.1:5500/src/checkDeliveryAddresses/checkDeliveryAddresses.html";
             } else if (role === 'Manager') {
                 //Mandar a la pantalla de manager
             } else if (role === 'Delivery Person') {
