@@ -1,17 +1,17 @@
 let map; 
 let marker; 
 let geocoder;
+let USER_ID
 
 const VALID_INTERNAL_NUMBER = /^[a-zA-Z0-9\-\/]{2,10}$/;
 const VALID_EXTERNAL_NUMBER = /^\d{2,5}([a-zA-Z]|\-\d{2,3})?$/;
 var ACTION_TYPE = sessionStorage.getItem('actionType');
 var creationAccountData = JSON.parse(sessionStorage.getItem('creationAccountData'));
 var deliveryAddressData = JSON.parse(sessionStorage.getItem('deliveryAddressData'));
-const API_URL = 'http://localhost:3000/api/v1/';
 
 function initMap() {  
+    
     const initialLocation = { lat: 19.541186809084778, lng: -96.92744610055618 };
-
     if(deliveryAddressData){
         initialLocation.lat = deliveryAddressData.latitude;
         initialLocation.lng = deliveryAddressData.longitude;
@@ -34,6 +34,8 @@ function initMap() {
     if(ACTION_TYPE === 'EditDeliveryAddress' || ACTION_TYPE === 'ShowDeliveryAddress'){
         const customLocation = new google.maps.LatLng(initialLocation.lat, initialLocation.lng);
         getAddressFromCoordinates(customLocation);
+        document.getElementById("exterior_number").value = deliveryAddressData.number;
+        document.getElementById("interior_number").value = deliveryAddressData.internalNumber;
     }
 
     //Si la acción es mostrar dirección, se deshabilita la acción de seleccionar en el mapa
@@ -53,7 +55,17 @@ function initMap() {
 
             getAddressFromCoordinates(clickedLocation);
         });
+    } else {
+        fillData();
     }
+
+    USER_ID = getInstance().id;
+}
+
+function fillData(){
+    document.getElementById("exterior_number").disabled = true;
+    document.getElementById("interior_number").disabled = true;
+    document.getElementById("SaveButtom").style.visibility = "hidden";
 }
 
 function getAddressFromCoordinates(coordinates) {
@@ -87,7 +99,7 @@ function getAddressFromCoordinates(coordinates) {
     });
 }
 
-    async function registerDeliveryAddress() {
+    async function registerDeliveryAddress(event) {
         event.preventDefault();
         clearErrors();
         let exterior_number = document.getElementById('exterior_number').value.trim();
@@ -110,15 +122,18 @@ function getAddressFromCoordinates(coordinates) {
                 internalNumber: interior_number,
                 type: "Point",
                 latitude: latitude,
-                longitude: longitude, 
-                isCurrentAddress: true
+                longitude: longitude
             }
 
             if(ACTION_TYPE === 'RegisterDeliveryAddress'){
-                registerNewDeliveryAddress(newDeliveryAddress);
+                newDeliveryAddress.isCurrentAddress = false;
+                let succes =  await registerNewDeliveryAddress(newDeliveryAddress);
+
             }else if(ACTION_TYPE ==='EditDeliveryAddress'){
                 editDeliveryAddress(newDeliveryAddress);
+
             } else if(ACTION_TYPE === 'CreateClientAccount'){
+                newDeliveryAddress.isCurrentAddress = true;
                 let succes = await registerClientAccount(newDeliveryAddress)
                 if(succes) {
                     window.location.href = "http://127.0.0.1:5500/src/login/login.html"
@@ -127,37 +142,27 @@ function getAddressFromCoordinates(coordinates) {
         } 
     }
 
-    //Falta obtener el Id del usuario 
-    //Falta obtener el id de la dirección 
-
-    //pendiente de revisar
     async function editDeliveryAddress(newDeliveryAddress){
-        await axios
-        .put(`${API_URL}${localStorage.getItem('id')}`, newDeliveryAddress)
-        .then((response) => {
-            console.log(response.data);
-            alert("Dirección actualizada correctamente");
-        })
-        .catch((error) => {
-            console.error(error);
-            alert("Error al actualizar la dirección");
-        });
+        try{
+            await axios.put(`${API_URL}/users/${USER_ID}/addresses/${deliveryAddressData._id}`, newDeliveryAddress);
+            showToast("Se ha actualizado la dirección", toastTypes.SUCCESS);
+            return true;
+        } catch (error) {
+            alert(error);
+            showToast(error.response.data.message, toastTypes.DANGER);
+            return false;
+        }
     }
 
-
-    //pendiente de revisar
    async function registerNewDeliveryAddress(newDeliveryAddress){
-        await axios
-        .post(`${API_URL}`, newDeliveryAddress)
-        .then((response) => {
-            console.log(response.data);
-            
-            alert("Dirección registrada correctamente");
-        })
-        .catch((error) => {
-            console.error(error);
-            alert("Error al registrar la dirección");
-        });
+        try{
+            await axios.post(`${API_URL}/users/${USER_ID}/addresses`, newDeliveryAddress);
+            showToast("Se ha registrado la dirección", toastTypes.SUCCESS);
+            return true;
+        } catch (error) {
+            showToast(error.response.data.message, toastTypes.DANGER);
+            return false;
+        }
     }
 
     async function registerClientAccount(newDeliveryAddress) {
@@ -167,7 +172,7 @@ function getAddressFromCoordinates(coordinates) {
                     addresses: [newDeliveryAddress],
                 };
     
-                const response = await axios.post(`${API_URL}/users/`, creationAccountData);
+                await axios.post(`${API_URL}/users/`, creationAccountData);
                 showToast("Se ha registrado la cuenta", toastTypes.SUCCESS);
                 sessionStorage.removeItem('creationAccountData');
                 return true;

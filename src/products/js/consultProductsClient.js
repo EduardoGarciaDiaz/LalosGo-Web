@@ -1,5 +1,3 @@
-const API_URL = 'http://127.0.0.1:3000/api/v1/'
-
 let branchId
 let branch
 let categories = []
@@ -188,7 +186,8 @@ async function loadProductsFromNearestBranch(branchToConsult) {
         }
 
     } catch (error) {
-        showToast("Ocurrio algo inesperado al realizar la petición. Revise su conexión a internet e inténtelo mas tarde", toastTypes.WARNING)
+        const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
+        showToast(errorMessage, toastTypes.DANGER); 
     }
 }
 
@@ -286,7 +285,8 @@ async function addProductToCart(product, number) {
             showToast(response.data.message, toastTypes.WARNING);
         }
     } catch (error) {
-        showToast(error.response.data.message || "Error en el servidor", toastTypes.ERROR);
+        const errorMessage = error.response ? error.response.data.message : "No se pudo agregar el producto al carrito. Inténtelo de nuevo.";
+        showToast(errorMessage, toastTypes.DANGER);
     }
 }
 

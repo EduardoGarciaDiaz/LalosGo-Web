@@ -34,7 +34,6 @@ function getAllPaymentMethods() {
             });
         })
         .catch((error) => {
-            console.error(error);
             showToast("Error al cargar los métodos de pago", toastTypes.DANGER);
         });
 }
@@ -171,7 +170,6 @@ function loadOrderSummary() {
             }
         })
         .catch((error) => {
-            console.error(error);
             showToast("Error al cargar el resumen de la compra", toastTypes.DANGER);
             window.location.replace('./cart.html');
         });
@@ -293,7 +291,6 @@ async function deleteCart(orderId) {
         showToast(response.data.message, toastTypes.SUCCESS);
     })
     .catch((error) => {
-        console.log(error);
         const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
         showToast(errorMessage, toastTypes.DANGER);
     });
@@ -330,7 +327,6 @@ async function reserveCartProducts() {
 
         window.location.replace(`./finish-cart.html?${params.toString()}`);
     } catch (error) {
-        console.log(error);
         if (error.response.status == 409) {
             showToast("Ha cambiado el inventario de algunos productos, vuelve a revisarlo. Lamentamos los inconvenientes",
                 toastTypes.WARNING);

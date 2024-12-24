@@ -23,6 +23,7 @@ async function getLogin(loginData) {
     try {
         const response = await axios.post(`${API_URL}auth/`, loginData);
         const role = response.data.role;
+        clearSession();
         let user = getInstance(response.data);
         if(user.status === 'Active'){
             if (role === 'Customer') {

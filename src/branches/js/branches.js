@@ -43,7 +43,6 @@ function getAllBranches() {
         .catch((error) => {
             const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
             showToast(errorMessage, toastTypes.DANGER);
-            console.error(error);
         });
 }
 
@@ -104,7 +103,6 @@ function toggleBranchStatus(branchId) {
                 loadBranches();
             })
             .catch((error) => {
-                console.error(error);
                 const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
                 showToast(errorMessage, toastTypes.DANGER);
             });

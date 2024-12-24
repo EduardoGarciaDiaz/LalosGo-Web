@@ -15,7 +15,6 @@ function getBranch() {
         .catch((error) => {
             const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
             showToast(errorMessage, toastTypes.DANGER);
-            console.error(error);
         });
 }
 

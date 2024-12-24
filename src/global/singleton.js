@@ -34,3 +34,19 @@ function redirectToLogin() {
 function clearSession() {
     sessionStorage.removeItem(USER_SESSION_KEY);
 }
+
+function updateSession(updatedData){
+    try {
+        let user = JSON.parse(sessionStorage.getItem(USER_SESSION_KEY));
+        user = {
+            ...user, 
+            username: updatedData.username,
+            fullname: updatedData.fullname,
+            birthdate: updatedData.birthdate,
+            phone: updatedData.phone
+        };
+        sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(user));
+    } catch (error) {
+        alert("Error al actualizar la información del usuario");
+    }
+}

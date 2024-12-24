@@ -1,47 +1,27 @@
-// Array para almacenar direcciones
-// Se deben recuperar de la base de datos
+const ADDRESS_LIMIT = 3;
+const DELIVERY_ADDRESS_WINDOW = "http://127.0.0.1:5500/src/RegisterDeliveryAddress/registerDeliveryAddress.html";
+// Elemento contenedor de tarjetas
+const addressContainer = document.getElementById("addressContainer");
+let USER_ID
+let addresses = [];
 
-let addresses = [
-    {
-      addressId: 1,
-      street: "Cuauhtla Morales #10",
-      neighborhood: "Revolución",
-      city: "Xalapa-Enríquez, Veracruz",
-      postalCode: "91100",
-      country: "México",
-      contact: "Sugey Alarcón Hernández - 2282755817",
-      longitude: 10.726054378965815,
-      latitude: 59.923359432938874    
-    },
-    {
-        street: "Cuauhtla #10",
-        neighborhood: "Revo",
-        city: "Xalapa-Enríquez, Veracruz",
-        postalCode: "91100",
-        country: "México",
-        contact: "Sugey Alarcón Hernández - 2282755817",
-        longitude: -96.919444,
-        latitude: 19.543611
-    },
-    {
-        street: "Otra",
-        neighborhood: "Revo",
-        city: "Xalapa-Enríquez, Veracruz",
-        postalCode: "91100",
-        country: "México",
-        contact: "Sugey Alarcón Hernández - 2282755817",
-        longitude: -96.919444,
-        latitude: 19.543611
-    }
-  ];
+document.addEventListener("DOMContentLoaded", async () => {
+  USER_ID = getInstance().id
+  await getUserAddress()
+  renderAddresses()
+})
 
-  const ADDRESS_LIMIT = 3;
-  const DELIVERY_ADDRESS_WINDOW = "http://127.0.0.1:5500/src/RegisterDeliveryAddress/registerDeliveryAddress.html";
-  // Elemento contenedor de tarjetas
-  const addressContainer = document.getElementById("addressContainer");
-  
+async function getUserAddress() {
+  try {
+      const response = await axios.get(`${API_URL}users/${USER_ID}/addresses`);
+      addresses = response.data.addresses;
+  } catch (error) {
+      showToast(error.response.data?.message || "Error al obtener la dirección", toastTypes.WARNING);
+  }
+} 
+
   // Renderizar direcciones iniciales
-  function renderAddresses() {
+function renderAddresses() {
     addressContainer.innerHTML = "";
     addresses.forEach((address, index) => {
       const cardHTML = `
@@ -49,11 +29,8 @@ let addresses = [
           <div class="card shadow-sm">
             <div class="card-body">
               <h5 class="card-title fw-bold">${address.street}</h5>
-              <p class="card-text">${address.neighborhood}</p>
-              <p class="card-text">${address.city} ${address.postalCode}</p>
-              <p class="card-text">${address.country}</p>
-              <p class="card-text text-muted">${address.contact}</p>
-              
+              <p class="card-text">${address.locality}</p>
+              <p class="card-text">${address.federalEntity} ${address.zipcode}</p>
               <!-- Botón de menú -->
               <div class="dropdown menu-btn">
                 <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
@@ -85,11 +62,6 @@ let addresses = [
     sessionStorage.setItem('actionType', 'EditDeliveryAddress');
     sessionStorage.setItem('deliveryAddressData', JSON.stringify(addresses[index]));
     window.location.href = DELIVERY_ADDRESS_WINDOW;
-    /*const newStreet = prompt("Ingrese nueva calle:", addresses[index].street);
-    if (newStreet) {
-      addresses[index].street = newStreet;
-      renderAddresses();
-    }*/
   }
   
   // Eliminar dirección
@@ -123,9 +95,7 @@ let addresses = [
   document.getElementById("CreateAddressButtom").addEventListener("click", () => {
     if(addresses.length < ADDRESS_LIMIT){
       sessionStorage.removeItem("deliveryAddressData");
-      sessionStorage.setItem('actionType', 'CreateClientAccount');
-
-      //Esta URL se debe cambiar al final por la de la página de registro de dirección
+      sessionStorage.setItem('actionType', 'RegisterDeliveryAddress');
       window.location.href = DELIVERY_ADDRESS_WINDOW;
     } else {
       showToast("No se pueden agregar más de tres direcciones", toastTypes.DANGER);
