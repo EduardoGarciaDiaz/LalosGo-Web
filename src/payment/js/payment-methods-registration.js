@@ -20,6 +20,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const expirationDateField = document.getElementById("expirationDate");
     expirationDateField.setAttribute("min", minDate);
     expirationDateField.setAttribute("max", maxDate);
+
+    expirationDateField.addEventListener("input", function() {
+        const selectedDate = this.value;
+        if (selectedDate < minDate) {
+            this.value = minDate;
+            showErrorMessage('expirationDate', 'invalidExpirationDate', 'La fecha no puede ser anterior al mes actual.');
+        } else if (selectedDate > maxDate) {
+            this.value = maxDate;
+            showErrorMessage('expirationDate', 'invalidExpirationDate', 'La fecha no puede ser superior a 10 años.');
+        } else {
+            this.classList.remove("is-invalid");
+            document.getElementById('invalidExpirationDate').textContent = '';
+        }
+    });
 });
 
 function isValidPaymentMethod(newPaymentMethod) {
@@ -196,8 +210,8 @@ function addPaymentMethod(newPaymentMethod) {
             paymentMethodsNumber++;
         })
         .catch((error) => {
-            showToast("No se pudo agregar el método de pago. Inténtelo de nuevo.", toastTypes.DANGER);
-            console.error(error);
+            const errorMessage = error.response ? error.response.data.message : "No se pudo agregar el método de pago. Inténtelo de nuevo.";
+            showToast(errorMessage, toastTypes.DANGER);
         });
 }
 

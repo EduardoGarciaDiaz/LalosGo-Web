@@ -24,7 +24,6 @@ function getAllPaymentMethods() {
             });
         })
         .catch((error) => {
-            console.error(error);
             showToast("Error al cargar los métodos de pago", toastTypes.DANGER);
         });
 }
