@@ -131,6 +131,7 @@ async function updateCurrentAddress(newAddress){
             address: newAddress
         })
         showToast(response.data.message, toastTypes.SUCCESS)
+        window.location.reload()
     } catch (error) {
         showToast(error.response.data.message, toastTypes.WARNING)
     }
