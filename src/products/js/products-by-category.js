@@ -1,12 +1,10 @@
+let categoryTitle
+let searchBar
+let productContainer 
+
 let branchId
-let branch
-let categories = []
-let products = []
-let userAddresses = {}
-let currentProductInModal
-let branchNameLabel
-let addressesComboBox
-let currentAddresLabel
+let categoryId
+
 
 let productsDetaildModal
 let modalProductImage
@@ -21,10 +19,7 @@ let modalProdcutQuantity
 let modalLessBtn
 let modalMoreBtn
 
-
 let USER_ID
-let currentAddress = null
-
 
 document.addEventListener("DOMContentLoaded", async () => {
     productsDetaildModal = document.getElementById('productsDetailsModal')
@@ -40,193 +35,46 @@ document.addEventListener("DOMContentLoaded", async () => {
     modalMoreBtn = document.getElementById('more-btn')
     modalLessBtn = document.getElementById('less-btn')
 
-    branchNameLabel = document.getElementById("store-label")
-    currentAddresLabel = document.getElementById("user-address")
-    addressesComboBox = document.getElementById("address-select")
 
-    
+    categoryTitle = document.getElementById("title-products")
+    searchBar = document.getElementById("search-Bar")
+    productContainer = document.getElementById("product-container")
 
-    addressesComboBox.addEventListener('change', confirmChangeOfAddres)
- 
+
+    branchId = sessionStorage.getItem('branch-Id-to-consult-products')
+    categoryId = sessionStorage.getItem('category-Id-to-consult-products')
+
 
     USER_ID = getInstance().id
     await loadFooter()
-    await getUserAddress()
 
-   
+    await loadProductsOfCategory()
 
-    if (currentAddress != null) {
-        branchId = await getNearestBranch(currentAddress)
-    }
-    if (branchId) {
-        await loadProductsFromNearestBranch(branchId)
-    }
-    
-    sessionStorage.setItem('branch-Id-to-consult-products', branch._id);
-   
 })
 
-window.addEventListener("load", function (event) {
-  });
 
-async function loadFooter(){
-    fetch('/src/shared/footer.html')
-    .then(response => response.text())
-    .then(data => {
-        document.getElementById('footer').innerHTML = data;
-    });
-}
-
-async function getUserAddress() {
+async function loadProductsOfCategory(){
     try {
-        const response = await axios.get(`${API_URL}users/${USER_ID}/addresses`);
-        response.data.addresses.forEach(element => {
-            const latLongKey = `${element.latitude},${element.longitude}`;
-            userAddresses[latLongKey] = element;
-            const formattedAddress = formatAddress(element);
-
-            const option = document.createElement('option');
-            option.value = latLongKey;
-            option.textContent = formattedAddress;
-            addressesComboBox.appendChild(option)
-
-            if (element.isCurrentAddress) {
-                currentAddresLabel.innerHTML = formattedAddress
-                currentAddress = element;
-            }
-
-        });
-    } catch (error) {
-        showToast(error.response.data.message || "Error al obtener la dirección", toastTypes.WARNING);
-    }
-}
-
-
-function formatAddress(address) {
-    const {
-        street,
-        number,
-        internalNumber,
-        cologne,
-        zipcode,
-        locality,
-        federalEntity
-    } = address;
-
-    let formattedAddress = `${street} ${number}`;
-    if (internalNumber) {
-        formattedAddress += `, Int. ${internalNumber}`;
-    }
-    formattedAddress += `, ${cologne}, ${locality}, ${federalEntity}, C.P. ${zipcode}`;
-
-    return formattedAddress;
-}
-
-function confirmChangeOfAddres(event) {
-    let selectValue = event.target.value
-    if (selectValue != "") {
-        let { modalInstance, primaryBtn, secondaryBtn } = createConfirmationModal("Cuidado", "¿Estas seguro que quieres cambiar la dirección de envio?, los productos en tu carrito se podrian perder.", modalTypes.DANGER, "Confirmar.")
-        modalInstance.show()
-        primaryBtn.onclick = function () {
-            updateCurrentAddress(userAddresses[selectValue])
-        }
-        secondaryBtn.onclick = function () {
-            addressesComboBox.selectedIndex = 0
-            modalInstance.hide()
-        }
-    }
-}
-
-async function updateCurrentAddress(newAddress) {
-    try {
-        let response = await axios.put(`${API_URL}users/${USER_ID}/addresses`, {
-            address: newAddress
-        })
-        showToast(response.data.message, toastTypes.SUCCESS)
-        window.location.reload()
-    } catch (error) {
-        showToast(error.response.data.message, toastTypes.WARNING)
-    }
-}
-
-
-async function getNearestBranch(asddressData) {
-    try {
-        let response = await axios.get(`${API_URL}branches/`, {
-            params: {
-                location: {
-                    latitude: asddressData.latitude,
-                    longitude: asddressData.longitude,
-                    type: asddressData.type
-                }
-            }
-        })
-        return response.data.branches
-    } catch (error) {
-        const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
-        showToast(errorMessage, toastTypes.DANGER);
-    }
-}
-
-async function loadProductsFromNearestBranch(branchToConsult) {
-    try {
-        let response = await axios.get(`${API_URL}products/${branchToConsult}`)
+        let response = await axios.get(`${API_URL}products/${branchId}/${categoryId}`)
         if (response.status < 300 && response.status > 199) {
-            branch = response.data.branch
-            branchNameLabel.innerHTML = branch.name
-            if(response.data.branch.branchProducts.length == 0){
+            if(response.data.branch.length == 0){
                 showToast("No hay productos disponibles en esta sucursal", toastTypes.SUCCESS)
             }
-            response.data.branch.branchProducts.forEach(element => {
-                if (!categories.some(category => category._id === element.product.category._id)) {
-                    categories.push(element.product.category);
-                }
-                products.push(element)
+            response.data.branch.forEach(element => {
+                let productCard = createProductCard(element)
+                productContainer.appendChild(productCard)
             });
-            categories.forEach(element => {
-                let categorySection = createCategorySection(element)
-                let productsOfCategory = products.filter(productBranch => productBranch.product.category._id === element._id)
-                productsOfCategory.forEach(proElement => {
-                    let productCard = createProductCard(proElement)
-                    let categoryContainer = categorySection.getElementsByClassName("d-flex overflow-auto")[0];
-                    if (categoryContainer) {
-                        categoryContainer.appendChild(productCard);
-                    }
-                });
-                document.getElementById("main-container").appendChild(categorySection)    
-            });
-            createCategoriesListBoxItems(categories, branch)
+            categoryTitle.innerHTML = response.data.branch[0].product.category.name
             showToast(response.data.message, toastTypes.SUCCESS)
-
         }
         else {
             showToast(response.data.message, toastTypes.WARNING)
         }
-
-    } catch (error) {
+    } catch (error) {    
+        console.log(error)   
         const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
         showToast(errorMessage, toastTypes.DANGER);
     }
-}
-
-
-
-function createCategorySection(category) {
-    const categorySection = document.createElement("div")
-    categorySection.id = category._id
-    categorySection.className = "container-fluid mt-4"
-
-    const categoryTitle = document.createElement("h2")
-    categoryTitle.textContent = category.name
-    categoryTitle.className = " mb-4"
-
-    const categoryProductsContainer = document.createElement("div")
-    categoryProductsContainer.className = "d-flex gap-4 overflow-auto rounded bg-light p-2"
-
-    categorySection.appendChild(categoryTitle)
-    categorySection.appendChild(categoryProductsContainer)
-
-    return categorySection
 }
 
 function createProductCard(element) {
@@ -295,7 +143,7 @@ async function addProductToCart(product, number) {
                 quantity: number ?? 1,
                 price: Number(product.unitPrice) * Number(number)
             },
-            branchId: branch._id
+            branchId: branchId
         });
 
         if (response.status >= 200 && response.status < 300) {
@@ -357,4 +205,16 @@ function clearModal() {
     modalProductLimit.value = ``
     modalProdcutQuantity.value = 0
     modalProductImage.src = ""
+}
+
+function searchProduct(){
+
+}
+
+async function loadFooter(){
+    fetch('/src/shared/footer.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('footer').innerHTML = data;
+    });
 }
