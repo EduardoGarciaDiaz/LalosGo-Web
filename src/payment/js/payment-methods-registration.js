@@ -195,8 +195,11 @@ function calculateCardType(cardNumber) {
 }
 
 function addPaymentMethod(newPaymentMethod) {
+    let token = getInstance().token;
     axios
-        .post(`${API_URL}users/${userId}/payment-methods`, newPaymentMethod)
+        .post(`${API_URL}users/${userId}/payment-methods`, newPaymentMethod, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
         .then((response) => {
             if (!response || !response.data) {
                 showToast("No se pudo agregar el método de pago. Inténtelo de nuevo.", toastTypes.DANGER);

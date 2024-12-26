@@ -1,7 +1,7 @@
 const CART_STATUS = 'reserved';
 const VALID_PAYMENT_NETWORKS = ['Visa', 'MasterCard'];
-const URL_IMAGE_VISA='../assets/images/visa.png';
-const URL_IMAGE_MASTERCARD='../assets/images/mastercard.png';
+const URL_IMAGE_VISA = '../assets/images/visa.png';
+const URL_IMAGE_MASTERCARD = '../assets/images/mastercard.png';
 const CVV_REGEX = /^[0-9]{3,4}$/;
 const PAYMENT_METHODS = new Map();
 
@@ -10,7 +10,13 @@ var orderId;
 var branchId;
 var paymentMethodId;
 
-window.onload = function() {
+window.onload = function () {
+    fetch('/src/shared/footer.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('footer').innerHTML = data;
+        });
+
     userId = getInstance().id;
     getAllPaymentMethods();
     loadOrderSummary();
@@ -23,7 +29,7 @@ function getAllPaymentMethods() {
         .get(`${API_URL}users/${userId}/payment-methods`)
         .then((response) => {
             let paymentMethods = response.data.userPaymentMethods;
-            
+
             if (!paymentMethods || paymentMethods.length === 0) {
                 withoutPaymentMessage.className = 'without-payment-methods';
                 return;
@@ -46,13 +52,13 @@ function addPaymentMethodToContainer(paymentMethod) {
 }
 
 function createPaymentMethodCard(paymentMethod) {
-    if (!paymentMethod) { 
+    if (!paymentMethod) {
         return;
     }
 
     PAYMENT_METHODS.set(paymentMethod._id, paymentMethod);
 
-    let {cardNumber, expirationDate, paymentNetwork, cardEmitter, cardOwner} = paymentMethod;
+    let { cardNumber, expirationDate, paymentNetwork, cardEmitter, cardOwner } = paymentMethod;
 
     let imageUrl = '';
     if (paymentNetwork === VALID_PAYMENT_NETWORKS[0]) {
@@ -63,11 +69,11 @@ function createPaymentMethodCard(paymentMethod) {
 
     const paymentMethodContainer = document.createElement('div');
     paymentMethodContainer.classList.add(
-        'payment-methods-container', 
-        'd-flex', 
-        'align-items-center', 
-        'border', 
-        'p-3', 
+        'payment-methods-container',
+        'd-flex',
+        'align-items-center',
+        'border',
+        'p-3',
         'mb-3'
     );
 
@@ -79,7 +85,7 @@ function createPaymentMethodCard(paymentMethod) {
     cardSelector.id = paymentMethod._id;
     cardSelector.classList.add('radio-selector', 'form-check-input', 'me-3');
     radioAndInfoContainer.appendChild(cardSelector);
-    
+
     const cardInfo = document.createElement('div');
     cardInfo.classList.add('card-info');
 
@@ -112,7 +118,7 @@ function createPaymentMethodCard(paymentMethod) {
 
     const cardOptions = document.createElement('div');
     cardOptions.classList.add('card-options', 'ms-auto');
-    
+
     const cardImage = document.createElement('img');
     cardImage.src = imageUrl;
     cardImage.alt = 'Red de pago: ' + paymentNetwork;
@@ -148,14 +154,14 @@ function loadOrderSummary() {
             params: {
                 status: CART_STATUS
             }
-        })   
+        })
         .then((response) => {
             let cartSummary = response.data.cartSummary;
             if (cartSummary === undefined || cartSummary === null) {
                 showToast("Ocurrió un error al recuperar el resumen de su compra", toastTypes.INFO);
                 return;
             }
-            
+
             let clientAddress = cartSummary.clientAddresses.find(address => address.isCurrentAddress);
             let branchAddress = cartSummary.branchAddress;
             loadAddressData(clientAddress, branchAddress);
@@ -178,13 +184,13 @@ function loadOrderSummary() {
 function loadAddressData(clientAddress, branchAddress) {
     let clientAddressP = document.getElementById('client-address');
     let branchAddressP = document.getElementById('branch-address');
-    
-    if (clientAddress && branchAddress) {    
+
+    if (clientAddress && branchAddress) {
         clientAddressP.textContent = formatAddress(clientAddress);
         branchAddressP.textContent = formatAddress(branchAddress);
     } else {
         showToast("No se pudo cargar la dirección", toastTypes.WARNING);
-    }    
+    }
 }
 
 function formatAddress(address) {
@@ -209,7 +215,7 @@ function doOrder() {
         return;
     }
 
-    validateOrder();    
+    validateOrder();
 }
 
 function validateOrder() {
@@ -262,38 +268,38 @@ function cancelOrder() {
     const MODAL_PRIMARY_BTN_TEXT = 'Eliminar carrito';
 
     const { modalInstance, primaryBtn, secondaryBtn } = createConfirmationModal(
-        MODAL_TITLE, 
-        MODAL_MESSAGE, 
-        modalTypes.DANGER, 
+        MODAL_TITLE,
+        MODAL_MESSAGE,
+        modalTypes.DANGER,
         MODAL_PRIMARY_BTN_TEXT
     );
     modalInstance.show();
 
-    primaryBtn.onclick = async function() {
+    primaryBtn.onclick = async function () {
         await deleteCart(orderId);
         modalInstance.hide();
         window.location.replace('./cart.html');
     }
 
-    secondaryBtn.onclick = function() {
+    secondaryBtn.onclick = function () {
         modalInstance.hide();
     }
 }
 
 async function deleteCart(orderId) {
     axios
-    .delete(`${API_URL}carts/${orderId}`, {
-        params: {
-            status: CART_STATUS
-        }
-    })
-    .then((response) => {
-        showToast(response.data.message, toastTypes.SUCCESS);
-    })
-    .catch((error) => {
-        const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
-        showToast(errorMessage, toastTypes.DANGER);
-    });
+        .delete(`${API_URL}carts/${orderId}`, {
+            params: {
+                status: CART_STATUS
+            }
+        })
+        .then((response) => {
+            showToast(response.data.message, toastTypes.SUCCESS);
+        })
+        .catch((error) => {
+            const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
+            showToast(errorMessage, toastTypes.DANGER);
+        });
 }
 
 
@@ -301,7 +307,7 @@ async function reserveCartProducts() {
     const paymentMethodSelected = paymentMethodId;
     try {
         const response = await axios.put(
-            `${API_URL}orders/${orderId}`, 
+            `${API_URL}orders/${orderId}`,
             {
                 customer: userId,
                 branch: branchId,

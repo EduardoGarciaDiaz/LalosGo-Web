@@ -10,6 +10,12 @@ var orderId;
 var branchId;
 
 window.onload = () => {
+    fetch('/src/shared/footer.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('footer').innerHTML = data;
+        });
+
     cartItems = document.getElementById('cart-items')
     productsMessage = document.getElementById('products-message');
     clearBtn = document.querySelector('.clear-cart-btn');

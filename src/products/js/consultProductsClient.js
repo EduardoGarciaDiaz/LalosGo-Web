@@ -50,8 +50,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     })
     addressesComboBox.addEventListener('change', confirmChangeOfAddres)
 
-
-    $("#footer").load("/src/shared/footer.html")
+    fetch('/src/shared/footer.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('footer').innerHTML = data;
+    });
 
     USER_ID = getInstance().id
 

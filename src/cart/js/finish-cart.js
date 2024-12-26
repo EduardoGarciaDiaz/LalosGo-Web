@@ -1,8 +1,14 @@
 window.onload = () => {
+    fetch('/src/shared/footer.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('footer').innerHTML = data;
+        });
+
     const params = new URLSearchParams(window.location.search);
     const orden = params.get('order');
     const orderNumber = document.getElementById('order-number');
-    orderNumber.textContent = "N° de orden: " + (orden || "") ;
+    orderNumber.textContent = "N° de orden: " + (orden || "");
 };
 
 function goToAllOrders() {

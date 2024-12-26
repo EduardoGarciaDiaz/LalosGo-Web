@@ -1,5 +1,11 @@
 const branchesContainer = document.getElementById('branches-container');
 
+fetch('/src/shared/footer.html')
+.then(response => response.text())
+.then(data => {
+    document.getElementById('footer').innerHTML = data;
+});
+
 window.onload = function () {
     loadBranches();
 }
