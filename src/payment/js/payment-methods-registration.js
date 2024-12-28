@@ -7,6 +7,10 @@ const PAYMENT_NETWORKS_REGEX = {
     masterCard: /^5[1-5][0-9]{14}$/,
 };
 
+if (role !== roles.CUSTOMER) {
+    window.history.back();
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const today = new Date();
     const currentYear = today.getFullYear();

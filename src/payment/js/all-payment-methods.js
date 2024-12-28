@@ -3,6 +3,11 @@ const URL_IMAGE_MASTERCARD = '../assets/images/mastercard.png';
 var paymentMethodsNumber = 0;
 var userId;
 
+let role = getInstance().role;
+if (role !== roles.CUSTOMER) {
+    window.history.back();
+}
+
 fetch('/src/shared/footer.html')
     .then(response => response.text())
     .then(data => {

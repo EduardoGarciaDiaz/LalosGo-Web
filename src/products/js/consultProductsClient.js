@@ -44,16 +44,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     currentAddresLabel = document.getElementById("user-address")
     addressesComboBox = document.getElementById("address-select")
 
-    
+
 
     addressesComboBox.addEventListener('change', confirmChangeOfAddres)
- 
+
 
     USER_ID = getInstance().id
     await loadFooter()
     await getUserAddress()
 
-   
+
 
     if (currentAddress != null) {
         branchId = await getNearestBranch(currentAddress)
@@ -61,20 +61,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (branchId) {
         await loadProductsFromNearestBranch(branchId)
     }
-    
+
     sessionStorage.setItem('branch-Id-to-consult-products', branch._id);
-   
+
 })
 
 window.addEventListener("load", function (event) {
-  });
+});
 
-async function loadFooter(){
+async function loadFooter() {
     fetch('/src/shared/footer.html')
-    .then(response => response.text())
-    .then(data => {
-        document.getElementById('footer').innerHTML = data;
-    });
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('footer').innerHTML = data;
+        });
 }
 
 async function getUserAddress() {
@@ -152,6 +152,8 @@ async function updateCurrentAddress(newAddress) {
 
 async function getNearestBranch(asddressData) {
     try {
+        let token = getInstance().token;
+
         let response = await axios.get(`${API_URL}branches/`, {
             params: {
                 location: {
@@ -159,7 +161,8 @@ async function getNearestBranch(asddressData) {
                     longitude: asddressData.longitude,
                     type: asddressData.type
                 }
-            }
+            },
+            headers: { 'Authorization': `Bearer ${token}` }
         })
         return response.data.branches
     } catch (error) {
@@ -174,7 +177,7 @@ async function loadProductsFromNearestBranch(branchToConsult) {
         if (response.status < 300 && response.status > 199) {
             branch = response.data.branch
             branchNameLabel.innerHTML = branch.name
-            if(response.data.branch.branchProducts.length == 0){
+            if (response.data.branch.branchProducts.length == 0) {
                 showToast("No hay productos disponibles en esta sucursal", toastTypes.SUCCESS)
             }
             response.data.branch.branchProducts.forEach(element => {
@@ -193,7 +196,7 @@ async function loadProductsFromNearestBranch(branchToConsult) {
                         categoryContainer.appendChild(productCard);
                     }
                 });
-                document.getElementById("main-container").appendChild(categorySection)    
+                document.getElementById("main-container").appendChild(categorySection)
             });
             createCategoriesListBoxItems(categories, branch)
             showToast(response.data.message, toastTypes.SUCCESS)

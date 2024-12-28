@@ -18,7 +18,7 @@ function getInstance(newUser) {
         return user;
     } catch (error) {
         alert("Error al obtener la información del usuario");
-        clearSession();
+        redirectToLogin();
     }
 }
 

@@ -10,23 +10,29 @@ var orderId;
 var branchId;
 var paymentMethodId;
 
-window.onload = function () {
-    fetch('/src/shared/footer.html')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('footer').innerHTML = data;
-        });
-
-    userId = getInstance().id;
-    getAllPaymentMethods();
-    loadOrderSummary();
+let role = getInstance().role;
+if (role !== roles.CUSTOMER) {
+    window.history.back();
 }
 
+fetch('/src/shared/footer.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('footer').innerHTML = data;
+
+        userId = getInstance().id;
+        getAllPaymentMethods();
+        loadOrderSummary();
+    });
+
 function getAllPaymentMethods() {
+    let token = getInstance().token;
     let withoutPaymentMessage = document.getElementById('payment-methods-message');
     withoutPaymentMessage.className = 'with-payment-methods';
     axios
-        .get(`${API_URL}users/${userId}/payment-methods`)
+        .get(`${API_URL}users/${userId}/payment-methods`, 
+            { headers: { 'Authorization': `Bearer ${token}` } }
+        )
         .then((response) => {
             let paymentMethods = response.data.userPaymentMethods;
 
