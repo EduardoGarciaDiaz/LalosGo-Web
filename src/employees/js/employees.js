@@ -249,5 +249,6 @@ function createEmployeeCard(employeeData) {
 }
 
 function goToAddEmployee() {
-    // Redirect to add employee page
+    
+    window.location.href = './employee-form.html';
 }
