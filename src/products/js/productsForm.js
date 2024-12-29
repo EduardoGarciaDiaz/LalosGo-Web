@@ -41,6 +41,12 @@ window.onload = async function () {
     await loadBranches();
 }
 
+fetch('/src/shared/footer.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('footer').innerHTML = data;
+    });
+
 async function loadCategories() {
     axios.get(API_URL + 'categories/', {
         params: {

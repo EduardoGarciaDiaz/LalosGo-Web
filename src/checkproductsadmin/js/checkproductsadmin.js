@@ -9,6 +9,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadCategories();
 })
 
+fetch('/src/shared/footer.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('footer').innerHTML = data;
+    });
+
 async function getProducts() {
     try {
         const response = await axios.get(`${API_URL}/products`);
@@ -75,7 +81,7 @@ function renderProducts(products) {
                     <p class="card-text">${product.name}</p>
                     <div class="d-flex justify-content-between">
                         <button class="btn btn-outline-primary" onclick="viewProduct('${product._id}')">Ver detalles</button>
-                        <button class="btn btn-primary" onclick="editProductt('${product._id}')">Editar</button>
+                        <button class="btn btn-primary" onclick="editProduct('${product._id}')">Editar</button>
                     </div>
                 </div>
             </div>
@@ -119,8 +125,8 @@ function removeAccents(str) {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); 
 }
 
-function editProductt(index) {
-    // Guardar el producto en el sessionStorage
-    //Recibir el producto en el otro archivo
-    //enviar al usuario a la otra pagina
+function editProduct(index) {
+    sessionStorage.clear('productData');
+    sessionStorage.setItem('productData', JSON.stringify(allProducts.find(product => product._id === index)));
+    window.location.href = "/src/checkproductsadmin/checkproductdetails.html";
 }
