@@ -107,7 +107,7 @@ function filterEmployeesByBranch(branchName) {
 
 function filterEmployees(type, value) {
     let employeesContainer = document.getElementById('employees-container');
-
+    value = value.toLowerCase();
     Array.from(employeesContainer.children).forEach(employeeCard => {
         let isMatch = false;
 
@@ -115,8 +115,8 @@ function filterEmployees(type, value) {
             const employeeName = employeeCard.querySelector('.employee-name').textContent.toLowerCase();
             isMatch = employeeName.includes(value);
         } else if (type === 'branch') {
-            const branchName = employeeCard.querySelector('.employee-branch').textContent.toLowerCase();
-            isMatch = branchName.includes(value);
+            let branch = employeeCard.querySelector('.employee-branch').textContent.toLowerCase();
+            isMatch = branch.includes(value);
         }
 
         if (isMatch) {
@@ -187,9 +187,11 @@ function createEmployeeCard(employeeData) {
     hiredDateParagraph.textContent = `Fecha de ingreso: ${new Date(employeeData.employee.hiredDate).toLocaleDateString()}`;
     infoDiv.appendChild(hiredDateParagraph);
 
+    let branchName = employeeData.employee.branch ? employeeData.employee.branch.name : 'Sin asignar';
+
     const branchNameParagraph = document.createElement('p');
-    branchNameParagraph.classList.add('mb-3');
-    branchNameParagraph.textContent = `Sucursal: ${employeeData.employee.branch.name}`;
+    branchNameParagraph.classList.add('mb-3', 'employee-branch');
+    branchNameParagraph.textContent = `Sucursal: ${branchName}`;
     infoDiv.appendChild(branchNameParagraph);
 
     const statusParagraph = document.createElement('p');
