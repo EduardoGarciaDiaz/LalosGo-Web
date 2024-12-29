@@ -9,14 +9,23 @@ var clearBtn;
 var orderId;
 var branchId;
 
-window.onload = () => {
-    cartItems = document.getElementById('cart-items')
-    productsMessage = document.getElementById('products-message');
-    clearBtn = document.querySelector('.clear-cart-btn');
-    user = getInstance();
-    userId = user.id;
-    loadProducts();
-};
+let role = getInstance().role;
+if (role !== roles.CUSTOMER) {
+    window.history.back();
+}
+
+fetch('/src/shared/footer.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('footer').innerHTML = data;
+
+        cartItems = document.getElementById('cart-items')
+        productsMessage = document.getElementById('products-message');
+        clearBtn = document.querySelector('.clear-cart-btn');
+        user = getInstance();
+        userId = user.id;
+        loadProducts();
+    });
 
 function loadProducts() {
     clearCartUI();

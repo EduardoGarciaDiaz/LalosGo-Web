@@ -7,6 +7,10 @@ const PAYMENT_NETWORKS_REGEX = {
     masterCard: /^5[1-5][0-9]{14}$/,
 };
 
+if (role !== roles.CUSTOMER) {
+    window.history.back();
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const today = new Date();
     const currentYear = today.getFullYear();
@@ -195,8 +199,11 @@ function calculateCardType(cardNumber) {
 }
 
 function addPaymentMethod(newPaymentMethod) {
+    let token = getInstance().token;
     axios
-        .post(`${API_URL}users/${userId}/payment-methods`, newPaymentMethod)
+        .post(`${API_URL}users/${userId}/payment-methods`, newPaymentMethod, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
         .then((response) => {
             if (!response || !response.data) {
                 showToast("No se pudo agregar el método de pago. Inténtelo de nuevo.", toastTypes.DANGER);

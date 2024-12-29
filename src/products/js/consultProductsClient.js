@@ -21,7 +21,6 @@ let modalProdcutQuantity
 let modalLessBtn
 let modalMoreBtn
 
-let previousComboBoxSelection
 
 let USER_ID
 let currentAddress = null
@@ -45,17 +44,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     currentAddresLabel = document.getElementById("user-address")
     addressesComboBox = document.getElementById("address-select")
 
-    addressesComboBox.addEventListener('focus', function (event){
-        previousComboBoxSelection = event.target.value
-    })
+
+
     addressesComboBox.addEventListener('change', confirmChangeOfAddres)
 
 
-    $("#footer").load("/src/shared/footer.html")
-
     USER_ID = getInstance().id
-
+    await loadFooter()
     await getUserAddress()
+
+
+
     if (currentAddress != null) {
         branchId = await getNearestBranch(currentAddress)
     }
@@ -63,7 +62,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         await loadProductsFromNearestBranch(branchId)
     }
 
+    sessionStorage.setItem('branch-Id-to-consult-products', branch._id);
+
 })
+
+window.addEventListener("load", function (event) {
+});
+
+async function loadFooter() {
+    fetch('/src/shared/footer.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('footer').innerHTML = data;
+        });
+}
 
 async function getUserAddress() {
     try {
@@ -71,7 +83,7 @@ async function getUserAddress() {
         response.data.addresses.forEach(element => {
             const latLongKey = `${element.latitude},${element.longitude}`;
             userAddresses[latLongKey] = element;
-            const formattedAddress = formatAddress(element);            
+            const formattedAddress = formatAddress(element);
 
             const option = document.createElement('option');
             option.value = latLongKey;
@@ -85,7 +97,6 @@ async function getUserAddress() {
 
         });
     } catch (error) {
-        console.log(error)
         showToast(error.response.data.message || "Error al obtener la dirección", toastTypes.WARNING);
     }
 }
@@ -112,25 +123,27 @@ function formatAddress(address) {
 }
 
 function confirmChangeOfAddres(event) {
-   let selectValue = event.target.value
-   if(selectValue != ""){
-    let { modalInstance, primaryBtn, secondaryBtn } = createConfirmationModal("Cuidado", "¿Estas seguro que quieres cambiar la dirección de envio?, los productos en tu carrito se podrian perder.", modalTypes.DANGER, "Confirmar.")
-    modalInstance.show()
-    primaryBtn.onclick = function(){
-        updateCurrentAddress(userAddresses[selectValue])
+    let selectValue = event.target.value
+    if (selectValue != "") {
+        let { modalInstance, primaryBtn, secondaryBtn } = createConfirmationModal("Cuidado", "¿Estas seguro que quieres cambiar la dirección de envio?, los productos en tu carrito se podrian perder.", modalTypes.DANGER, "Confirmar.")
+        modalInstance.show()
+        primaryBtn.onclick = function () {
+            updateCurrentAddress(userAddresses[selectValue])
+        }
+        secondaryBtn.onclick = function () {
+            addressesComboBox.selectedIndex = 0
+            modalInstance.hide()
+        }
     }
-    secondaryBtn.onclick = function() {
-        modalInstance.hide()
-    }
-   }
 }
 
-async function updateCurrentAddress(newAddress){
+async function updateCurrentAddress(newAddress) {
     try {
-        let response = await axios.put(`${API_URL}users/${USER_ID}/addresses`,{
+        let response = await axios.put(`${API_URL}users/${USER_ID}/addresses`, {
             address: newAddress
         })
         showToast(response.data.message, toastTypes.SUCCESS)
+        window.location.reload()
     } catch (error) {
         showToast(error.response.data.message, toastTypes.WARNING)
     }
@@ -139,6 +152,8 @@ async function updateCurrentAddress(newAddress){
 
 async function getNearestBranch(asddressData) {
     try {
+        let token = getInstance().token;
+
         let response = await axios.get(`${API_URL}branches/`, {
             params: {
                 location: {
@@ -146,11 +161,13 @@ async function getNearestBranch(asddressData) {
                     longitude: asddressData.longitude,
                     type: asddressData.type
                 }
-            }
+            },
+            headers: { 'Authorization': `Bearer ${token}` }
         })
         return response.data.branches
     } catch (error) {
-        showToast(error.response.data.message, toastTypes.WARNING)
+        const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
+        showToast(errorMessage, toastTypes.DANGER);
     }
 }
 
@@ -160,6 +177,9 @@ async function loadProductsFromNearestBranch(branchToConsult) {
         if (response.status < 300 && response.status > 199) {
             branch = response.data.branch
             branchNameLabel.innerHTML = branch.name
+            if (response.data.branch.branchProducts.length == 0) {
+                showToast("No hay productos disponibles en esta sucursal", toastTypes.SUCCESS)
+            }
             response.data.branch.branchProducts.forEach(element => {
                 if (!categories.some(category => category._id === element.product.category._id)) {
                     categories.push(element.product.category);
@@ -178,6 +198,7 @@ async function loadProductsFromNearestBranch(branchToConsult) {
                 });
                 document.getElementById("main-container").appendChild(categorySection)
             });
+            createCategoriesListBoxItems(categories, branch)
             showToast(response.data.message, toastTypes.SUCCESS)
 
         }
@@ -187,9 +208,10 @@ async function loadProductsFromNearestBranch(branchToConsult) {
 
     } catch (error) {
         const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
-        showToast(errorMessage, toastTypes.DANGER); 
+        showToast(errorMessage, toastTypes.DANGER);
     }
 }
+
 
 
 function createCategorySection(category) {

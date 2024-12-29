@@ -1,5 +1,3 @@
-const API_URL = 'http://127.0.0.1:3000/api/v1/'
-
 let productName
 let productDescription
 let productCode
@@ -63,9 +61,14 @@ async function loadCategories() {
 }
 
 async function loadBranches() {
+    let token = getInstance().token;
+
     axios.get(`${API_URL}branches/`, {
         params: {
             recoverProduct: false
+        },
+        headers: {
+            'Authorization': `Bearer ${token}`
         }
     }).then((response) => {
         branchesList.innetHTML = ""
@@ -74,6 +77,7 @@ async function loadBranches() {
             branchesList.appendChild(branchCard)
         });
     }).catch((error) => {
+
         showToast("Ocurrio algo inesperado al cargar las sucursales. Verirfique su conexión e inténtelo mas tarde", toastTypes.DANGER)
     })
 }

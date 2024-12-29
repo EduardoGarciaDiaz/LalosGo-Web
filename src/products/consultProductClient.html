@@ -1,32 +1,39 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página principal</title>    
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>    
-    <script src="../utils/toast-utils.js"></script>
-    <script src="./js/consultProductsClient.js"></script>
-    <script src="../utils/commonRegeexValidations.js"></script>
-    <script src="../global/singleton.js"></script>
-    <script src="/src/utils/header-utils.js"></script>
-    <script src="../utils/modal-utils.js"></script>
+    <title>Página principal</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="./styles/consultProdcutsClient.css" rel="stylesheet">
+
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="../global/global.js"></script>
+    <script src="../global/singleton.js"></script>
+    <script src="../utils/toast-utils.js"></script>
+    <script src="../utils/commonRegeexValidations.js"></script>
+    <script src="/src/utils/header-utils.js"></script>
+    <script src="../utils/modal-utils.js"></script>
+    <script src="./js/consultProductsClient.js"></script>
 </head>
 
 <body>
-    <div id="header-container"></div>
+    <header id="header-container"></header>
 
     <section class="container-fluid p-0 ">
         <div id="banner-carousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
-                <iframe src="./resources/banner-bargains.html" class="w-100 carousel-item active" scrolling="no" style="height: 330px;"></iframe>
-                <iframe src="./resources/banner-blackFridat.html" class="w-100 carousel-item" scrolling="no" style="height: 330px;"></iframe>
-                <iframe src="./resources/banner-credit-cards.html" class="w-100 carousel-item" scrolling="no" style="height: 330px;"></iframe>
+                <iframe src="./resources/banner-bargains.html" class="w-100 carousel-item active" scrolling="no"
+                    style="height: 330px;"></iframe>
+                <iframe src="./resources/banner-blackFridat.html" class="w-100 carousel-item" scrolling="no"
+                    style="height: 330px;"></iframe>
+                <iframe src="./resources/banner-credit-cards.html" class="w-100 carousel-item" scrolling="no"
+                    style="height: 330px;"></iframe>
             </div>
 
             <button class="carousel-control-prev" type="button" data-bs-target="#banner-carousel" data-bs-slide="prev">
@@ -39,7 +46,6 @@
             </button>
         </div>
     </section>
-
 
     <!-- Store Selector Section -->
     <section class="container mt-5">
@@ -65,50 +71,55 @@
         </div>
     </section>
 
-    
-    <div id="main-container"></div>
-    
+
+    <div id="main-container" class="min-vh-100"></div>
 
 
-    <div id="productsDetailsModal" class="modal fade" tabindex="-1" aria-labelledby="products-details-label" aria-hidden="true">
+
+    <div id="productsDetailsModal" class="modal fade" tabindex="-1" aria-labelledby="products-details-label"
+        aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="products-details-label">Detalles del producto</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-    
+
                 <div class="modal-body p-4">
                     <div class="row">
                         <div class="col-md-4 rounded bg-light d-flex justify-content-center align-items-center">
-                            <img  alt="Bacardi Raspberry" class="img-fluid" id="product-image">
+                            <img alt="Bacardi Raspberry" class="img-fluid" id="product-image">
                         </div>
-    
+
                         <div class="col-md-8">
                             <h2 id="product-name"></h2>
                             <p id="product-price"></p>
                             <p id="product-description"> </p>
-                            
+
                             <ul class="list-group mb-3" id="product-details">
                                 <li id="product-weigth" class="list-group-item"></li>
                                 <li id="product-unitMeasure" class="list-group-item"></li>
-                                <li id="product-stock" class="list-group-item"></li>                                
+                                <li id="product-stock" class="list-group-item"></li>
                                 <li id="product-limit" class="list-group-item"></li>
                             </ul>
-                            
+
                             <div>
-                                
+
                             </div>
 
                             <h6>Elige la cantidad a comprar</h6>
                             <div class="input-group mb-3 gap-1" id="product-quantity">
-                                <button id="less-btn" class="btn btn-outline-secondary" onclick="deacreaseQuantity()" type="button">-</button>
-                                <input id="product-quantity-input"  oninput="numberOnly(this.id)" type="text" class="form-control text-center"  aria-label="Cantidad">
-                                <button id="more-btn"  class="btn btn-outline-secondary" onclick="increaseQuantity()" type="button">+</button>
+                                <button id="less-btn" class="btn btn-outline-secondary" onclick="deacreaseQuantity()"
+                                    type="button">-</button>
+                                <input id="product-quantity-input" oninput="numberOnly(this.id)" type="text"
+                                    class="form-control text-center" aria-label="Cantidad">
+                                <button id="more-btn" class="btn btn-outline-secondary" onclick="increaseQuantity()"
+                                    type="button">+</button>
                             </div>
-    
+
                             <div class="modal-footer d-flex justify-content-end">
-                                <button class="btn btn-primary" onclick="addProductToCartFromModal()" id="add-to-cart">Agregar al carrito</button>
+                                <button class="btn btn-primary" onclick="addProductToCartFromModal()"
+                                    id="add-to-cart">Agregar al carrito</button>
                             </div>
                         </div>
                     </div>
@@ -116,9 +127,9 @@
             </div>
         </div>
     </div>
-    
 
-    
+
+
 </body>
 
 

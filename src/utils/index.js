@@ -1,3 +1,7 @@
 document.addEventListener("DOMContentLoaded", async() =>{
-    $("#footer").load("/src/shared/footer.html")
+    fetch('/src/shared/footer.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('footer').innerHTML = data;
+    });
 })

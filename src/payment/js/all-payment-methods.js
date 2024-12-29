@@ -1,17 +1,31 @@
-const URL_IMAGE_VISA='../assets/images/visa.png';
-const URL_IMAGE_MASTERCARD='../assets/images/mastercard.png';
+const URL_IMAGE_VISA = '../assets/images/visa.png';
+const URL_IMAGE_MASTERCARD = '../assets/images/mastercard.png';
 var paymentMethodsNumber = 0;
 var userId;
 
-window.onload = function() {
+let role = getInstance().role;
+if (role !== roles.CUSTOMER) {
+    window.history.back();
+}
+
+fetch('/src/shared/footer.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('footer').innerHTML = data;
+    });
+
+window.onload = function () {
     userId = getInstance().id;
     getAllPaymentMethods();
     loadBanksOnComboBox();
 }
 
 function getAllPaymentMethods() {
+    let token = getInstance().token;
     axios
-        .get(`${API_URL}users/${userId}/payment-methods`)
+        .get(`${API_URL}users/${userId}/payment-methods`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
         .then((response) => {
             let paymentMethods = response.data.userPaymentMethods;
             if (!paymentMethods || paymentMethods.length === 0) {
@@ -46,18 +60,18 @@ const BANKS = [
 
 function loadBanksOnComboBox() {
     let bankEmisorSelector = document.getElementById('bankSelect');
-    
+
     BANKS.forEach(bank => {
         const option = document.createElement("option");
         option.value = bank.value;
         option.textContent = bank.text;
-    
+
         if (bank.disabled) option.disabled = true;
         if (bank.selected) option.selected = true;
-    
+
         bankEmisorSelector.appendChild(option);
     });
-    
+
 }
 
 function addPaymentMethodToContainer(paymentMethod) {
@@ -68,7 +82,7 @@ function addPaymentMethodToContainer(paymentMethod) {
 }
 
 function createPaymentMethodCard(newPaymentMethod) {
-    if (!newPaymentMethod) { 
+    if (!newPaymentMethod) {
         return;
     }
 
@@ -88,13 +102,13 @@ function createPaymentMethodCard(newPaymentMethod) {
     const paymentMethodContainer = document.createElement('div');
     paymentMethodContainer.classList.add(
         'payment-methods-container', 'd-flex', 'justify-content-between',
-        'align-items-center', 'border', 'ps-3','pe-3', 'pt-1','pb-1', 'mb-3', 'rounded'
+        'align-items-center', 'border', 'ps-3', 'pe-3', 'pt-1', 'pb-1', 'mb-3', 'rounded'
     );
     paymentMethodContainer.id = newPaymentMethod._id;
 
     const cardInfo = document.createElement('div');
     cardInfo.classList.add('card-info');
-    
+
     const cardEmitterTitle = document.createElement('h4');
     cardEmitterTitle.textContent = cardEmitter;
     cardEmitterTitle.id = 'card-emitter';
@@ -122,7 +136,7 @@ function createPaymentMethodCard(newPaymentMethod) {
 
     const cardOptions = document.createElement('div');
     cardOptions.classList.add('card-options', 'd-flex');
-    
+
     const cardImage = document.createElement('img');
     cardImage.src = imageUrl;
     cardImage.alt = 'Red de pago: ' + paymentNetwork;
@@ -140,7 +154,7 @@ function createPaymentMethodCard(newPaymentMethod) {
 
     paymentMethodContainer.appendChild(cardOptions);
 
-    deleteBtn.addEventListener('click', function(event) {
+    deleteBtn.addEventListener('click', function (event) {
         event.preventDefault();
         showDeleteConfirmation(newPaymentMethod);
     });
@@ -148,32 +162,35 @@ function createPaymentMethodCard(newPaymentMethod) {
     return paymentMethodContainer;
 }
 
-function showDeleteConfirmation(paymentMethod) {    
+function showDeleteConfirmation(paymentMethod) {
     const MODAL_TITLE = 'Eliminar método de pago';
     const MODAL_MESSAGE = `¿Estás seguro que deseas eliminar el método de pago con terminación ${paymentMethod.cardNumber.slice(-4)}?`;
     const MODAL_PRIMARY_BTN_TEXT = 'Eliminar';
 
     const { modalInstance, primaryBtn, secondaryBtn } = createConfirmationModal(
-        MODAL_TITLE, 
-        MODAL_MESSAGE, 
-        modalTypes.DANGER, 
+        MODAL_TITLE,
+        MODAL_MESSAGE,
+        modalTypes.DANGER,
         MODAL_PRIMARY_BTN_TEXT
     );
     modalInstance.show();
 
-    primaryBtn.onclick = async function() {
+    primaryBtn.onclick = async function () {
         await deletePaymentMethod(paymentMethod._id);
         modalInstance.hide();
     }
 
-    secondaryBtn.onclick = function() {
+    secondaryBtn.onclick = function () {
         modalInstance.hide();
     }
 }
 
 async function deletePaymentMethod(paymentMethodId) {
+    let token = getInstance().token;
     await axios
-        .delete(`${API_URL}users/${userId}/payment-methods/${paymentMethodId}`)
+        .delete(`${API_URL}users/${userId}/payment-methods/${paymentMethodId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
         .then((response) => {
             showToast("Método de pago eliminado", toastTypes.SUCCESS);
             removePaymentMethodFromUI(paymentMethodId);
