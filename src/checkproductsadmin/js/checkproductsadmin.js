@@ -100,7 +100,7 @@ function addNewProduct(){
 }
 
 function viewProduct(productId) {
-    sessionStorage.clear('productData');
+    sessionStorage.removeItem('productData');
     sessionStorage.setItem('productData', JSON.stringify(allProducts.find(product => product._id === productId)));
     window.location.href = "http://127.0.0.1:5500/src/checkproductsadmin/checkproductdetails.html";
 }
@@ -126,7 +126,7 @@ function removeAccents(str) {
 }
 
 function editProduct(index) {
-    sessionStorage.clear('productData');
+    sessionStorage.removeItem('productData');
     sessionStorage.setItem('productData', JSON.stringify(allProducts.find(product => product._id === index)));
-    window.location.href = "/src/checkproductsadmin/checkproductdetails.html";
+    window.location.href = "/src/products/edit-product-form.html";
 }
