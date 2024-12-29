@@ -42,3 +42,17 @@
     gap: 20px;
     padding: 20px;
 }
+
+.not-searched {
+    display: none;
+}
+
+.searched {
+    display: block;
+}
+
+
+.form-container {
+    max-width: 700px;
+    margin: 0 auto;
+}

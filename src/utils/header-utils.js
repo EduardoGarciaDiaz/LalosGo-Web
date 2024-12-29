@@ -67,7 +67,7 @@ function createCategoriesListBoxItems(categoriesToProcess, branch) {
     }
     
     let categoriesHeaderDropDown = document.getElementById('dropdown-categories-navbar');
-    
+    if(!categoriesHeaderDropDown) return;
     categoriesHeaderDropDown.innerHTML = ''; 
     categoriesToProcess.forEach(element => {
         const liElement = document.createElement("li");
