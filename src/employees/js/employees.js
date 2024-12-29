@@ -1,34 +1,70 @@
 const API_URL = 'http://127.0.0.1:3000/api/v1/';
 
 window.onload = function () {
-    document.getElementById('add-employee-btn').addEventListener('click', goToAddEmployee);
-    const searchBtn = document.getElementById('search-btn');
+    setupEventListeners();
+    loadInitialData();
+}
+
+function setupEventListeners() {
+    const addEmployeeButton = document.getElementById('add-employee-btn');
+    addEmployeeButton.addEventListener('click', goToAddEmployee);
+
     const searchInput = document.getElementById('search-input');
+    const searchButton = document.getElementById('search-btn');
+
     searchInput.addEventListener('keydown', (event) => {
-
-
-        if (event.key === 'Enter') {
-            searchEmployees(searchInput.value.trim());
-        }
+        if (event.key === 'Enter') searchEmployees(searchInput.value.trim());
     });
 
     searchInput.addEventListener('input', () => {
-        if (searchInput.value === '') {
-            showAllEmployees();
-        }
+        if (searchInput.value === '') showAllEmployees();
     });
 
-    searchBtn.addEventListener('click', () => {
-        searchEmployees(searchInput.value.trim());
-    });
+    searchButton.addEventListener('click', () => searchEmployees(searchInput.value.trim()));
+}
 
+function loadInitialData() {
     loadEmployees();
+    loadBranches();
 }
 
 function loadEmployees() {
     clearAllEmployees();
     getAllEmployees();
 }
+
+function loadBranches() {
+    let branchesDropdown = document.getElementById('branch-dropdown');
+    let token = getInstance().token;
+    axios
+        .get(`${API_URL}branches/`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
+        .then((response) => {
+            let branches = response.data.branches;
+
+            if (!branches || branches.length === 0) {
+                showToast("No se encontraron sucursales registradas", toastTypes.PRIMARY);
+                return;
+            }
+
+            branches.forEach(branch => {
+                const branchOption = document.createElement('li');
+                const branchLink = document.createElement('a');
+                branchLink.classList.add('dropdown-item');
+                branchLink.textContent = branch.name;
+                branchLink.href = "#";
+                branchLink.addEventListener('click', () => filterEmployeesByBranch(branch.name));
+                branchOption.appendChild(branchLink);
+                branchesDropdown.appendChild(branchOption);
+            });
+        })
+        .catch((error) => {
+            const message = error.response?.data?.message || "Error al cargar las sucursales";
+            showToast(message, toastTypes.WARNING);
+        });
+}
+
 
 function clearAllEmployees() {
     let employeesContainer = document.getElementById('employees-container');
@@ -62,22 +98,35 @@ function getAllEmployees() {
 }
 
 function searchEmployees(inputValue) {
+    filterEmployees('name', inputValue.toLowerCase());
+}
+
+function filterEmployeesByBranch(branchName) {
+    filterEmployees('branch', branchName);
+}
+
+function filterEmployees(type, value) {
     let employeesContainer = document.getElementById('employees-container');
-    if (inputValue !== undefined && inputValue) {
-        const searchTerm = inputValue.toLowerCase();
+    value = value.toLowerCase();
+    Array.from(employeesContainer.children).forEach(employeeCard => {
+        let isMatch = false;
 
-        Array.from(employeesContainer.children).forEach(employeeCard => {
+        if (type === 'name') {
             const employeeName = employeeCard.querySelector('.employee-name').textContent.toLowerCase();
+            isMatch = employeeName.includes(value);
+        } else if (type === 'branch') {
+            let branch = employeeCard.querySelector('.employee-branch').textContent.toLowerCase();
+            isMatch = branch.includes(value);
+        }
 
-            if (employeeName.includes(searchTerm)) {
-                employeeCard.classList.remove('not-searched');
-                employeeCard.classList.add('searched');
-            } else {
-                employeeCard.classList.remove('searched');
-                employeeCard.classList.add('not-searched');
-            }
-        });
-    }
+        if (isMatch) {
+            employeeCard.classList.remove('not-searched');
+            employeeCard.classList.add('searched');
+        } else {
+            employeeCard.classList.remove('searched');
+            employeeCard.classList.add('not-searched');
+        }
+    });
 }
 
 function showAllEmployees() {
@@ -85,8 +134,7 @@ function showAllEmployees() {
     Array.from(employeesContainer.children).forEach(employeeCard => {
         employeeCard.classList.remove('not-searched', 'searched');
     });
-};
-
+}
 function toggleEmployeeStatus(employeeId) {
     if (employeeId !== undefined && employeeId) {
         axios
@@ -98,11 +146,11 @@ function toggleEmployeeStatus(employeeId) {
                     return;
                 }
 
-                showToast(response.data.message, toastTypes.SUCCESS);
+                showToast("Estado del empleado actualizado correctamente", toastTypes.SUCCESS);
                 loadEmployees();
             })
             .catch((error) => {
-                showToast(error.response.data.message, toastTypes.WARNING);
+                showToast("Error al actualizar el estado del empleado", toastTypes.WARNING);
             });
     }
 }
@@ -136,12 +184,14 @@ function createEmployeeCard(employeeData) {
 
     const hiredDateParagraph = document.createElement('p');
     hiredDateParagraph.classList.add('mb-1');
-    hiredDateParagraph.textContent = `Fecha de ingreso: '${new Date(employeeData.employee.hiredDate).toLocaleDateString()}`;
+    hiredDateParagraph.textContent = `Fecha de ingreso: ${new Date(employeeData.employee.hiredDate).toLocaleDateString()}`;
     infoDiv.appendChild(hiredDateParagraph);
 
+    let branchName = employeeData.employee.branch ? employeeData.employee.branch.name : 'Sin asignar';
+
     const branchNameParagraph = document.createElement('p');
-    branchNameParagraph.classList.add('mb-3');
-    branchNameParagraph.textContent = `Sucursal: ${employeeData.employee.branch.name}`;
+    branchNameParagraph.classList.add('mb-3', 'employee-branch');
+    branchNameParagraph.textContent = `Sucursal: ${branchName}`;
     infoDiv.appendChild(branchNameParagraph);
 
     const statusParagraph = document.createElement('p');
@@ -199,5 +249,6 @@ function createEmployeeCard(employeeData) {
 }
 
 function goToAddEmployee() {
-    // Redirect to add employee page
+    
+    window.location.href = './employee-form.html';
 }
