@@ -11,8 +11,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 fetch('/src/shared/footer.html')
     .then(response => response.text())
-    .then(data => {
+    .then(async data => {
         document.getElementById('footer').innerHTML = data;
+        const products = await getProducts()
+        renderProducts(products);
+        await loadCategories();
     });
 
 async function getProducts() {

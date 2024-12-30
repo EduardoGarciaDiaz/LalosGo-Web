@@ -1,3 +1,6 @@
+var productEditingId = ""
+let isImageChanged = false
+
 let productName
 let productDescription
 let productCode
@@ -38,7 +41,8 @@ document.addEventListener("DOMContentLoaded",  () => {
 
 window.addEventListener("load", async () =>{
     let productData = JSON.parse(sessionStorage.getItem('productData'));   
-    if(productData){        
+    if(productData){      
+        productEditingId = productData._id
         await loadCategories(productData);    
         loadProductInfo(productData)
         await loadBranches(productData._id);
@@ -49,15 +53,18 @@ fetch('/src/shared/footer.html')
     .then(response => response.text())
     .then(data => {
         document.getElementById('footer').innerHTML = data;
+        isImageChanged = false;
 });
 
 
 async function loadCategories(product) {
-    axios.get(API_URL + 'categories/', {
-        params: {
-            api_key: "00000" //CAMBIAR 
-        },
-    }).then((response) => {
+    let token = getInstance().token;
+    axios.get(API_URL + 'categories/',{
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    }
+    ).then((response) => {
         response.data.category.forEach((category) => {
             const option = document.createElement('option')
             option.value = category.name
@@ -79,7 +86,7 @@ async function loadBranches(productId) {
 
     axios.get(`${API_URL}branches/${productId}`, {
         headers: {
-            'Authorization': `Bearer ${2}`
+            'Authorization': `Bearer ${token}`
         }
     }).then((response) => {
         branchesList.innetHTML = ""
@@ -88,7 +95,6 @@ async function loadBranches(productId) {
             branchesList.appendChild(branchCard)
         });
     }).catch((error) => {
-        console.log(error)
         showToast("Ocurrio algo inesperado al cargar las sucursales. Verirfique su conexión e inténtelo mas tarde", toastTypes.DANGER)
     })
 }
@@ -111,7 +117,7 @@ function loadProductInfo(product){
 }
 
 
-async function saveProduct() {
+async function saveEditedProduct() {
     if (!checkEmptyFields()) {
         return
     }
@@ -127,35 +133,46 @@ async function saveProduct() {
     }
 
     try {
-        let response = await axios.post(API_URL + 'products/', {
-            barCode: productCode.value,
-            name: productName.value,
-            description: productDescription.value,
-            unitPrice: productPrice.value,
-            expireDate: productExpirationDate.value,
-            weight: productWeight.value,
-            limit: productLimit.value,
-            productStatus: true,
-            unitMeasure: productUnit.value,
-            category: productCategory.options[productCategory.selectedIndex].id,
-            branches: selectedBranches
-        })
-        if (response.status < 300 && response.status > 199) {
-
-            showToast(response.data.message, toastTypes.SUCCESS)
-            let responseImage = await axios.put(`${API_URL}products/${response.data.product._id}`, imageData)
+        let token = getInstance().token;
+        let response = await axios.put(
+            `${API_URL}products/${productEditingId}`,
+            {
+                barCode: productCode.value,
+                name: productName.value,
+                description: productDescription.value,
+                unitPrice: productPrice.value,
+                expireDate: productExpirationDate.value,
+                weight: productWeight.value,
+                limit: productLimit.value,
+                productStatus: true,
+                unitMeasure: productUnit.value,
+                category: productCategory.options[productCategory.selectedIndex].id,
+                branches: selectedBranches
+            },
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        );
+        
+        showToast(response.data.message, toastTypes.SUCCESS)
+        if (response.status < 300 && response.status > 199 && isImageChanged) {
+            let responseImage = await axios.put(`${API_URL}products/${response.data.product._id}/images`, imageData)
             if (responseImage.status < 300 && responseImage.status > 199) {
-                showToast(responseImage.data.message, toastTypes.SUCCESS)
+                showToast(responseImage.data.message, toastTypes.SUCCESS)                
             }
             else {
                 showToast(responseImage.data.message, toastTypes.WARNING)
-            }
-            clearFields()
+            }            
         }
-        else {
-            showToast(response.data.message, toastTypes.WARNING)
-        }
+        setTimeout(() => {        
+            clearFields()            
+            sessionStorage.removeItem('productData');
+            history.back()
+        }, 2000);   
     } catch (error) {
+        console.log(error)
         showToast("Ocurrio algo inesperado al realizar la petición. Revise su conexión a internet e inténtelo mas tarde", toastTypes.WARNING)
     }
 }
@@ -378,9 +395,10 @@ function loadImageFromUrl(url) {
                     errorImageSpan.className = "text-danger";
                     errorImageSpan.classList.add("is-invalid");
                 });
+           
         }
     };
-
+    
     img.onerror = () => {
         errorImageSpan.textContent = "No se pudo cargar la imagen desde la URL inicial.";
         errorImageSpan.className = "text-danger";
@@ -390,61 +408,49 @@ function loadImageFromUrl(url) {
 }
 
 function uploadImage(event) {
-    let file = event.target.files ? event.target.files[0] : null;
+    let file = event.target.files[0]
+    if (file) {
 
-    const handleImage = (imageSrc, fromFile = false) => {
+        const maxSize = 10 * 1024 * 1024;
+        if (file.size > maxSize) {
+            errorImageSpan.textContent = "El tamaño de la imagen no debe exceder los 10 MB.";
+            errorImageSpan.className = "text-danger"
+            errorImageSpan.classList.add("is-invalid")
+            productImg.src = ""
+            inputImage.value = ""
+            imageData = new FormData()
+            return;
+        } else {
+            errorImageSpan.className = "d-none"
+            errorImageSpan.classList.remove("is-invalid")
+        }
+
         let img = new Image();
-        img.src = imageSrc;
+        let reader = new FileReader();
+
+        reader.onload = (e) => {
+            img.src = e.target.result;
+        };
 
         img.onload = () => {
             if (img.width !== 225 || img.height !== 225) {
                 errorImageSpan.textContent = "El tamaño de la imagen debe de ser de 225x225.";
-                errorImageSpan.className = "text-danger";
-                errorImageSpan.classList.add("is-invalid");
-                productImg.src = "";
-                if (fromFile) inputImage.value = "";
-                imageData = new FormData();
-            } else {
-                errorImageSpan.className = "d-none";
-                errorImageSpan.classList.remove("is-invalid");
-                productImg.src = imageSrc;
-                productImg.style.display = "block";
-
-                if (fromFile) {
-                    imageData.append('image', file);
-                }
+                errorImageSpan.className = "text-danger"
+                errorImageSpan.classList.add("is-invalid")
+                productImg.src = ""
+                inputImage.value = ""
+                imageData = new FormData()
+            } else {             
+                imageData = new FormData()       
+                errorImageSpan.className = "d-none"
+                errorImageSpan.classList.remove("is-invalid")
+                productImg.src = img.src
+                productImg.style.display = "block"
+                imageData.append('image', file)           
+                isImageChanged = true
             }
         };
-
-        img.onerror = () => {
-            errorImageSpan.textContent = "No se pudo cargar la imagen. Verifique el archivo.";
-            errorImageSpan.className = "text-danger";
-            errorImageSpan.classList.add("is-invalid");
-            productImg.src = "";
-        };
-    };
-
-    if (file) {
-        const maxSize = 10 * 1024 * 1024;
-
-        if (file.size > maxSize) {
-            errorImageSpan.textContent = "El tamaño de la imagen no debe exceder los 10 MB.";
-            errorImageSpan.className = "text-danger";
-            errorImageSpan.classList.add("is-invalid");
-            productImg.src = "";
-            inputImage.value = "";
-            imageData = new FormData();
-            return;
-        } else {
-            errorImageSpan.className = "d-none";
-            errorImageSpan.classList.remove("is-invalid");
-        }
-
-        let reader = new FileReader();
-        reader.onload = (e) => {
-            handleImage(e.target.result, true);
-        };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(file)
     }
 }
 
@@ -535,7 +541,8 @@ function registryCancelation(){
     primaryBtn.onclick = function(){
         clearFields()        
         modalInstance.hide()
-        //TODO:GO BACK TO CONSULT PRODUCTS
+        sessionStorage.removeItem('productData');
+        history.back()
     }
     secondaryBtn.onclick = function() {
         modalInstance.hide()

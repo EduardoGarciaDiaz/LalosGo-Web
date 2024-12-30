@@ -121,7 +121,7 @@ async function saveProduct() {
         if (response.status < 300 && response.status > 199) {
 
             showToast(response.data.message, toastTypes.SUCCESS)
-            let responseImage = await axios.put(`${API_URL}products/${response.data.product._id}`, imageData)
+            let responseImage = await axios.post(`${API_URL}products/${response.data.product._id}/images`, imageData)
             if (responseImage.status < 300 && responseImage.status > 199) {
                 showToast(responseImage.data.message, toastTypes.SUCCESS)
             }
@@ -352,7 +352,6 @@ function uploadImage(event) {
 
         reader.onload = (e) => {
             img.src = e.target.result;
-            console.log("4")           
         };
 
         img.onload = () => {
@@ -368,7 +367,8 @@ function uploadImage(event) {
                 errorImageSpan.classList.remove("is-invalid")
                 productImg.src = img.src
                 productImg.style.display = "block"
-                imageData.append('image', file)                    
+                imageData.append('image', file)     
+                console.log(imageData)               
             }
         };
         reader.readAsDataURL(file)
@@ -455,7 +455,7 @@ function registryCancelation(){
     primaryBtn.onclick = function(){
         clearFields()        
         modalInstance.hide()
-        //TODO:GO BACK TO CONSULT PRODUCTS
+        history.back()
     }
     secondaryBtn.onclick = function() {
         modalInstance.hide()
