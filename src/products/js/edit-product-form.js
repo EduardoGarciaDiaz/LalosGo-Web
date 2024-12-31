@@ -1,3 +1,6 @@
+var productEditingId = ""
+let isImageChanged = false
+
 let productName
 let productDescription
 let productCode
@@ -14,7 +17,7 @@ var imageData = new FormData()
 let branchesList
 let errorImageSpan
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded",  () => {
     productName = document.getElementById("name-product")
     productDescription = document.getElementById("description-product");
     productCode = document.getElementById("code-product");
@@ -36,23 +39,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
-window.onload = async function () {
-    await loadCategories();
-    await loadBranches();
-}
+window.addEventListener("load", async () =>{
+    let productData = JSON.parse(sessionStorage.getItem('productData'));   
+    if(productData){      
+        productEditingId = productData._id
+        await loadCategories(productData);    
+        loadProductInfo(productData)
+        await loadBranches(productData._id);
+    }
+})
 
 fetch('/src/shared/footer.html')
     .then(response => response.text())
     .then(data => {
         document.getElementById('footer').innerHTML = data;
-    });
+        isImageChanged = false;
+});
 
-async function loadCategories() {
-    axios.get(API_URL + 'categories/', {
-        params: {
-            api_key: "00000" //CAMBIAR 
-        },
-    }).then((response) => {
+
+async function loadCategories(product) {
+    let token = getInstance().token;
+    axios.get(API_URL + 'categories/',{
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    }
+    ).then((response) => {
         response.data.category.forEach((category) => {
             const option = document.createElement('option')
             option.value = category.name
@@ -60,36 +72,52 @@ async function loadCategories() {
             option.id = category._id
             productCategory.appendChild(option)
         })
+        let categoryIndex = Array.from(productCategory.options).findIndex(
+            (cat) => cat.id === product.category._id
+        );        
+        productCategory.selectedIndex = categoryIndex;
     }).catch((error) => {
         showToast("Ocurrio algo inesperado al cargar las categorías. Verirfique su conexión e inténtelo mas tarde.", toastTypes.DANGER);
     })
-
 }
 
-async function loadBranches() {
+async function loadBranches(productId) {
     let token = getInstance().token;
 
-    axios.get(`${API_URL}branches/`, {
-        params: {
-            recoverProduct: false
-        },
+    axios.get(`${API_URL}branches/${productId}`, {
         headers: {
             'Authorization': `Bearer ${token}`
         }
     }).then((response) => {
         branchesList.innetHTML = ""
         response.data.branches.forEach(element => {
-            const branchCard = createCheckboxWithNumber(element._id, element.name)
+            const branchCard = createCheckboxWithNumber(element)
             branchesList.appendChild(branchCard)
         });
     }).catch((error) => {
-
         showToast("Ocurrio algo inesperado al cargar las sucursales. Verirfique su conexión e inténtelo mas tarde", toastTypes.DANGER)
     })
 }
 
+function loadProductInfo(product){
+    productName.value = product.name
+    productDescription.value = product.description
+    productCode.value = product.barCode
+    generateBarCode()
+    productPrice.value = product.unitPrice
+    productWeight.value = product.weight    
+    productExpirationDate.value = formatDateToISO(product.expireDate)       
+    let unitMeasureIndex = Array.from(productUnit.options).findIndex(
+        (unt) => unt.value == product.unitMeasure
+    )
+    productUnit.selectedIndex = unitMeasureIndex
+    productLimit.value = product.limit    
+    loadImageFromUrl(product.image)
 
-async function saveProduct() {
+}
+
+
+async function saveEditedProduct() {
     if (!checkEmptyFields()) {
         return
     }
@@ -105,35 +133,46 @@ async function saveProduct() {
     }
 
     try {
-        let response = await axios.post(API_URL + 'products/', {
-            barCode: productCode.value,
-            name: productName.value,
-            description: productDescription.value,
-            unitPrice: productPrice.value,
-            expireDate: productExpirationDate.value,
-            weight: productWeight.value,
-            limit: productLimit.value,
-            productStatus: true,
-            unitMeasure: productUnit.value,
-            category: productCategory.options[productCategory.selectedIndex].id,
-            branches: selectedBranches
-        })
-        if (response.status < 300 && response.status > 199) {
-
-            showToast(response.data.message, toastTypes.SUCCESS)
-            let responseImage = await axios.post(`${API_URL}products/${response.data.product._id}/images`, imageData)
+        let token = getInstance().token;
+        let response = await axios.put(
+            `${API_URL}products/${productEditingId}`,
+            {
+                barCode: productCode.value,
+                name: productName.value,
+                description: productDescription.value,
+                unitPrice: productPrice.value,
+                expireDate: productExpirationDate.value,
+                weight: productWeight.value,
+                limit: productLimit.value,
+                productStatus: true,
+                unitMeasure: productUnit.value,
+                category: productCategory.options[productCategory.selectedIndex].id,
+                branches: selectedBranches
+            },
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        );
+        
+        showToast(response.data.message, toastTypes.SUCCESS)
+        if (response.status < 300 && response.status > 199 && isImageChanged) {
+            let responseImage = await axios.put(`${API_URL}products/${response.data.product._id}/images`, imageData)
             if (responseImage.status < 300 && responseImage.status > 199) {
-                showToast(responseImage.data.message, toastTypes.SUCCESS)
+                showToast(responseImage.data.message, toastTypes.SUCCESS)                
             }
             else {
                 showToast(responseImage.data.message, toastTypes.WARNING)
-            }
-            clearFields()
+            }            
         }
-        else {
-            showToast(response.data.message, toastTypes.WARNING)
-        }
+        setTimeout(() => {        
+            clearFields()            
+            sessionStorage.removeItem('productData');
+            history.back()
+        }, 2000);   
     } catch (error) {
+        console.log(error)
         showToast("Ocurrio algo inesperado al realizar la petición. Revise su conexión a internet e inténtelo mas tarde", toastTypes.WARNING)
     }
 }
@@ -329,6 +368,45 @@ function generateBarCode() {
     }
 }
 
+function loadImageFromUrl(url) {
+    let img = new Image();
+    img.src = url;
+
+    img.onload = () => {
+        if (img.width !== 225 || img.height !== 225) {
+            errorImageSpan.textContent = "El tamaño de la imagen debe de ser de 225x225.";
+            errorImageSpan.className = "text-danger";
+            errorImageSpan.classList.add("is-invalid");
+            productImg.src = "";
+        } else {
+            errorImageSpan.className = "d-none";
+            errorImageSpan.classList.remove("is-invalid");
+            productImg.src = url;
+            productImg.style.display = "block";
+            fetch(url)
+                .then(response => response.blob())
+                .then(blob => {
+                    imageData = new FormData();
+                    imageData.append('image', blob, "image-from-url.png");
+                })
+                .catch(err => {
+                    console.error("Error al cargar la imagen desde la URL:", err);
+                    errorImageSpan.textContent = "No se pudo cargar la imagen desde la URL inicial.";
+                    errorImageSpan.className = "text-danger";
+                    errorImageSpan.classList.add("is-invalid");
+                });
+           
+        }
+    };
+    
+    img.onerror = () => {
+        errorImageSpan.textContent = "No se pudo cargar la imagen desde la URL inicial.";
+        errorImageSpan.className = "text-danger";
+        errorImageSpan.classList.add("is-invalid");
+        productImg.src = "";
+    };
+}
+
 function uploadImage(event) {
     let file = event.target.files[0]
     if (file) {
@@ -362,13 +440,14 @@ function uploadImage(event) {
                 productImg.src = ""
                 inputImage.value = ""
                 imageData = new FormData()
-            } else {                    
+            } else {             
+                imageData = new FormData()       
                 errorImageSpan.className = "d-none"
                 errorImageSpan.classList.remove("is-invalid")
                 productImg.src = img.src
                 productImg.style.display = "block"
-                imageData.append('image', file)     
-                console.log(imageData)               
+                imageData.append('image', file)           
+                isImageChanged = true
             }
         };
         reader.readAsDataURL(file)
@@ -376,8 +455,8 @@ function uploadImage(event) {
 }
 
 
-function createCheckboxWithNumber(branchId, branchName) {
 
+function createCheckboxWithNumber(branch) {
     const container = document.createElement("div");
     container.className = "checkbox-with-number mb-3";
 
@@ -387,16 +466,17 @@ function createCheckboxWithNumber(branchId, branchName) {
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.className = "form-check-input me-2";
-    checkbox.id = branchId;
+    checkbox.id = branch._id;
 
     const label = document.createElement("label");
     label.className = "form-check-label me-3";
-    label.htmlFor = branchId;
-    label.textContent = branchName;
+    label.htmlFor = branch._id;
+    label.textContent = branch.name;
 
     const numberInput = document.createElement("input");
-    numberInput.id = branchId + 1
+    numberInput.id = branch._id + 1
     numberInput.type = "text";
+    numberInput.value = branch.branchProducts[0]?.quantity || 0
     numberInput.oninput = function () {
         numberOnly(numberInput.id);
     };
@@ -410,8 +490,14 @@ function createCheckboxWithNumber(branchId, branchName) {
             numberInput.disabled = false;
         } else {
             numberInput.disabled = true;
+            numberInput.value = 0
         }
     });
+
+    if(branch.branchProducts.length > 0){
+        checkbox.checked = true
+        numberInput.disabled = false;
+    }
 
     checkboxContainer.appendChild(checkbox);
     checkboxContainer.appendChild(label);
@@ -455,6 +541,7 @@ function registryCancelation(){
     primaryBtn.onclick = function(){
         clearFields()        
         modalInstance.hide()
+        sessionStorage.removeItem('productData');
         history.back()
     }
     secondaryBtn.onclick = function() {

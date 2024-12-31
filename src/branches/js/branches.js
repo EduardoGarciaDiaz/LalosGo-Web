@@ -1,8 +1,16 @@
 const branchesContainer = document.getElementById('branches-container');
 
-window.onload = function () {
-    loadBranches();
+let role = getInstance().role;
+if (role !== roles.ADMIN) {
+    window.history.back();
 }
+
+fetch('/src/shared/footer.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('footer').innerHTML = data;
+        loadBranches();
+    });
 
 function loadBranches() {
     clearAllBranches();
@@ -16,11 +24,12 @@ function clearAllBranches() {
 }
 
 function getAllBranches() {
+    let token = getInstance().token;
+
     axios
         .get(`${API_URL}branches/`, {
-            params: {
-                recoverProduct: false
-            }
+            params: { recoverProduct: false },
+            headers: { 'Authorization': `Bearer ${token}` }
         })
         .then((response) => {
             let branches = response.data.branches;
@@ -43,7 +52,6 @@ function getAllBranches() {
         .catch((error) => {
             const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
             showToast(errorMessage, toastTypes.DANGER);
-            console.error(error);
         });
 }
 
@@ -90,9 +98,13 @@ function showAllBranches() {
 };
 
 function toggleBranchStatus(branchId) {
+    let token = getInstance().token;
+
     if (branchId !== undefined && branchId) {
         axios
-            .patch(`${API_URL}branches/${branchId}`)
+            .patch(`${API_URL}branches/${branchId}`, {}, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
             .then((response) => {
                 let updatedBranch = response.data.branch;
                 if (updatedBranch === undefined || !updatedBranch) {
@@ -104,7 +116,6 @@ function toggleBranchStatus(branchId) {
                 loadBranches();
             })
             .catch((error) => {
-                console.error(error);
                 const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
                 showToast(errorMessage, toastTypes.DANGER);
             });

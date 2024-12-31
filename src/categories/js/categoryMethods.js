@@ -1,4 +1,3 @@
-const API_URL = 'http://127.0.0.1:3000/api/v1/'
 const categoryIdentifierRegex = /^[A-Z]{4}\d{3}$/;
 
 let categorySearchBar 
@@ -34,7 +33,14 @@ document.addEventListener("DOMContentLoaded", () => {
     toastWindow = document.getElementById('success-toast');
     toastTitle =  document.getElementById('toast-title');
     toastMessage = document.getElementById('toast-message');
+
 });
+
+fetch('/src/shared/footer.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('footer').innerHTML = data;
+    });
 
 window.onload = async function() {
     await loadCategories()      

@@ -18,6 +18,11 @@ let branchTown
 let branchLocality
 let completeAddress
 
+let role = getInstance().role;
+if (role !== roles.ADMIN) {
+    window.history.back();
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     branchName = document.getElementById("branch-name")
     branchOpeningTime = document.getElementById("branch-opentime")
@@ -43,8 +48,15 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
         branchPageTitle.innerHTML = "Nueva sucursal";
         btnSave.addEventListener("click", () => saveBranch(false));
-    }
+    }    
 });
+
+fetch('/src/shared/footer.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('footer').innerHTML = data;
+    });
+
 
 async function initMap(loadedLocation) {
     var initialLocation = { lat: 19.541186809084778, lng: -96.92744610055618 };
@@ -180,18 +192,23 @@ async function createBranch() {
     }
 
     try {
+        let token = getInstance().token;
+
         let response = await axios.post(API_URL + 'branches/', {
             name,
             openingTime,
             closingTime,
             address
-        })
+        }, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
         if (response.status < 300 && response.status > 199) {
-            showToast(response.data.message, toastTypes.SUCCESS)
-            clearFields()
-        }
-        else {
-            showToast(response.data.message, toastTypes.WARNING)
+            showToast(response.data.message, toastTypes.SUCCESS);
+            clearFields();
+        } else {
+            showToast(response.data.message, toastTypes.WARNING);
         }
 
     } catch (error) {
@@ -200,8 +217,6 @@ async function createBranch() {
         return;
     }
 }
-
-
 
 function checkEmptyFields() {
     let areValidFields = true;

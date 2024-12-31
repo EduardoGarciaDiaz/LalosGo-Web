@@ -1,4 +1,5 @@
 const DEFAULT_TEXT = "0";
+const DELETE_QUANTITY = 0;
 
 function createProductCard(product) {
     const productDetails = product.product;
@@ -92,8 +93,6 @@ function createProductCard(product) {
 }
 
 function deleteItemFromCart(productId) {
-    const DELETE_QUANTITY = 0;
-    console.log(orderId);
     axios
         .patch(`${API_URL}carts/${orderId}`, 
             {
@@ -115,7 +114,6 @@ function deleteItemFromCart(productId) {
             updatePrices();
         })
         .catch((error) => {
-            console.log(error);
             const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
             showToast(errorMessage, toastTypes.DANGER);
         });

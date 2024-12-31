@@ -1,4 +1,4 @@
-const VALID_PASSWORD = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const VALID_PASSWORD = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[_@$!%*?&])[A-Za-z\d@$!_%*?&]{8,}$/;
 const VALID_USERNAME = /^(?![_-])[a-zA-Z0-9_-]{3,16}(?<![_-])$/;
 
 
@@ -28,7 +28,7 @@ async function getLogin(loginData) {
         if(user.status === 'Active'){
             if (role === 'Customer') {
                 //Mandar a la pantlla principal
-                window.location.href = "http://127.0.0.1:5500/src/checkDeliveryAddresses/checkDeliveryAddresses.html";
+                window.location.href = "/src/products/consultProductClient.html";
             } else if (role === 'Manager') {
                 //Mandar a la pantalla de manager
             } else if (role === 'Delivery Person') {

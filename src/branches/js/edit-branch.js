@@ -1,13 +1,21 @@
 let branchId;
 
+if (role !== roles.ADMIN) {
+    window.history.back();
+}
+
 function getBranchIdFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('branchId');
 }
 
 function getBranch() {
+    let token = getInstance().token;
+
     axios
-        .get(`${API_URL}branches/${branchId}`)
+        .get(`${API_URL}branches/${branchId}`, 
+            { headers: { 'Authorization': `Bearer ${token}` } }
+        )
         .then((response) => {
             const branch = response.data.branch;
             fillBranchForm(branch);
@@ -15,7 +23,6 @@ function getBranch() {
         .catch((error) => {
             const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
             showToast(errorMessage, toastTypes.DANGER);
-            console.error(error);
         });
 }
 
@@ -62,26 +69,29 @@ async function editBranch() {
     }
 
     try {
+        let token = getInstance().token;
+
         let response = await axios.put(`${API_URL}branches/${branchId}`, {
             name,
             openingTime,
             closingTime,
             address
-        })
+        }, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         if (response.status < 300 && response.status > 199) {
-            showToast(response.data.message, toastTypes.SUCCESS)
+            showToast(response.data.message, toastTypes.SUCCESS);
             clearFields();
             setTimeout(() => {
                 window.location.href = "/src/branches/branches.html";
             }, 2000);
-        }
-        else {
-            showToast(response.data.message, toastTypes.WARNING)
+        } else {
+            showToast(response.data.message, toastTypes.WARNING);
         }
 
     } catch (error) {
         const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
-            showToast(errorMessage, toastTypes.DANGER);
+        showToast(errorMessage, toastTypes.DANGER);
         return;
     }
 
