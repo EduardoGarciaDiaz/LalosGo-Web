@@ -13,92 +13,104 @@
     <link rel="stylesheet" href="/src/employees/styles/employees.css">
     <script src="/src/utils/header-utils.js"></script>
     <script src="../utils/toast-utils.js"></script>
+    <script src="./js/employee-form.js"></script>
 </head>
 
 <body>
     <header id="header-container"></header>
     <div class="container my-5">
-        <!-- Breadcrumb -->
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">Inicio</a></li>
                 <li class="breadcrumb-item"><a href="#">Empleados</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Nuevo empleado</li>
+                <li id="breadcrumb-title" class="breadcrumb-item active" aria-current="page">Nuevo empleado</li>
             </ol>
         </nav>
 
 
-        <h2 class="text-center mb-4">Registrar empleado</h2>
+        <h2 id="page-title" class="text-center mb-4">Registrar empleado</h2>
         <div class="card shadow form-container">
             <div class="card-body">
                 <form>
                     <div class="row mb-3">
                         <div class="col-md-12">
-                            <label for="name" class="form-label">Nombre y apellidos</label>
-                            <input type="text" id="name" class="form-control" placeholder="Nombre y apellidos" required>
+                            <label for="employee-name" class="form-label">Nombre y apellidos</label>
+                            <input type="text" id="employee-name" class="form-control" placeholder="Nombre y apellidos"
+                                required>
+                            <span class="d-none" id="error-employee-name"></span>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="dob" class="form-label">Fecha de nacimiento</label>
-                            <input type="date" id="dob" class="form-control" required>
+                            <label for="date-of-birth" class="form-label">Fecha de nacimiento</label>
+                            <input type="date" id="date-of-birth" class="form-control" required>
+                            <span class="d-none" id="error-date-of-birth"></span>
                         </div>
                         <div class="col-md-6">
-                            <label for="phone" class="form-label">Teléfono de contacto</label>
-                            <input type="text" id="phone" class="form-control" placeholder="Teléfono de contacto"
-                                required>
+                            <label for="employee-phone" class="form-label">Teléfono de contacto</label>
+                            <input type="text" id="employee-phone" class="form-control"
+                                placeholder="Teléfono de contacto" required>
+                            <span class="d-none" id="error-employee-phone"></span>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <label for="position" class="form-label">Cargo</label>
-                            <select id="cargo" class="form-select" required>
+                            <label for="employee-role" class="form-label">Cargo</label>
+                            <select id="employee-role" class="form-select" required>
                                 <option value="" selected disabled>Selecciona</option>
                             </select>
+                            <span class="d-none" id="error-employee-role"></span>
                         </div>
                         <div class="col-md-4">
                             <label for="branch" class="form-label">Sucursal</label>
                             <select id="branch" class="form-select" required>
                                 <option value="" selected disabled>Selecciona</option>
                             </select>
+                            <span class="d-none" id="error-branch"></span>
                         </div>
                         <div class="col-md-4">
                             <label for="hire-date" class="form-label">Fecha de contratación</label>
                             <input type="date" id="hire-date" class="form-control" required>
+                            <span class="d-none" id="error-hire-date"></span>
                         </div>
                     </div>
 
                     <div class="row mb-3">
                         <div class="col-md-12">
-                            <label for="email" class="form-label">Correo electrónico</label>
-                            <input type="email" id="email" class="form-control" placeholder="Correo electrónico"
-                                required>
+                            <label for="employee-email" class="form-label">Correo electrónico</label>
+                            <input type="email" id="employee-email" class="form-control"
+                                placeholder="Correo electrónico" required>
+                            <span class="d-none" id="error-employee-email"></span>
                         </div>
                     </div>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="username" class="form-label">Nombre de usuario</label>
-                            <input type="text" id="username" class="form-control" placeholder="Nombre de usuario"
-                                required>
+                            <label for="employee-username" class="form-label">Nombre de usuario</label>
+                            <input type="text" id="employee-username" class="form-control"
+                                placeholder="Nombre de usuario" required>
+                            <span class="d-none" id="error-employee-username"></span>
                         </div>
                         <div class="col-md-6">
-                            <label for="password" class="form-label">Contraseña</label>
-                            <input type="password" id="password" class="form-control" placeholder="Contraseña" required>
+                            <label for="employee-password" class="form-label">Contraseña</label>
+                            <input type="password" id="employee-password" class="form-control" placeholder="Contraseña"
+                                required>
+                            <span class="d-none" id="error-employee-password"></span>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-12">
-                            <label for="confirm-password" class="form-label">Confirmar contraseña</label>
-                            <input type="password" id="confirm-password" class="form-control"
+                            <label for="employee-confirm-password" class="form-label">Confirmar contraseña</label>
+                            <input type="password" id="employee-confirm-password" class="form-control"
                                 placeholder="Confirmar contraseña" required>
+                            <span class="d-none" id="error-employee-confirm-password"></span>
                         </div>
                     </div>
                 </form>
 
 
                 <div class="d-flex justify-content-end gap-2">
-                    <button type="button" class="btn btn-outline-secondary" id="employee-cancel">Cancelar</button>
+                    <button type="button" class="btn btn-outline-secondary" id="employee-cancel-btn">Cancelar</button>
                     <button type="button" class="btn btn-primary" id="employee-save-btn">Guardar</button>
                 </div>
             </div>
