@@ -3,7 +3,7 @@ let marker;
 let geocoder;
 let USER_ID
 
-const VALID_INTERNAL_NUMBER = /^[a-zA-Z0-9\-\/]{2,10}$/;
+const VALID_INTERNAL_NUMBER = /^\d{2,5}([a-zA-Z]|\-\d{2,3})?$/;
 const VALID_EXTERNAL_NUMBER = /^\d{2,5}([a-zA-Z]|\-\d{2,3})?$/;
 var ACTION_TYPE = sessionStorage.getItem('actionType');
 var creationAccountData = JSON.parse(sessionStorage.getItem('creationAccountData'));
@@ -59,7 +59,9 @@ function initMap() {
         fillData();
     }
 
-    USER_ID = getInstance().id;
+    if(ACTION_TYPE != 'CreateClientAccount'){
+        USER_ID = getInstance().id;
+    }
 }
 
 function fillData(){
@@ -125,7 +127,7 @@ function getAddressFromCoordinates(coordinates) {
                 longitude: longitude
             }
 
-            if(ACTION_TYPE === 'RegisterDeliveryAddress'){
+           if(ACTION_TYPE === 'RegisterDeliveryAddress'){
                 newDeliveryAddress.isCurrentAddress = false;
                 let succes =  await registerNewDeliveryAddress(newDeliveryAddress);
 
@@ -201,17 +203,20 @@ function getAddressFromCoordinates(coordinates) {
 
         if(!isExternalNumberValid(externalNumber)){
             document.getElementById('exterior_number').classList.add("is-invalid");
+            document.getElementById('exteriorNumberError').style.display = "block";
             isValid = false;
         }
 
         if(!isInternalNumberValid(internalNumber)){
             document.getElementById('interior_number').classList.add("is-invalid");
+            document.getElementById('interiorNumberError').style.display = "block";
             isValid = false;
         }
 
         if(!isAddressSelected(state)){
             showToast("Debe seleccionar una dirección en el mapa", toastTypes.WARNING);
             document.getElementById('map').style.border = '2px solid red';
+            document.getElementById('mapError').style.display = "block";
             isValid = false;
         }
 
@@ -222,4 +227,8 @@ function getAddressFromCoordinates(coordinates) {
         document.getElementById('exterior_number').classList.remove("is-invalid");
         document.getElementById('interior_number').classList.remove("is-invalid");
         document.getElementById('map').style.border = '';
+
+        document.getElementById('exteriorNumberError').style.display = "none";
+        document.getElementById('interiorNumberError').style.display = "none";
+        document.getElementById('mapError').style.display = "none";
     }

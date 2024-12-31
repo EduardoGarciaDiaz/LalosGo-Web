@@ -63,3 +63,9 @@ body{
     margin-bottom: 20px;
   }
 
+  .error-message {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 0.2rem;
+    display: none;
+  }
