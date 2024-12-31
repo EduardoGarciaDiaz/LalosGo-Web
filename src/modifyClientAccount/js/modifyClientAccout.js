@@ -70,21 +70,25 @@ function isValidClientAccountt(dataClientUpdate){
 
     if(!isClientUsernameValid(dataClientUpdate.username)){
         document.getElementById('username_label').classList.add("is-invalid");
+        document.getElementById('userError').style.display = "block";
         isValid = false; 
     }
 
     if(!isClientNameAndLastNameValid(dataClientUpdate.fullname)){
         document.getElementById('fullName_label').classList.add("is-invalid");
+        document.getElementById('fullNameError').style.display = "block";
         isValid = false;
     }
 
     if (!dataClientUpdate.birthdate || !isBirthdateClientValid(dataClientUpdate.birthdate)) {
         document.getElementById('birthday_label').classList.add("is-invalid");
+        document.getElementById('birthdateError').style.display = "block";
         isValid = false;
     }
 
     if(!isClientCellPhoneValid(dataClientUpdate.phone)){
         document.getElementById('cellPhone_label').classList.add("is-invalid");
+        document.getElementById('phoneNumberError').style.display = "block";
         isValid = false;
     }
     return isValid;
@@ -131,4 +135,9 @@ function clearErrors(){
     document.getElementById('fullName_label').classList.remove("is-invalid");
     document.getElementById('birthday_label').classList.remove("is-invalid");
     document.getElementById('cellPhone_label').classList.remove("is-invalid");
+
+    document.getElementById('userError').style.display = "none";
+    document.getElementById('fullNameError').style.display = "none";
+    document.getElementById('birthdateError').style.display = "none";
+    document.getElementById('phoneNumberError').style.display = "none";
 }
