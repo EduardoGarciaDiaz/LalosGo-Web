@@ -25,6 +25,8 @@ document.addEventListener("DOMContentLoaded", () => {
     btnCancel = document.getElementById("employee-cancel-btn")
     pageTitle = document.getElementById("page-title")
     breadcrumbTitle = document.getElementById("breadcrumb-title")
+    passwordContainer = document.getElementById("password-container")
+    confirmPasswordContainer = document.getElementById("confirm-password-container")
 
     setBranches(branchNameSelect);
     setEmployeeRoles(employeeRoleSelect);
@@ -35,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
         pageTitle.innerHTML = "Modificar empleado";
         breadcrumbTitle.innerHTML = "Modificar empleado";
         btnSave.addEventListener("click", () => saveEmployee(true));
+        getEmployee(employeeId);
     } else {
         pageTitle.innerHTML = "Nuevo empleado";
         btnSave.addEventListener("click", () => saveEmployee(false));
@@ -390,7 +393,7 @@ function getEmployeeIdFromUrl() {
     return urlParams.get('employeeId');
 }
 
-function getEmployee() {
+function getEmployee(employeeId) {
     let token = getInstance().token;
 
     axios
@@ -398,7 +401,7 @@ function getEmployee() {
             { headers: { 'Authorization': `Bearer ${token}` } }
         )
         .then((response) => {
-            const employee = response.data.employee;
+            const employee = response.data;
             fillEmployeeForm(employee);
         })
         .catch((error) => {
@@ -408,19 +411,21 @@ function getEmployee() {
 }
 
 function fillEmployeeForm(employee) {
-    const employeeData = employee.employee;
+    const employeeData = employee?.employee || {};
 
-    employeeName.value = `${employee.fullname || ""}`;
-    dayOfBirth.value = `${employee.birthdate || ""}`;
-    employeePhone.value = `${employee.phone || ""}`;
-    employeeRoleSelect.value = `${employeeData.role || ""}`;
-    branchNameSelect.value = `${employeeData.branch || ""}`;
-    hireDate.value = `${employeeData.hiredDate || ""}`;
-    employeeEmail.value = `${employee.email || ""}`;
-    employeeUsername.value = `${employee.username || ""}`;
-    employeePassword.classList.add("d-none");
-    employeeConfirmPassword.classList.add("d-none");
+    employeeName.value = employee?.fullname || "";
+    dayOfBirth.value = employee?.birthdate?.split("T")[0] || "";
+    employeePhone.value = employee?.phone || "";
+    employeeRoleSelect.value = employeeData?.role || "";
+    branchNameSelect.value = employeeData?.branch || "";
+    hireDate.value = employeeData?.hiredDate?.split("T")[0] || "";
+    employeeEmail.value = employee?.email || "";
+    employeeUsername.value = employee?.username || "";
+
+    passwordContainer.classList.add("d-none");
+    confirmPasswordContainer.classList.add("d-none");
 }
+
 
 async function editEmployee() {
     let name = employeeName.value

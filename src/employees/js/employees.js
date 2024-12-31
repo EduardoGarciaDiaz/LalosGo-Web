@@ -142,7 +142,7 @@ function toggleEmployeeStatus(employeeId) {
             .then((response) => {
                 let updatedEmployee = response.data.employee;
                 if (updatedEmployee === undefined || !updatedEmployee) {
-                    showToast("Error al actualizar el estado del empleado", toastTypes.WARNING);
+                    showToast(response.data.message, toastTypes.WARNING);
                     return;
                 }
 
@@ -251,4 +251,12 @@ function createEmployeeCard(employeeData) {
 function goToAddEmployee() {
     
     window.location.href = './employee-form.html';
+}
+
+function editEmployee(employeeId) {
+    const params = new URLSearchParams({
+        employeeId: employeeId
+    });
+
+    window.location.href = `/src/employees/employee-form.html?${params.toString()}`;
 }
