@@ -27,26 +27,44 @@
       <div class="form-floating mb-3">
         <input type="text" class="form-control" id="fullName_label" placeholder="Nombre completo">
         <label for="floatingInput">Nombre completo</label>
+        <div id="fullNameError" class="error-message">
+          El nombre completo debe tener al menos un nombre y un apellido
+        </div>
       </div>
       <div class="form-floating mb-3">
         <input type="text" class="form-control" id="username_label" placeholder="Segundo apellido">
         <label for="floatingInput">Usuario</label>
+        <div id="userError" class="error-message">
+          El usuario debe ser único
+        </div>
       </div>
       <div class="form-floating mb-3">
         <input type="date" class="form-control" id="birthday_label" placeholder="Fecha de nacimiento">
         <label for="floatingInput">Fecha de nacimiento</label>
+        <div id="birthdateError" class="error-message">
+          La fecha de nacimiento debe ser mayor a 18 años
+        </div>
       </div>
       <div class="form-floating mb-3">
         <input type="tel" class="form-control" id="cellPhone_label" placeholder="Número de teléfono">
         <label for="floatingInput">Número de teléfono</label>
+        <div id="phoneNumberError" class="error-message">
+          El número de teléfono debe ser de 10 dígitos
+        </div>
       </div>
       <div class="form-floating mb-3">
         <input type="email" class="form-control" id="email_label" placeholder="Correo electrónico">
         <label for="floatingInput">Correo electrónico</label>
+        <div id="emailError" class="error-message">
+          El correo debe ser válido
+        </div>
       </div>
       <div class="form-floating">
         <input type="password" class="form-control" id="password_label" placeholder="Contraseñas">
         <label for="floatingPassword">Password</label>
+        <div id="passwordError" class="error-message">
+          La contraseña debe tener al menos 8 caracteres, los cuales deben incluir al menos una mayúscula, una minúscula, un número y un carácter especial.
+        </div>
       </div>
       <div class="buttons">
         <button class="btn btn-primary" type="submit" onclick="createClientAccount()">

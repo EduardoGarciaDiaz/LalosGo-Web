@@ -3,7 +3,6 @@ const VALID_PHONE_NUMBER = /^\+?[0-9]{1,3}[-. ]?\(?\d{1,4}\)?[-. ]?\d{1,4}[-. ]?
 const VALID_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const VALID_PASSWORD = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&_])[A-Za-z\d@$!%*?&_]{8,}$/;
 const VALID_USERNAME = /^[a-zA-Z][a-zA-Z0-9._]{1,11}[a-zA-Z0-9]$/;
-const API_URL = 'http://localhost:3000/api/v1/users/';
 
 document.addEventListener("DOMContentLoaded", () => {
     const today = new Date();
@@ -45,31 +44,37 @@ function isValidClientAccountt(newClient){
 
     if(!isClientUsernameValid(newClient.username)){
         document.getElementById('username_label').classList.add("is-invalid");
+        document.getElementById('userError').style.display = "block";
         isValid = false; 
     }
 
     if(!isClientNameAndLastNameValid(newClient.fullname)){
         document.getElementById('fullName_label').classList.add("is-invalid");
+        document.getElementById('fullNameError').style.display = "block";
         isValid = false;
     }
 
     if (!newClient.birthdate || !isBirthdateClientValid(newClient.birthdate)) {
         document.getElementById('birthday_label').classList.add("is-invalid");
+        document.getElementById('birthdateError').style.display = "block";
         isValid = false;
     }
 
     if(!isClientCellPhoneValid(newClient.phone)){
         document.getElementById('cellPhone_label').classList.add("is-invalid");
+        document.getElementById('phoneNumberError').style.display = "block";
         isValid = false;
     }
 
     if(!isClientEmailValid(newClient.email)){
         document.getElementById('email_label').classList.add("is-invalid");
+        document.getElementById('emailError').style.display = "block";
         isValid = false;
     }
 
     if(!isClientPasswordValid(newClient.password)){
         document.getElementById('password_label').classList.add("is-invalid");
+        document.getElementById('passwordError').style.display = "block";
         isValid = false;
     }
 
@@ -124,4 +129,11 @@ function clearErrors(){
     document.getElementById('cellPhone_label').classList.remove("is-invalid");  
     document.getElementById('email_label').classList.remove("is-invalid");
     document.getElementById('password_label').classList.remove("is-invalid");
+
+    document.getElementById('userError').style.display = "none";
+    document.getElementById('fullNameError').style.display = "none";
+    document.getElementById('birthdateError').style.display = "none";
+    document.getElementById('phoneNumberError').style.display = "none";
+    document.getElementById('emailError').style.display = "none";
+    document.getElementById('passwordError').style.display = "none";
 }

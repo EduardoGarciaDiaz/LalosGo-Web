@@ -29,3 +29,18 @@ function numberOnly(id) {
         console.error(`No se encontró el elemento con id: ${id}`);
     }
 }
+
+function formatDateToISO(dateString) {
+    const date = new Date(dateString);
+
+    if (isNaN(date.getTime())) {
+        throw new Error("Fecha no válida");
+    }
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); 
+     const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+}
+

@@ -9,6 +9,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadCategories();
 })
 
+fetch('/src/shared/footer.html')
+    .then(response => response.text())
+    .then(async data => {
+        document.getElementById('footer').innerHTML = data;
+        const products = await getProducts()
+        renderProducts(products);
+        await loadCategories();
+    });
+
 async function getProducts() {
     try {
         const response = await axios.get(`${API_URL}/products`);
@@ -75,7 +84,7 @@ function renderProducts(products) {
                     <p class="card-text">${product.name}</p>
                     <div class="d-flex justify-content-between">
                         <button class="btn btn-outline-primary" onclick="viewProduct('${product._id}')">Ver detalles</button>
-                        <button class="btn btn-primary" onclick="editProductt('${product._id}')">Editar</button>
+                        <button class="btn btn-primary" onclick="editProduct('${product._id}')">Editar</button>
                     </div>
                 </div>
             </div>
@@ -94,7 +103,7 @@ function addNewProduct(){
 }
 
 function viewProduct(productId) {
-    sessionStorage.clear('productData');
+    sessionStorage.removeItem('productData');
     sessionStorage.setItem('productData', JSON.stringify(allProducts.find(product => product._id === productId)));
     window.location.href = "http://127.0.0.1:5500/src/checkproductsadmin/checkproductdetails.html";
 }
@@ -119,8 +128,8 @@ function removeAccents(str) {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); 
 }
 
-function editProductt(index) {
-    // Guardar el producto en el sessionStorage
-    //Recibir el producto en el otro archivo
-    //enviar al usuario a la otra pagina
+function editProduct(index) {
+    sessionStorage.removeItem('productData');
+    sessionStorage.setItem('productData', JSON.stringify(allProducts.find(product => product._id === index)));
+    window.location.href = "/src/products/edit-product-form.html";
 }

@@ -48,8 +48,15 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
         branchPageTitle.innerHTML = "Nueva sucursal";
         btnSave.addEventListener("click", () => saveBranch(false));
-    }
+    }    
 });
+
+fetch('/src/shared/footer.html')
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('footer').innerHTML = data;
+    });
+
 
 async function initMap(loadedLocation) {
     var initialLocation = { lat: 19.541186809084778, lng: -96.92744610055618 };
