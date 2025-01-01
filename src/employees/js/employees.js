@@ -58,8 +58,8 @@ function loadBranches() {
             });
         })
         .catch((error) => {
-            const message = error.response?.data?.message || "Error al cargar las sucursales";
-            showToast(message, toastTypes.WARNING);
+            const message = error.response?.data?.message || "Error al cargar las sucursales. Intente de nuevo más tarde.";
+            showToast(message, toastTypes.DANGER);
         });
 }
 
@@ -90,8 +90,8 @@ function getAllEmployees() {
             });
         })
         .catch((error) => {
-            const message = error.response?.data?.message || "Error al cargar los empleados";
-            showToast(message, toastTypes.WARNING);
+            const message = error.response?.data?.message || "Error al cargar los empleados. Intente de nuevo más tarde.";
+            showToast(message, toastTypes.DANGER);
         });
 }
 
@@ -138,7 +138,7 @@ async function toggleEmployeeStatus(employeeId) {
 
     const MODAL_TITLE = 'Cambiar estado de cuenta de empleado';
     const MODAL_MESSAGE = `¿Estás seguro que deseas cambiar el estado de la cuenta de este empleado?`;
-    const MODAL_PRIMARY_BTN_TEXT = 'Aceptar';
+    const MODAL_PRIMARY_BTN_TEXT = 'Estoy seguro';
 
     const { modalInstance, primaryBtn, secondaryBtn } = createConfirmationModal(
         MODAL_TITLE,

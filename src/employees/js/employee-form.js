@@ -42,6 +42,10 @@ document.addEventListener("DOMContentLoaded", () => {
         pageTitle.innerHTML = "Nuevo empleado";
         btnSave.addEventListener("click", () => saveEmployee(false));
     }
+
+    btnCancel.addEventListener("click", () => {
+        window.history.back();
+    });
 });
 
 function setBranches(branchNameSelect) {
