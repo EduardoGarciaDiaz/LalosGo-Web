@@ -10,7 +10,7 @@ function loadHTML(filePath, elementId, callback) {
             const container = document.getElementById(elementId);
             if (container) {
                 container.innerHTML = html;
-                if (callback) callback(); 
+                if (callback) callback();
             } else {
                 showToast(`Error al cargar contenido. Intente nuevamente más tarde.`, toastTypes.DANGER);
             }
@@ -47,27 +47,47 @@ async function loadHeaderByRole() {
     }
 
     loadHTML(headerPath, CONTAINER_ID, () => {
-        createCategoriesListBoxItems(); 
+        createCategoriesListBoxItems();
     });
 }
+
+window.onload = () => {
+
+    profile = document.getElementById('profile');
+    logout = document.getElementById('logout');
+    if (profile) {
+        profile.addEventListener('click', () => {
+            window.location.href = '/src/profile/profile.html';
+        });
+    }
+
+    if (logout) {
+        logout.addEventListener('click', () => {
+            logoutUser();
+        });
+    }
+};
 
 
 document.addEventListener('DOMContentLoaded', () => {
     loadHeaderByRole();
-    
 });
 
+async function logoutUser() {
+    redirectToLogin();
+}
+
 function createCategoriesListBoxItems(categoriesToProcess, branch) {
-    const storedCategories = sessionStorage.getItem('categories');    
+    const storedCategories = sessionStorage.getItem('categories');
     if (!categoriesToProcess) {
         categoriesToProcess = storedCategories ? JSON.parse(storedCategories) : [];
     } else {
         sessionStorage.setItem('categories', JSON.stringify(categoriesToProcess));
     }
-    
+
     let categoriesHeaderDropDown = document.getElementById('dropdown-categories-navbar');
-    if(!categoriesHeaderDropDown) return;
-    categoriesHeaderDropDown.innerHTML = ''; 
+    if (!categoriesHeaderDropDown) return;
+    categoriesHeaderDropDown.innerHTML = '';
     categoriesToProcess.forEach(element => {
         const liElement = document.createElement("li");
         const aElement = document.createElement("a");
@@ -81,11 +101,11 @@ function createCategoriesListBoxItems(categoriesToProcess, branch) {
         liElement.addEventListener("click", () => {
             sessionStorage.removeItem('category-Id-to-consult-products');
             sessionStorage.setItem('category-Id-to-consult-products', element._id);
-            
+
             let branchId = sessionStorage.getItem('branch-Id-to-consult-products')
-            if(!branchId){                
+            if (!branchId) {
                 sessionStorage.setItem('branch-Id-to-consult-products', branch._id);
-            }else if(branchId != branch._id){
+            } else if (branchId != branch._id) {
                 sessionStorage.removeItem('branch-Id-to-consult-products');
                 sessionStorage.setItem('branch-Id-to-consult-products', branch._id);
             }

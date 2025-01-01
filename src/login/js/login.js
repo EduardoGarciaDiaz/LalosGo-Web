@@ -48,6 +48,8 @@ async function getLogin(loginData) {
     } catch (error) {
         if (error.response && error.response.status === 401) {
             showToast("Credenciales incorrectas. Verifique su usuario y contraseña.", toastTypes.DANGER);
+        } else if (error.response && error.response.status === 404) {
+            showToast("Usuario no registrado.", toastTypes.DANGER);
         } else {
             showToast("Error al iniciar sesión. Inténtelo más tarde.", toastTypes.DANGER);
         }
