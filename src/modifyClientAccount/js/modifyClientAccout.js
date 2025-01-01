@@ -4,6 +4,7 @@ const VALID_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const VALID_USERNAME = /^[a-zA-Z][a-zA-Z0-9._]{1,11}[a-zA-Z0-9]$/;
 var SINGLETON;
 
+let role = getInstance().role;
 
 document.addEventListener("DOMContentLoaded", () => {
     const today = new Date();
@@ -49,7 +50,10 @@ function modifyClientAccount() {
 
 async function updateClientAccount(dataClientUpdate){
     try{
-        const response = await axios.put(`${API_URL}users/${SINGLETON.id}`, dataClientUpdate);
+        let token = getInstance().token;
+        const response = await axios.put(`${API_URL}users/${SINGLETON.id}`, dataClientUpdate, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         if(response.status === 200 && response.data){
             updateSession(dataClientUpdate);
             SINGLETON = getInstance();

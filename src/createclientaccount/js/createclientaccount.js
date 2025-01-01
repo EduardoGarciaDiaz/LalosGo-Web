@@ -1,7 +1,7 @@
 const VALID_FULL_NAME  = /^(?!\s)[A-ZÁÉÍÓÚÑ][a-záéíóúñü]+(?: [A-ZÁÉÍÓÚÑ][a-záéíóúñü]+)*$/;
 const VALID_PHONE_NUMBER = /^\+?[0-9]{1,3}[-. ]?\(?\d{1,4}\)?[-. ]?\d{1,4}[-. ]?\d{1,9}$/;
 const VALID_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const VALID_PASSWORD = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&_])[A-Za-z\d@$!%*?&_]{8,}$/;
+const VALID_PASSWORD = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&_])[A-Za-z\d@$!%*?&_]{8,13}$/;
 const VALID_USERNAME = /^[a-zA-Z][a-zA-Z0-9._]{1,11}[a-zA-Z0-9]$/;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -34,7 +34,7 @@ function createClientAccount() {
     if(isValidClientAccountt(newClient)){
         sessionStorage.setItem('actionType', 'CreateClientAccount');
         sessionStorage.setItem('creationAccountData', JSON.stringify(newClient));
-        window.location.href = "http://127.0.0.1:5500/src/RegisterDeliveryAddress/registerDeliveryAddress.html";
+        window.location.href = "/src/RegisterDeliveryAddress/registerDeliveryAddress.html";
     }
 }
 

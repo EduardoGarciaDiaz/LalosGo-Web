@@ -138,7 +138,7 @@ function getAddressFromCoordinates(coordinates) {
                 newDeliveryAddress.isCurrentAddress = true;
                 let succes = await registerClientAccount(newDeliveryAddress)
                 if(succes) {
-                    window.location.href = "http://127.0.0.1:5500/src/login/login.html"
+                    window.location.href = "/src/login/login.html"
                 }
             }
         } 
@@ -146,7 +146,10 @@ function getAddressFromCoordinates(coordinates) {
 
     async function editDeliveryAddress(newDeliveryAddress){
         try{
-            await axios.put(`${API_URL}/users/${USER_ID}/addresses/${deliveryAddressData._id}`, newDeliveryAddress);
+            let token = getInstance().token;
+            await axios.put(`${API_URL}/users/${USER_ID}/addresses/${deliveryAddressData._id}`, newDeliveryAddress, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+            });
             showToast("Se ha actualizado la dirección", toastTypes.SUCCESS);
             return true;
         } catch (error) {
@@ -158,7 +161,10 @@ function getAddressFromCoordinates(coordinates) {
 
    async function registerNewDeliveryAddress(newDeliveryAddress){
         try{
-            await axios.post(`${API_URL}/users/${USER_ID}/addresses`, newDeliveryAddress);
+            let token = getInstance().token;
+            await axios.post(`${API_URL}/users/${USER_ID}/addresses`, newDeliveryAddress, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             showToast("Se ha registrado la dirección", toastTypes.SUCCESS);
             return true;
         } catch (error) {
@@ -172,8 +178,7 @@ function getAddressFromCoordinates(coordinates) {
             if (creationAccountData) {
                 creationAccountData.client = {
                     addresses: [newDeliveryAddress],
-                };
-    
+                };                
                 await axios.post(`${API_URL}/users/`, creationAccountData);
                 showToast("Se ha registrado la cuenta", toastTypes.SUCCESS);
                 sessionStorage.removeItem('creationAccountData');

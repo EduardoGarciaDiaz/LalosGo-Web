@@ -28,7 +28,7 @@ async function getLogin(loginData) {
         if(user.status === 'Active'){
             if (role === 'Customer') {
                 //Mandar a la pantlla principal
-                window.location.href = "/src/products/consultProductClient.html";
+                window.location.href = "/src/categories/consultCategories.html";
             } else if (role === 'Manager') {
                 //Mandar a la pantalla de manager
             } else if (role === 'Delivery Person') {

@@ -35,7 +35,7 @@ let userId;
         const code = document.getElementById('authenticationCodeInput').value;
         if(code == authenticationCode){
             sessionStorage.setItem('userId', userId);
-            window.location.href = "http://127.0.0.1:5500/src/forgotPassword/changePassword.html";
+            window.location.href = "/src/forgotPassword/changePassword.html";
         } else {
             showToast("Código incorrecto", toastTypes.DANGER)
         }

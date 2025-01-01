@@ -1,24 +1,16 @@
-body{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  body {
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
-    display: flex;
-    justify-content: center;
+  body{
+    display: block;
+    flex-direction: column;
     align-items: center;
-    min-height: 100vh;
+    width: 100%;
+    min-height: 100vh; 
   }
   
-  .container {
+  .main-container {
     width: 800px;
     max-width: 100%;
     margin: auto;
     padding-bottom: 40px;
-
   }
   
   header {
