@@ -1,5 +1,3 @@
-const API_URL = 'http://127.0.0.1:3000/api/v1/';
-
 window.onload = function () {
     setupEventListeners();
     loadInitialData();
@@ -135,23 +133,57 @@ function showAllEmployees() {
         employeeCard.classList.remove('not-searched', 'searched');
     });
 }
-function toggleEmployeeStatus(employeeId) {
-    if (employeeId !== undefined && employeeId) {
-        axios
-            .patch(`${API_URL}employees/${employeeId}`)
-            .then((response) => {
-                let updatedEmployee = response.data.employee;
-                if (updatedEmployee === undefined || !updatedEmployee) {
-                    showToast("Error al actualizar el estado del empleado", toastTypes.WARNING);
-                    return;
-                }
 
-                showToast("Estado del empleado actualizado correctamente", toastTypes.SUCCESS);
-                loadEmployees();
-            })
-            .catch((error) => {
-                showToast("Error al actualizar el estado del empleado", toastTypes.WARNING);
-            });
+async function toggleEmployeeStatus(employeeId) {
+
+    const MODAL_TITLE = 'Cambiar estado de cuenta de empleado';
+    const MODAL_MESSAGE = `¿Estás seguro que deseas cambiar el estado de la cuenta de este empleado?`;
+    const MODAL_PRIMARY_BTN_TEXT = 'Aceptar';
+
+    const { modalInstance, primaryBtn, secondaryBtn } = createConfirmationModal(
+        MODAL_TITLE,
+        MODAL_MESSAGE,
+        modalTypes.DANGER,
+        MODAL_PRIMARY_BTN_TEXT
+    );
+    modalInstance.show();
+
+    primaryBtn.onclick = async function () {
+        await changeEmployeeStatus(employeeId);
+        modalInstance.hide();
+        loadEmployees();
+
+    }
+
+    secondaryBtn.onclick = function () {
+        modalInstance.hide();
+    }
+}
+
+async function changeEmployeeStatus(employeeId) {
+    if (employeeId !== getInstance().id) {
+        if (employeeId !== undefined && employeeId) {
+            try {
+                let token = getInstance().token;
+                let response = await axios.patch(`${API_URL}employees/${employeeId}/`, {}, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.status < 300 && response.status > 199) {
+                    showToast("Estado del empleado actualizado correctamente", toastTypes.SUCCESS);
+                } else {
+                    showToast("Error al actualizar el estado del empleado", toastTypes.WARNING);
+                }
+            } catch (error) {
+                const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
+                showToast(errorMessage, toastTypes.DANGER);
+                return;
+            }
+        }
+    } else {
+        showToast("No puedes desactivar tu propia cuenta", toastTypes.WARNING);
     }
 }
 
@@ -196,9 +228,11 @@ function createEmployeeCard(employeeData) {
 
     const statusParagraph = document.createElement('p');
 
+    const isActive = employeeData.status === 'Active';
     const statusSpan = document.createElement('span');
-    statusSpan.classList.add(`status-${employeeData.status ? 'active' : 'inactive'}`, 'badge', 'bg-primary');
-    statusSpan.textContent = employeeData.status ? 'Activo' : 'Inactivo';
+    statusSpan.classList.add(`status-${employeeData.status ? 'active' : 'inactive'}`, 'badge');
+    statusSpan.textContent = isActive ? 'Activo' : 'Inactivo';
+    statusSpan.classList.add('badge', isActive ? 'bg-success' : 'bg-danger');
     statusParagraph.appendChild(statusSpan);
     infoDiv.appendChild(statusParagraph);
 
@@ -231,7 +265,8 @@ function createEmployeeCard(employeeData) {
     const toggleA = document.createElement('a');
     toggleA.classList.add('dropdown-item');
     toggleA.href = '#';
-    toggleA.textContent = employeeData.status ? 'Desactivar' : 'Activar';
+    let status = employeeData.status === 'Active';
+    toggleA.textContent = status ? 'Desactivar' : 'Activar';
     toggleA.onclick = () => toggleEmployeeStatus(employeeData._id);
     toggleLi.appendChild(toggleA);
 
@@ -249,6 +284,14 @@ function createEmployeeCard(employeeData) {
 }
 
 function goToAddEmployee() {
-    
+
     window.location.href = './employee-form.html';
+}
+
+function editEmployee(employeeId) {
+    const params = new URLSearchParams({
+        employeeId: employeeId
+    });
+
+    window.location.href = `/src/employees/employee-form.html?${params.toString()}`;
 }

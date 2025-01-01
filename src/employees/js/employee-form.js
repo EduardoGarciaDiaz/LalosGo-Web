@@ -25,6 +25,8 @@ document.addEventListener("DOMContentLoaded", () => {
     btnCancel = document.getElementById("employee-cancel-btn")
     pageTitle = document.getElementById("page-title")
     breadcrumbTitle = document.getElementById("breadcrumb-title")
+    passwordContainer = document.getElementById("password-container")
+    confirmPasswordContainer = document.getElementById("confirm-password-container")
 
     setBranches(branchNameSelect);
     setEmployeeRoles(employeeRoleSelect);
@@ -35,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
         pageTitle.innerHTML = "Modificar empleado";
         breadcrumbTitle.innerHTML = "Modificar empleado";
         btnSave.addEventListener("click", () => saveEmployee(true));
+        getEmployee(employeeId);
     } else {
         pageTitle.innerHTML = "Nuevo empleado";
         btnSave.addEventListener("click", () => saveEmployee(false));
@@ -72,10 +75,10 @@ function setEmployeeRoles(employeeRoleSelect) {
 
 async function saveEmployee(isAnUpdate) {
     event.preventDefault();
-    if (!checkEmptyFields()) {
+    if (!checkEmptyFields(isAnUpdate)) {
         return
     }
-    if (!checkFieldFormats()) {
+    if (!checkFieldFormats(isAnUpdate)) {
         return
     }
 
@@ -133,7 +136,7 @@ async function createEmployee() {
     }
 }
 
-function checkEmptyFields() {
+function checkEmptyFields(isAnUpdate) {
     let areValidFields = true;
 
     let errorEmployeeName = document.getElementById("error-employee-name");
@@ -228,30 +231,32 @@ function checkEmptyFields() {
         employeeUsername.classList.remove("is-invalid");
     }
 
-    if (!employeePassword.value) {
-        areValidFields = false;
-        employeePassword.classList.add("is-invalid");
-        errorEmployeePassword.textContent = "Este campo es obligatorio";
-        errorEmployeePassword.className = "text-danger";
-    } else {
-        errorEmployeePassword.className = "d-none";
-        employeePassword.classList.remove("is-invalid");
-    }
+    if (!isAnUpdate) {
+        if (!employeePassword.value) {
+            areValidFields = false;
+            employeePassword.classList.add("is-invalid");
+            errorEmployeePassword.textContent = "Este campo es obligatorio";
+            errorEmployeePassword.className = "text-danger";
+        } else {
+            errorEmployeePassword.className = "d-none";
+            employeePassword.classList.remove("is-invalid");
+        }
 
-    if (!employeeConfirmPassword.value) {
-        areValidFields = false;
-        employeeConfirmPassword.classList.add("is-invalid");
-        errorEmployeeConfirmPassword.textContent = "Este campo es obligatorio";
-        errorEmployeeConfirmPassword.className = "text-danger";
-    } else {
-        errorEmployeeConfirmPassword.className = "d-none";
-        employeeConfirmPassword.classList.remove("is-invalid");
+        if (!employeeConfirmPassword.value) {
+            areValidFields = false;
+            employeeConfirmPassword.classList.add("is-invalid");
+            errorEmployeeConfirmPassword.textContent = "Este campo es obligatorio";
+            errorEmployeeConfirmPassword.className = "text-danger";
+        } else {
+            errorEmployeeConfirmPassword.className = "d-none";
+            employeeConfirmPassword.classList.remove("is-invalid");
+        }
     }
 
     return areValidFields;
 }
 
-function checkFieldFormats() {
+function checkFieldFormats(isAnUpdate) {
     let areValidFormats = true;
     const fullnameRegex = /^(?!\s)[A-ZÁÉÍÓÚÑ][a-záéíóúñü]+(?: [A-ZÁÉÍÓÚÑ][a-záéíóúñü]+)*$/;
     const usernameRegex = /^[a-zA-Z][a-zA-Z0-9._]{1,11}[a-zA-Z0-9]$/;
@@ -298,14 +303,16 @@ function checkFieldFormats() {
         employeeEmail.classList.remove("is-invalid");
     }
 
-    if (!passwordRegex.test(employeePassword.value)) {
-        areValidFormats = false;
-        employeePassword.classList.add("is-invalid");
-        errorEmployeePassword.textContent = "Contraseña inválida";
-        errorEmployeePassword.className = "text-danger";
-    } else {
-        errorEmployeePassword.className = "d-none";
-        employeePassword.classList.remove("is-invalid");
+    if (!isAnUpdate) {
+        if (!passwordRegex.test(employeePassword.value)) {
+            areValidFormats = false;
+            employeePassword.classList.add("is-invalid");
+            errorEmployeePassword.textContent = "Contraseña inválida";
+            errorEmployeePassword.className = "text-danger";
+        } else {
+            errorEmployeePassword.className = "d-none";
+            employeePassword.classList.remove("is-invalid");
+        }
     }
 
     if (employeePassword.value !== employeeConfirmPassword.value) {
@@ -390,7 +397,7 @@ function getEmployeeIdFromUrl() {
     return urlParams.get('employeeId');
 }
 
-function getEmployee() {
+function getEmployee(employeeId) {
     let token = getInstance().token;
 
     axios
@@ -398,7 +405,7 @@ function getEmployee() {
             { headers: { 'Authorization': `Bearer ${token}` } }
         )
         .then((response) => {
-            const employee = response.data.employee;
+            const employee = response.data;
             fillEmployeeForm(employee);
         })
         .catch((error) => {
@@ -408,19 +415,21 @@ function getEmployee() {
 }
 
 function fillEmployeeForm(employee) {
-    const employeeData = employee.employee;
+    const employeeData = employee?.employee || {};
 
-    employeeName.value = `${employee.fullname || ""}`;
-    dayOfBirth.value = `${employee.birthdate || ""}`;
-    employeePhone.value = `${employee.phone || ""}`;
-    employeeRoleSelect.value = `${employeeData.role || ""}`;
-    branchNameSelect.value = `${employeeData.branch || ""}`;
-    hireDate.value = `${employeeData.hiredDate || ""}`;
-    employeeEmail.value = `${employee.email || ""}`;
-    employeeUsername.value = `${employee.username || ""}`;
-    employeePassword.classList.add("d-none");
-    employeeConfirmPassword.classList.add("d-none");
+    employeeName.value = employee?.fullname || "";
+    dayOfBirth.value = employee?.birthdate?.split("T")[0] || "";
+    employeePhone.value = employee?.phone || "";
+    employeeRoleSelect.value = employeeData?.role || "";
+    branchNameSelect.value = employeeData?.branch || "";
+    hireDate.value = employeeData?.hiredDate?.split("T")[0] || "";
+    employeeEmail.value = employee?.email || "";
+    employeeUsername.value = employee?.username || "";
+
+    passwordContainer.classList.add("d-none");
+    confirmPasswordContainer.classList.add("d-none");
 }
+
 
 async function editEmployee() {
     let name = employeeName.value
@@ -437,7 +446,7 @@ async function editEmployee() {
     try {
         let token = getInstance().token;
 
-        let response = await axios.put(`${API_URL}employee/${employeeId}`, {
+        let response = await axios.put(`${API_URL}employees/${employeeId}`, {
             fullname: name,
             birthdate: dob,
             phone: phone,

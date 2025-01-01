@@ -16,7 +16,6 @@ function loadHTML(filePath, elementId, callback) {
             }
         })
         .catch(error => {
-            console.error(error);
             showToast(`Error al cargar contenido. Intente nuevamente más tarde.`, toastTypes.DANGER);
         });
 }

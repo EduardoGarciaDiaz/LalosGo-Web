@@ -47,7 +47,7 @@
                             <span class="d-none" id="error-date-of-birth"></span>
                         </div>
                         <div class="col-md-6">
-                            <label for="employee-phone" class="form-label">Teléfono de contacto</label>
+                            <label for="employee-phone" maxlength="10" class="form-label">Teléfono de contacto</label>
                             <input type="text" id="employee-phone" class="form-control"
                                 placeholder="Teléfono de contacto" required>
                             <span class="d-none" id="error-employee-phone"></span>
@@ -91,7 +91,7 @@
                                 placeholder="Nombre de usuario" required>
                             <span class="d-none" id="error-employee-username"></span>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6" id="password-container">
                             <label for="employee-password" class="form-label">Contraseña</label>
                             <input type="password" id="employee-password" class="form-control" placeholder="Contraseña"
                                 required>
@@ -99,7 +99,7 @@
                         </div>
                     </div>
                     <div class="row mb-3">
-                        <div class="col-md-12">
+                        <div class="col-md-12" id="confirm-password-container">
                             <label for="employee-confirm-password" class="form-label">Confirmar contraseña</label>
                             <input type="password" id="employee-confirm-password" class="form-control"
                                 placeholder="Confirmar contraseña" required>
