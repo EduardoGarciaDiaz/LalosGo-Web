@@ -138,7 +138,9 @@ function getAddressFromCoordinates(coordinates) {
                 newDeliveryAddress.isCurrentAddress = true;
                 let succes = await registerClientAccount(newDeliveryAddress)
                 if(succes) {
-                    window.location.href = "http://127.0.0.1:5500/src/login/login.html"
+                    setTimeout(() => {
+                        window.location.href = "/src/employees/employees.html";
+                    }, 2000);
                 }
             }
         } 
