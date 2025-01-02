@@ -62,7 +62,7 @@ async function loadCategories() {
             productCategory.appendChild(option)
         })
     }).catch((error) => {
-        showToast("Ocurrio algo inesperado al cargar las categorías. Verirfique su conexión e inténtelo mas tarde.", toastTypes.DANGER);
+        handleException(error, "Ocurrió algo inesperado al cargar las categorías. Verirfique su conexión e inténtelo mas tarde.")
     })
 }
 
@@ -83,8 +83,7 @@ async function loadBranches() {
             branchesList.appendChild(branchCard)
         });
     }).catch((error) => {
-
-        showToast("Ocurrio algo inesperado al cargar las sucursales. Verirfique su conexión e inténtelo mas tarde", toastTypes.DANGER)
+        handleException(error, "Ocurrió algo inesperado al cargar las sucursales. Verirfique su conexión e inténtelo mas tarde.")
     })
 }
 
@@ -143,7 +142,7 @@ async function saveProduct() {
             showToast(response.data.message, toastTypes.WARNING)
         }
     } catch (error) {
-        showToast("Ocurrio algo inesperado al realizar la petición. Revise su conexión a internet e inténtelo mas tarde", toastTypes.WARNING)
+        handleException(error)
     }
 }
 

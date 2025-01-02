@@ -30,7 +30,7 @@ async function getProducts() {
         }));
         return response.data.products;
     } catch (error) {
-        showToast("No se ha podido obtener ningun producto", toastTypes.WARNING);
+        handleException(error, "Error al obtener los productos");
     }
 } 
 
@@ -51,17 +51,13 @@ async function loadCategories() {
             categoriesDropdown.appendChild(option); 
         });
     } catch (error) {
-        showToast(
-            "Ocurrió algo inesperado al cargar las categorías. Verifique su conexión e inténtelo más tarde.",
-            toastTypes.DANGER
-        );
+        handleException(error,  "Ocurrió algo inesperado al cargar las categorías. Verifique su conexión e inténtelo más tarde.");
     }
 
     categoriesDropdown.addEventListener("change", onCategoryChange);
 }
 
 function onCategoryChange(event) {
-    // Obtener el valor de la opción seleccionada
     const selectedCategoryId = event.target.value;
     
     if (selectedCategoryId) {
@@ -71,7 +67,6 @@ function onCategoryChange(event) {
     }
 }
 
-// Generar tarjetas dinámicamente
 function renderProducts(products) {
     productContainer.innerHTML = "";
     products.forEach((product, index) => {

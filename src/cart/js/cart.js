@@ -65,8 +65,7 @@ function getProductsFromCart() {
             }
         })
         .catch((error) => {
-            const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
-            showToast(errorMessage, toastTypes.DANGER);
+            handleException(error);
         });
 }
 
@@ -161,7 +160,7 @@ async function goToPayment() {
         }
 
     } catch (error) {
-        showToast("Ocurrió un error al validar el inventario", toastTypes.ERROR);
+        handleException(error, "Ocurrió un error al validar el inventario");
     }
 }
 
@@ -181,8 +180,7 @@ function deleteProductsFromCart() {
             clearCartUI();
         })
         .catch((error) => {
-            const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
-            showToast(errorMessage, toastTypes.DANGER);
+            handleException(error);
         });
 }
 
@@ -249,8 +247,7 @@ async function validateAvailability(productId, newQuantity) {
 
         return hasStock;
     } catch (error) {
-        const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
-        showToast(errorMessage, toastTypes.DANGER);
+        handleException(error, "Ocurrió un error al validar el inventario");
         return false;
     }
 }

@@ -46,7 +46,7 @@ function getAllPaymentMethods() {
             });
         })
         .catch((error) => {
-            showToast("Error al cargar los métodos de pago", toastTypes.DANGER);
+            handleException(error, "Error al cargar los métodos de pago");
         });
 }
 
@@ -182,7 +182,7 @@ function loadOrderSummary() {
             }
         })
         .catch((error) => {
-            showToast("Error al cargar el resumen de la compra", toastTypes.DANGER);
+            handleException(error, "Error al cargar el resumen de la compra");
             window.location.replace('./cart.html');
         });
 }
@@ -303,8 +303,7 @@ async function deleteCart(orderId) {
             showToast(response.data.message, toastTypes.SUCCESS);
         })
         .catch((error) => {
-            const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
-            showToast(errorMessage, toastTypes.DANGER);
+            handleException(error, "Error al eliminar el carrito");
         });
 }
 
@@ -347,6 +346,6 @@ async function reserveCartProducts() {
             }, 4000);
             return false;
         }
-        showToast(error.response.data.message, toastTypes.WARNING);
+        handleException(error, "Error al realizar la orden");
     }
 }

@@ -20,8 +20,7 @@ async function updatedPassword(newPassword, confirmPassword) {
         showToast("Se ha actualizado la contraseña", toastTypes.SUCCESS);
         return true;
     } catch (error) {
-        alert(error);
-        showToast("Error al cambiar la contraseña. Inténtelo más tarde", toastTypes.DANGER);
+        handleException(error, "Error al cambiar la contraseña. Inténtelo más tarde");
     }
 }
 

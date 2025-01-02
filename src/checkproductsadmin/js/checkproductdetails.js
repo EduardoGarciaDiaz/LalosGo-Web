@@ -93,10 +93,6 @@ async function changeProductStatus(){
         showToast("Estado del producto cambiado exitosamente", toastTypes.SUCCESS);
         changeButton(!productData.productStatus);
     }catch (error){
-        alert(error);
-        showToast(
-            "Ocurrió algo inesperado al cambiar el estado del producto. Verifique su conexión e inténtelo más tarde.",
-            toastTypes.DANGER
-        );
+        handleException(error);
     }
 }

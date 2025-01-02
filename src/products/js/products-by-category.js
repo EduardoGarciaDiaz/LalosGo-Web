@@ -74,9 +74,7 @@ async function loadProductsOfCategory(){
             showToast(response.data.message, toastTypes.WARNING)
         }
     } catch (error) {    
-        console.log(error)   
-        const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
-        showToast(errorMessage, toastTypes.DANGER);
+        handleException(error)
     }
 }
 
@@ -158,8 +156,7 @@ async function addProductToCart(product, number) {
             showToast(response.data.message, toastTypes.WARNING);
         }
     } catch (error) {
-        const errorMessage = error.response ? error.response.data.message : "No se pudo agregar el producto al carrito. Inténtelo de nuevo.";
-        showToast(errorMessage, toastTypes.DANGER);
+        handleException(error, "No se pudo agregar el producto al carrito. Inténtelo de nuevo.");
     }
 }
 

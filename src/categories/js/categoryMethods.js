@@ -1,27 +1,27 @@
 const categoryIdentifierRegex = /^[A-Z]{4}\d{3}$/;
 
-let categorySearchBar 
-let categoryContainer 
+let categorySearchBar
+let categoryContainer
 let modalWindowCategory
-let modalRegistryCategoryLabel 
-let modalRegistryCategoryBtn 
+let modalRegistryCategoryLabel
+let modalRegistryCategoryBtn
 let modalCancelBtn
-let _idCategory =""
+let _idCategory = ""
 let modalCategoryIdentifier
 let modalCategoryName
 let modalCategoryStatus
 let toastWindow
-let toastTitle 
-let toastMessage  
+let toastTitle
+let toastMessage
 let errorCategoryIdentifierLabel
-let errorCategoryNameLabel  
+let errorCategoryNameLabel
 
 document.addEventListener("DOMContentLoaded", () => {
     categorySearchBar = document.getElementById("category-search-bar")
-    categoryContainer = document.getElementById("categories-container"); 
+    categoryContainer = document.getElementById("categories-container");
     errorCategoryIdentifierLabel = document.getElementById("error-category-id")
     errorCategoryNameLabel = document.getElementById("error-category-name")
-    
+
     modalWindowCategory = document.getElementById('register-new-category')
     modalRegistryCategoryLabel = document.getElementById("register-category-label")
     modalRegistryCategoryBtn = document.getElementById("register-btn")
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
     modalCategoryStatus = document.getElementById("category-status-label")
 
     toastWindow = document.getElementById('success-toast');
-    toastTitle =  document.getElementById('toast-title');
+    toastTitle = document.getElementById('toast-title');
     toastMessage = document.getElementById('toast-message');
 
 });
@@ -42,13 +42,13 @@ fetch('/src/shared/footer.html')
         document.getElementById('footer').innerHTML = data;
     });
 
-window.onload = async function() {
-    await loadCategories()      
+window.onload = async function () {
+    await loadCategories()
 }
 
-function showModal() {        
-    modalRegistryCategoryLabel.value = "Registrar Categoría"    
-    modalRegistryCategoryBtn.onclick = function() {
+function showModal() {
+    modalRegistryCategoryLabel.value = "Registrar Categoría"
+    modalRegistryCategoryBtn.onclick = function () {
         saveCategory(false)
     }
 }
@@ -56,21 +56,21 @@ function showModal() {
 async function loadCategories() {
     let token = getInstance().token
 
-    axios.get(API_URL+'categories/',
-    {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    }).then((response) => {
-        categoryContainer.innerHTML = '';
-        response.data.category.forEach((category) => {
-            const card = createCard(category);
-            
+    axios.get(API_URL + 'categories/',
+        {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }).then((response) => {
+            categoryContainer.innerHTML = '';
+            response.data.category.forEach((category) => {
+                const card = createCard(category);
+
+            })
+        }).catch((error) => {
+            handleException(error, "Ocurrio algo inesperado al cargar las categorías. Verirfique su conexión e inténtelo mas tarde.")
         })
-    }).catch((error) => {
-       showToast("Ocurrio algo inesperado al cargar las categorías. Verirfique su conexión e inténtelo mas tarde.", toastTypes.DANGER);
-    })
-    
+
 }
 
 function createCard(category) {
@@ -111,15 +111,15 @@ function createCard(category) {
 
     editOption.addEventListener("click", () => {
         editCategory(category)
-        modalRegistryCategoryBtn.onclick = function() {
+        modalRegistryCategoryBtn.onclick = function () {
             saveCategory(true)
-        }        
-        dropdownMenu.style.display = "none"; 
+        }
+        dropdownMenu.style.display = "none";
     });
 
     changeStatisOption.addEventListener("click", () => {
         changeCategoryStatus(category)
-        dropdownMenu.style.display = "none"; 
+        dropdownMenu.style.display = "none";
     });
 
     document.addEventListener("click", (event) => {
@@ -127,68 +127,68 @@ function createCard(category) {
             dropdownMenu.style.display = "none";
         }
     });
-    
-    categoryContainer.appendChild(categoryCard); 
+
+    categoryContainer.appendChild(categoryCard);
 }
 
 
-function editCategory(category){
+function editCategory(category) {
     _idCategory = category._id
     modalCategoryIdentifier.value = category.identifier
     modalCategoryIdentifier.readOnly = true;
     modalCategoryName.value = category.name
     modalCategoryStatus.value = category.categoryStatus ? "Active" : "Inactive";
     modalRegistryCategoryLabel.textContent = "Editar Categoría"
-    modalRegistryCategoryBtn.textContent = "Guardar"    
+    modalRegistryCategoryBtn.textContent = "Guardar"
     modalCancelBtn.textContent = "Cancelar edición"
     const modal = new bootstrap.Modal(modalWindowCategory);
-    modal.show(); 
+    modal.show();
 }
 
 
-async function changeCategoryStatus(categoryToChange){
+async function changeCategoryStatus(categoryToChange) {
     let categoryStatus;
     let identifier = categoryToChange.identifier
     let name = categoryToChange.name
-    if(categoryToChange.categoryStatus){
+    if (categoryToChange.categoryStatus) {
         categoryStatus = false
 
-    }else{
+    } else {
         categoryStatus = true
 
     }
     let token = getInstance().token
     try {
-        const response = await axios.put(`${API_URL}categories/${categoryToChange._id}`, 
+        const response = await axios.put(`${API_URL}categories/${categoryToChange._id}`,
             {
                 identifier,
                 name,
                 categoryStatus,
             },
-            {   
+            {
                 params: {
-                    changeStatus: categoryStatus 
+                    changeStatus: categoryStatus
                 }
             },
             {
                 headers: {
                     'Authorization': `Bearer ${token}`
-                } 
+                }
             }
         );
-        loadCategories();   
-        showToast(response.data.message, toastTypes.SUCCESS) 
+        loadCategories();
+        showToast(response.data.message, toastTypes.SUCCESS)
     } catch (error) {
-        showToast(response.data.message, toastTypes.WARNING)  
+        handleException(error)
     }
 }
 
 
 async function saveCategory(isEdition) {
-    if(!checkEmptyFields()){
+    if (!checkEmptyFields()) {
         return
     }
-    if(!checkFieldsFormat()){
+    if (!checkFieldsFormat()) {
         return
     }
 
@@ -197,10 +197,10 @@ async function saveCategory(isEdition) {
     let name = modalCategoryName.value;
     let categoryStatus = modalCategoryStatus.value === "Active" ? true : false;
     let token = getInstance().token
-       
+
     try {
-        if(isEdition){
-            const response = await axios.put(`${API_URL}categories/${_id}`, 
+        if (isEdition) {
+            const response = await axios.put(`${API_URL}categories/${_id}`,
                 {
                     identifier,
                     name,
@@ -211,66 +211,66 @@ async function saveCategory(isEdition) {
                         'Authorization': `Bearer ${token}`
                     }
                 }
-            );                     
-            loadCategories();   
-            showToast(response.data.message, toastTypes.SUCCESS)  
-            clearModal();   
+            );
+            loadCategories();
+            showToast(response.data.message, toastTypes.SUCCESS)
+            clearModal();
             setTimeout(() => {
                 const bootstrapModal = bootstrap.Modal.getInstance(modalWindowCategory);
-                bootstrapModal.hide(); 
+                bootstrapModal.hide();
             }, 1000);
-        }else {
+        } else {
             const response = await axios.post(API_URL + 'categories/', {
                 _id,
                 identifier,
                 name,
                 categoryStatus
             },
-            {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
             createCard(response.data.category)
-            showToast(response.data.message, toastTypes.SUCCESS)                  
-            clearModal();        
-        }                  
-        
+            showToast(response.data.message, toastTypes.SUCCESS)
+            clearModal();
+        }
+
     } catch (error) {
-        showToast("Ocurrio un error al relaziar la operación, intentelo mas tarde", toastTypes.WARNING)  
+        handleException(error)
     }
 }
 
 
-function checkEmptyFields(){
-    let areVlaidFields = true 
-    if(modalCategoryIdentifier.value == ""){
-        areVlaidFields = false        
+function checkEmptyFields() {
+    let areVlaidFields = true
+    if (modalCategoryIdentifier.value == "") {
+        areVlaidFields = false
         modalCategoryIdentifier.classList.add("is-invalid")
         errorCategoryIdentifierLabel.textContent = "Este campo es obligatorio"
-        errorCategoryIdentifierLabel.className ="text-danger"
-    }else{
-        errorCategoryIdentifierLabel.className ="d-none"
+        errorCategoryIdentifierLabel.className = "text-danger"
+    } else {
+        errorCategoryIdentifierLabel.className = "d-none"
         modalCategoryIdentifier.classList.remove("is-invalid")
     }
-    if(modalCategoryName.value == ""){
-        areVlaidFields = false              
+    if (modalCategoryName.value == "") {
+        areVlaidFields = false
         modalCategoryName.classList.add("is-invalid")
-        errorCategoryNameLabel.textContent = "Este campo es obligatorio"  
+        errorCategoryNameLabel.textContent = "Este campo es obligatorio"
         errorCategoryNameLabel.className = "text-danger"
-    }else{
-        errorCategoryNameLabel.className ="d-none"
+    } else {
+        errorCategoryNameLabel.className = "d-none"
         modalCategoryName.classList.remove("is-invalid")
     }
     return areVlaidFields
 }
 
-function checkFieldsFormat(){
-    if(categoryIdentifierRegex.test(modalCategoryIdentifier.value)){     
-        errorCategoryNameLabel.className ="d-none"        
+function checkFieldsFormat() {
+    if (categoryIdentifierRegex.test(modalCategoryIdentifier.value)) {
+        errorCategoryNameLabel.className = "d-none"
         modalCategoryIdentifier.classList.remove("is-invalid")
         return true
-    }else{
+    } else {
         errorCategoryIdentifierLabel.textContent = "El indetificador debe seguir el formato: XXXX000 "
         errorCategoryIdentifierLabel.className = "text-danger"
         modalCategoryIdentifier.classList.add("is-invalid")
@@ -279,32 +279,32 @@ function checkFieldsFormat(){
 }
 
 function searchCategory() {
-    const searchInput = removeAccents(document.getElementById("category-search-bar").value.toLowerCase()); 
-    const categories = document.querySelectorAll("#categories-container .col-md-4"); 
+    const searchInput = removeAccents(document.getElementById("category-search-bar").value.toLowerCase());
+    const categories = document.querySelectorAll("#categories-container .col-md-4");
 
     categories.forEach(categoryCard => {
-        const categoryName = removeAccents(categoryCard.querySelector(".card-title").textContent.toLowerCase()); 
+        const categoryName = removeAccents(categoryCard.querySelector(".card-title").textContent.toLowerCase());
         if (categoryName.includes(searchInput)) {
-            categoryCard.style.display = "block"; 
+            categoryCard.style.display = "block";
         } else {
-            categoryCard.style.display = "none"; 
+            categoryCard.style.display = "none";
         }
     });
 }
 function removeAccents(str) {
-    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
 function clearModal() {
     modalCategoryIdentifier.value = "";
     modalCategoryName.value = "";
-    modalCategoryStatus.value = "Active";    
+    modalCategoryStatus.value = "Active";
     modalCategoryIdentifier.readOnly = false;
     modalRegistryCategoryLabel.textContent = "Registrar Categoría"
     modalRegistryCategoryBtn.textContent = "Registrar"
     modalCancelBtn.textContent = "Cancelar registro"
-    errorCategoryIdentifierLabel.className ="d-none"
-    errorCategoryNameLabel.className ="d-none"    
+    errorCategoryIdentifierLabel.className = "d-none"
+    errorCategoryNameLabel.className = "d-none"
     modalCategoryIdentifier.classList.remove("is-invalid")
     modalCategoryName.classList.remove("is-invalid")
 }

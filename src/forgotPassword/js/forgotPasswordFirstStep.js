@@ -26,7 +26,7 @@ let userId;
             if(error.response.status == 404){
                 showToast("El email ingresado no se encuentra registrado", toastTypes.DANGER)
             } else {
-                showToast("Ha ocurrido un error, por favor intente nuevamente", toastTypes.DANGER)
+                handleException(error);
             }
         }
     }

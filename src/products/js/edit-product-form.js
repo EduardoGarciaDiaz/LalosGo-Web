@@ -77,7 +77,7 @@ async function loadCategories(product) {
         );
         productCategory.selectedIndex = categoryIndex;
     }).catch((error) => {
-        showToast("Ocurrio algo inesperado al cargar las categorías. Verirfique su conexión e inténtelo mas tarde.", toastTypes.DANGER);
+        handleException(error, "Ocurrio un error al cargar las categorias. Verifique su conexión a internet e inténtelo mas tarde.")
     })
 }
 

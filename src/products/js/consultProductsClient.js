@@ -103,7 +103,7 @@ async function getUserAddress() {
 
         });
     } catch (error) {
-        showToast(error.response.data.message || "Error al obtener la dirección", toastTypes.WARNING);
+        handleException(error, "Error al obtener la dirección");
     }
 }
 
@@ -159,7 +159,7 @@ async function updateCurrentAddress(newAddress) {
         showToast(response.data.message, toastTypes.SUCCESS)
         window.location.reload()
     } catch (error) {
-        showToast(error.response.data.message, toastTypes.WARNING)
+        handleException(error);
     }
 }
 
@@ -179,8 +179,7 @@ async function getNearestBranch(asddressData) {
         })
         return response.data.branches
     } catch (error) {
-        const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
-        showToast(errorMessage, toastTypes.DANGER);
+        handleException(error);
     }
 }
 
@@ -223,8 +222,7 @@ async function loadProductsFromNearestBranch(branchToConsult) {
         }
 
     } catch (error) {
-        const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
-        showToast(errorMessage, toastTypes.DANGER);
+        handleException(error);
     }
 }
 
@@ -328,8 +326,7 @@ async function addProductToCart(product, number) {
             showToast(response.data.message, toastTypes.WARNING);
         }
     } catch (error) {
-        const errorMessage = error.response ? error.response.data.message : "No se pudo agregar el producto al carrito. Inténtelo de nuevo.";
-        showToast(errorMessage, toastTypes.DANGER);
+        handleException(error, "No se pudo agregar el producto al carrito. Inténtelo de nuevo.");
     }
 }
 

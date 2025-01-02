@@ -16,7 +16,7 @@ async function getUserAddress() {
       const response = await axios.get(`${API_URL}users/${USER_ID}/addresses`);
       addresses = response.data.addresses;
   } catch (error) {
-      showToast(error.response.data?.message || "Error al obtener la dirección", toastTypes.WARNING);
+      handleException(error, "Error al obtener la dirección");
   }
 } 
 
