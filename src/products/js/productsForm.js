@@ -48,11 +48,8 @@ fetch('/src/shared/footer.html')
     });
 
 async function loadCategories() {
-    axios.get(API_URL + 'categories/', {
-        params: {
-            api_key: "00000" //CAMBIAR 
-        },
-    }).then((response) => {
+    axios.get(API_URL + 'categories/'
+    ).then((response) => {
         response.data.category.forEach((category) => {
             const option = document.createElement('option')
             option.value = category.name
@@ -355,20 +352,19 @@ function uploadImage(event) {
         };
 
         img.onload = () => {
-            if (img.width !== 225 || img.height !== 225) {
+            if (img.width <= 225 || img.height <= 225) {
                 errorImageSpan.textContent = "El tamaño de la imagen debe de ser de 225x225.";
                 errorImageSpan.className = "text-danger"
                 errorImageSpan.classList.add("is-invalid")
                 productImg.src = ""
                 inputImage.value = ""
                 imageData = new FormData()
-            } else {                    
+            } else {
                 errorImageSpan.className = "d-none"
                 errorImageSpan.classList.remove("is-invalid")
                 productImg.src = img.src
                 productImg.style.display = "block"
-                imageData.append('image', file)     
-                console.log(imageData)               
+                imageData.append('image', file)
             }
         };
         reader.readAsDataURL(file)
@@ -433,7 +429,7 @@ function clearFields() {
     productPrice.value = '';
     productWeight.value = '';
     productCategory.selectedIndex = 0;
-    productUnit.selectedIndex= 0;
+    productUnit.selectedIndex = 0;
     productLimit.value = '';
     productExpirationDate.value = '';
     let checkboxes = branchesList.querySelectorAll('.form-check-input');
@@ -449,15 +445,15 @@ function clearFields() {
 }
 
 
-function registryCancelation(){
+function registryCancelation() {
     let { modalInstance, primaryBtn, secondaryBtn } = createConfirmationModal("Cuidado", "¿Estas seguro que deseass cancelar el registro?, esta acción no se puede desahcer.", modalTypes.DANGER, "Confirmar.")
     modalInstance.show()
-    primaryBtn.onclick = function(){
-        clearFields()        
+    primaryBtn.onclick = function () {
+        clearFields()
         modalInstance.hide()
         history.back()
     }
-    secondaryBtn.onclick = function() {
+    secondaryBtn.onclick = function () {
         modalInstance.hide()
     }
 }

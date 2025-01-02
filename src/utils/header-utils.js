@@ -51,27 +51,13 @@ async function loadHeaderByRole() {
     });
 }
 
-window.onload = () => {
-
-    profile = document.getElementById('profile');
-    logout = document.getElementById('logout');
-    if (profile) {
-        profile.addEventListener('click', () => {
-            window.location.href = '/src/profile/profile.html';
-        });
-    }
-
-    if (logout) {
-        logout.addEventListener('click', () => {
-            logoutUser();
-        });
-    }
-};
-
-
 document.addEventListener('DOMContentLoaded', () => {
     loadHeaderByRole();
 });
+
+async function goToProfile() {
+    window.location.href = '/src/profile/profile.html';
+}
 
 async function logoutUser() {
     redirectToLogin();
