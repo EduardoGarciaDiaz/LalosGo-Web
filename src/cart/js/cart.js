@@ -33,10 +33,15 @@ function loadProducts() {
 }
 
 function getProductsFromCart() {
+    let token = getInstance().token;
+
     axios
         .get(`${API_URL}carts/${userId}`, {
             params: {
                 status: CART_STATUS
+            },
+            headers: {
+                'Authorization': `Bearer ${token}`
             }
         })
         .then((response) => {
@@ -169,10 +174,15 @@ function clearCart() {
 }
 
 function deleteProductsFromCart() {
+    let token = getInstance().token;
+
     axios
         .delete(`${API_URL}carts/${orderId}`, {
             params: {
                 status: CART_STATUS
+            },
+            headers: {
+                'Authorization': `Bearer ${token}`
             }
         })
         .then((response) => {
@@ -207,6 +217,8 @@ function updatePrices() {
 }
 
 async function validateAvailability(productId, newQuantity) {
+    let token = getInstance().token;
+
     try {
         const response = await axios.patch(
             `${API_URL}carts/${orderId}`,
@@ -218,6 +230,9 @@ async function validateAvailability(productId, newQuantity) {
             {
                 params: {
                     status: CART_STATUS
+                },
+                headers: {
+                    'Authorization': `Bearer ${token}`
                 }
             }
         );
