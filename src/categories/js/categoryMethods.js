@@ -158,24 +158,24 @@ async function changeCategoryStatus(categoryToChange) {
 
     }
     let token = getInstance().token
+    console.log(token)
     try {
-        const response = await axios.put(`${API_URL}categories/${categoryToChange._id}`,
-            {
-                identifier,
-                name,
-                categoryStatus,
-            },
-            {
-                params: {
-                    changeStatus: categoryStatus
-                }
-            },
+        const response = await axios.put(
+            `${API_URL}categories/${categoryToChange._id}`,
+            { 
+                identifier, 
+                name, 
+                categoryStatus 
+            }, 
             {
                 headers: {
                     'Authorization': `Bearer ${token}`
+                },
+                params: {
+                    changeStatus: categoryStatus
                 }
-            }
-        );
+            } 
+        );        
         loadCategories();
         showToast(response.data.message, toastTypes.SUCCESS)
     } catch (error) {
