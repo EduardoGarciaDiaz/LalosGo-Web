@@ -20,7 +20,10 @@ fetch('/src/shared/footer.html')
 
 async function getProducts() {
     try {
-        const response = await axios.get(`${API_URL}/products`);
+        let token = getInstance().token
+        const response = await axios.get(`${API_URL}/products`,{
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         allProducts = response.data.products.map(product => ({
             ...product,
             simpleName: removeAccents(product.name)
@@ -36,10 +39,9 @@ async function loadCategories() {
     categoriesDropdown.innerHTML = '<option value="" selected>Todas las categorías</option>';
 
     try {
+        let token = getInstance().token
         const response = await axios.get(API_URL + 'categories/', {
-            params: {
-                api_key: "00000"
-            },
+            headers: { 'Authorization': `Bearer ${token}` }
         });
 
         response.data.category.forEach((category) => {

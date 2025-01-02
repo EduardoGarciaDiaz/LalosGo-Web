@@ -87,7 +87,9 @@ function convertUnitMeasure(unitMeasure){
 async function changeProductStatus(){
     try{ 
         const status =  {newStatus: !productData.productStatus};
-        await axios.patch(`${API_URL}/products/${productData._id}`, status);
+        await axios.patch(`${API_URL}/products/${productData._id}`, status, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         showToast("Estado del producto cambiado exitosamente", toastTypes.SUCCESS);
         changeButton(!productData.productStatus);
     }catch (error){

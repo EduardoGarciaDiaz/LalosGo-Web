@@ -48,10 +48,11 @@ fetch('/src/shared/footer.html')
     });
 
 async function loadCategories() {
-    axios.get(API_URL + 'categories/', {
-        params: {
-            api_key: "00000" //CAMBIAR 
-        },
+    let token = getInstance().token
+    axios.get(API_URL + 'categories/', {    
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
     }).then((response) => {
         response.data.category.forEach((category) => {
             const option = document.createElement('option')
@@ -63,7 +64,6 @@ async function loadCategories() {
     }).catch((error) => {
         showToast("Ocurrio algo inesperado al cargar las categorías. Verirfique su conexión e inténtelo mas tarde.", toastTypes.DANGER);
     })
-
 }
 
 async function loadBranches() {
@@ -103,7 +103,7 @@ async function saveProduct() {
     if (!checkBranchesSelected(selectedBranches)) {
         return
     }
-
+    let token = getInstance().token
     try {
         let response = await axios.post(API_URL + 'products/', {
             barCode: productCode.value,
@@ -117,11 +117,20 @@ async function saveProduct() {
             unitMeasure: productUnit.value,
             category: productCategory.options[productCategory.selectedIndex].id,
             branches: selectedBranches
+        },
+        {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
         })
         if (response.status < 300 && response.status > 199) {
 
             showToast(response.data.message, toastTypes.SUCCESS)
-            let responseImage = await axios.post(`${API_URL}products/${response.data.product._id}/images`, imageData)
+            let responseImage = await axios.post(`${API_URL}products/${response.data.product._id}/images`, imageData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
             if (responseImage.status < 300 && responseImage.status > 199) {
                 showToast(responseImage.data.message, toastTypes.SUCCESS)
             }
@@ -362,13 +371,13 @@ function uploadImage(event) {
                 productImg.src = ""
                 inputImage.value = ""
                 imageData = new FormData()
-            } else {                    
+            } else {
                 errorImageSpan.className = "d-none"
                 errorImageSpan.classList.remove("is-invalid")
                 productImg.src = img.src
                 productImg.style.display = "block"
-                imageData.append('image', file)     
-                console.log(imageData)               
+                imageData.append('image', file)
+                console.log(imageData)
             }
         };
         reader.readAsDataURL(file)
@@ -433,7 +442,7 @@ function clearFields() {
     productPrice.value = '';
     productWeight.value = '';
     productCategory.selectedIndex = 0;
-    productUnit.selectedIndex= 0;
+    productUnit.selectedIndex = 0;
     productLimit.value = '';
     productExpirationDate.value = '';
     let checkboxes = branchesList.querySelectorAll('.form-check-input');
@@ -449,15 +458,15 @@ function clearFields() {
 }
 
 
-function registryCancelation(){
+function registryCancelation() {
     let { modalInstance, primaryBtn, secondaryBtn } = createConfirmationModal("Cuidado", "¿Estas seguro que deseass cancelar el registro?, esta acción no se puede desahcer.", modalTypes.DANGER, "Confirmar.")
     modalInstance.show()
-    primaryBtn.onclick = function(){
-        clearFields()        
+    primaryBtn.onclick = function () {
+        clearFields()
         modalInstance.hide()
         history.back()
     }
-    secondaryBtn.onclick = function() {
+    secondaryBtn.onclick = function () {
         modalInstance.hide()
     }
 }

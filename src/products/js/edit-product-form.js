@@ -17,7 +17,7 @@ var imageData = new FormData()
 let branchesList
 let errorImageSpan
 
-document.addEventListener("DOMContentLoaded",  () => {
+document.addEventListener("DOMContentLoaded", () => {
     productName = document.getElementById("name-product")
     productDescription = document.getElementById("description-product");
     productCode = document.getElementById("code-product");
@@ -39,11 +39,11 @@ document.addEventListener("DOMContentLoaded",  () => {
 
 });
 
-window.addEventListener("load", async () =>{
-    let productData = JSON.parse(sessionStorage.getItem('productData'));   
-    if(productData){      
+window.addEventListener("load", async () => {
+    let productData = JSON.parse(sessionStorage.getItem('productData'));
+    if (productData) {
         productEditingId = productData._id
-        await loadCategories(productData);    
+        await loadCategories(productData);
         loadProductInfo(productData)
         await loadBranches(productData._id);
     }
@@ -54,12 +54,12 @@ fetch('/src/shared/footer.html')
     .then(data => {
         document.getElementById('footer').innerHTML = data;
         isImageChanged = false;
-});
+    });
 
 
 async function loadCategories(product) {
     let token = getInstance().token;
-    axios.get(API_URL + 'categories/',{
+    axios.get(API_URL + 'categories/', {
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -74,44 +74,47 @@ async function loadCategories(product) {
         })
         let categoryIndex = Array.from(productCategory.options).findIndex(
             (cat) => cat.id === product.category._id
-        );        
+        );
         productCategory.selectedIndex = categoryIndex;
     }).catch((error) => {
         showToast("Ocurrio algo inesperado al cargar las categorías. Verirfique su conexión e inténtelo mas tarde.", toastTypes.DANGER);
     })
 }
 
-async function loadBranches(productId) {
+async function loadBranches(productid) {
     let token = getInstance().token;
 
-    axios.get(`${API_URL}branches/${productId}`, {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
+    axios.get(`${API_URL}branches`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+        params: { productId: productid }
     }).then((response) => {
         branchesList.innetHTML = ""
+        if(response.data.branches.length <= 0){
+            showToast("No hay sucursales", toastTypes.DANGER)
+        }
         response.data.branches.forEach(element => {
             const branchCard = createCheckboxWithNumber(element)
             branchesList.appendChild(branchCard)
         });
     }).catch((error) => {
+        console.log(error)
         showToast("Ocurrio algo inesperado al cargar las sucursales. Verirfique su conexión e inténtelo mas tarde", toastTypes.DANGER)
     })
 }
 
-function loadProductInfo(product){
+function loadProductInfo(product) {
     productName.value = product.name
     productDescription.value = product.description
     productCode.value = product.barCode
     generateBarCode()
     productPrice.value = product.unitPrice
-    productWeight.value = product.weight    
-    productExpirationDate.value = formatDateToISO(product.expireDate)       
+    productWeight.value = product.weight
+    productExpirationDate.value = formatDateToISO(product.expireDate)
     let unitMeasureIndex = Array.from(productUnit.options).findIndex(
         (unt) => unt.value == product.unitMeasure
     )
     productUnit.selectedIndex = unitMeasureIndex
-    productLimit.value = product.limit    
+    productLimit.value = product.limit
     loadImageFromUrl(product.image)
 
 }
@@ -155,22 +158,26 @@ async function saveEditedProduct() {
                 }
             }
         );
-        
+
         showToast(response.data.message, toastTypes.SUCCESS)
         if (response.status < 300 && response.status > 199 && isImageChanged) {
-            let responseImage = await axios.put(`${API_URL}products/${response.data.product._id}/images`, imageData)
+            let responseImage = await axios.put(`${API_URL}products/${response.data.product._id}/images`, imageData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
             if (responseImage.status < 300 && responseImage.status > 199) {
-                showToast(responseImage.data.message, toastTypes.SUCCESS)                
+                showToast(responseImage.data.message, toastTypes.SUCCESS)
             }
             else {
                 showToast(responseImage.data.message, toastTypes.WARNING)
-            }            
+            }
         }
-        setTimeout(() => {        
-            clearFields()            
+        setTimeout(() => {
+            clearFields()
             sessionStorage.removeItem('productData');
             history.back()
-        }, 2000);   
+        }, 2000);
     } catch (error) {
         console.log(error)
         showToast("Ocurrio algo inesperado al realizar la petición. Revise su conexión a internet e inténtelo mas tarde", toastTypes.WARNING)
@@ -395,10 +402,10 @@ function loadImageFromUrl(url) {
                     errorImageSpan.className = "text-danger";
                     errorImageSpan.classList.add("is-invalid");
                 });
-           
+
         }
     };
-    
+
     img.onerror = () => {
         errorImageSpan.textContent = "No se pudo cargar la imagen desde la URL inicial.";
         errorImageSpan.className = "text-danger";
@@ -440,13 +447,13 @@ function uploadImage(event) {
                 productImg.src = ""
                 inputImage.value = ""
                 imageData = new FormData()
-            } else {             
-                imageData = new FormData()       
+            } else {
+                imageData = new FormData()
                 errorImageSpan.className = "d-none"
                 errorImageSpan.classList.remove("is-invalid")
                 productImg.src = img.src
                 productImg.style.display = "block"
-                imageData.append('image', file)           
+                imageData.append('image', file)
                 isImageChanged = true
             }
         };
@@ -494,7 +501,7 @@ function createCheckboxWithNumber(branch) {
         }
     });
 
-    if(branch.branchProducts.length > 0){
+    if (branch.branchProducts.length > 0) {
         checkbox.checked = true
         numberInput.disabled = false;
     }
@@ -519,7 +526,7 @@ function clearFields() {
     productPrice.value = '';
     productWeight.value = '';
     productCategory.selectedIndex = 0;
-    productUnit.selectedIndex= 0;
+    productUnit.selectedIndex = 0;
     productLimit.value = '';
     productExpirationDate.value = '';
     let checkboxes = branchesList.querySelectorAll('.form-check-input');
@@ -535,16 +542,16 @@ function clearFields() {
 }
 
 
-function registryCancelation(){
+function registryCancelation() {
     let { modalInstance, primaryBtn, secondaryBtn } = createConfirmationModal("Cuidado", "¿Estas seguro que deseass cancelar el registro?, esta acción no se puede desahcer.", modalTypes.DANGER, "Confirmar.")
     modalInstance.show()
-    primaryBtn.onclick = function(){
-        clearFields()        
+    primaryBtn.onclick = function () {
+        clearFields()
         modalInstance.hide()
         sessionStorage.removeItem('productData');
         history.back()
     }
-    secondaryBtn.onclick = function() {
+    secondaryBtn.onclick = function () {
         modalInstance.hide()
     }
 }

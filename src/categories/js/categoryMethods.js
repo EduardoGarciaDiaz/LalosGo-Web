@@ -54,10 +54,13 @@ function showModal() {
 }
 
 async function loadCategories() {
-    axios.get(API_URL+'categories/', {
-        params: {
-            api_key: "00000" //CAMBIAR 
-        },
+    let token = getInstance().token
+
+    axios.get(API_URL+'categories/',
+    {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
     }).then((response) => {
         categoryContainer.innerHTML = '';
         response.data.category.forEach((category) => {
@@ -154,6 +157,7 @@ async function changeCategoryStatus(categoryToChange){
         categoryStatus = true
 
     }
+    let token = getInstance().token
     try {
         const response = await axios.put(`${API_URL}categories/${categoryToChange._id}`, 
             {
@@ -165,7 +169,12 @@ async function changeCategoryStatus(categoryToChange){
                 params: {
                     changeStatus: categoryStatus 
                 }
-            }  
+            },
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                } 
+            }
         );
         loadCategories();   
         showToast(response.data.message, toastTypes.SUCCESS) 
@@ -187,6 +196,7 @@ async function saveCategory(isEdition) {
     let identifier = modalCategoryIdentifier.value;
     let name = modalCategoryName.value;
     let categoryStatus = modalCategoryStatus.value === "Active" ? true : false;
+    let token = getInstance().token
        
     try {
         if(isEdition){
@@ -195,25 +205,36 @@ async function saveCategory(isEdition) {
                     identifier,
                     name,
                     categoryStatus,
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 }
             );                     
             loadCategories();   
-            showToast(response.data.message, toastTypes.SUCCESS)   
+            showToast(response.data.message, toastTypes.SUCCESS)  
+            clearModal();   
             setTimeout(() => {
                 const bootstrapModal = bootstrap.Modal.getInstance(modalWindowCategory);
                 bootstrapModal.hide(); 
-            }, 1500);
+            }, 1000);
         }else {
             const response = await axios.post(API_URL + 'categories/', {
                 _id,
                 identifier,
                 name,
                 categoryStatus
+            },
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
             createCard(response.data.category)
-            showToast(response.data.message, toastTypes.SUCCESS)            
-        }        
-        clearModal();            
+            showToast(response.data.message, toastTypes.SUCCESS)                  
+            clearModal();        
+        }                  
         
     } catch (error) {
         showToast("Ocurrio un error al relaziar la operación, intentelo mas tarde", toastTypes.WARNING)  
