@@ -212,8 +212,7 @@ async function createBranch() {
         }
 
     } catch (error) {
-        const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
-        showToast(errorMessage, toastTypes.DANGER);
+        handleException(error);
         return;
     }
 }

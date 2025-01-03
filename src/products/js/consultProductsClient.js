@@ -59,10 +59,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         branchId = await getNearestBranch(currentAddress)
     }
     if (branchId) {
-        await loadProductsFromNearestBranch(branchId)
+        await loadProductsFromNearestBranch(branchId)    
+        sessionStorage.setItem('branch-Id-to-consult-products', branch._id);
     }
 
-    sessionStorage.setItem('branch-Id-to-consult-products', branch._id);
+    
 
 })
 
@@ -79,7 +80,12 @@ async function loadFooter() {
 
 async function getUserAddress() {
     try {
-        const response = await axios.get(`${API_URL}users/${USER_ID}/addresses`);
+        let token = getInstance().token
+        const response = await axios.get(`${API_URL}users/${USER_ID}/addresses`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
         response.data.addresses.forEach(element => {
             const latLongKey = `${element.latitude},${element.longitude}`;
             userAddresses[latLongKey] = element;
@@ -97,7 +103,7 @@ async function getUserAddress() {
 
         });
     } catch (error) {
-        showToast(error.response.data.message || "Error al obtener la dirección", toastTypes.WARNING);
+        handleException(error, "Error al obtener la dirección");
     }
 }
 
@@ -139,13 +145,21 @@ function confirmChangeOfAddres(event) {
 
 async function updateCurrentAddress(newAddress) {
     try {
-        let response = await axios.put(`${API_URL}users/${USER_ID}/addresses`, {
-            address: newAddress
-        })
+        let token = getInstance().token
+        let response = await axios.put(`${API_URL}users/${USER_ID}/addresses`,
+            {
+                address: newAddress
+            },
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        )
         showToast(response.data.message, toastTypes.SUCCESS)
         window.location.reload()
     } catch (error) {
-        showToast(error.response.data.message, toastTypes.WARNING)
+        handleException(error);
     }
 }
 
@@ -153,7 +167,6 @@ async function updateCurrentAddress(newAddress) {
 async function getNearestBranch(asddressData) {
     try {
         let token = getInstance().token;
-
         let response = await axios.get(`${API_URL}branches/`, {
             params: {
                 location: {
@@ -166,14 +179,16 @@ async function getNearestBranch(asddressData) {
         })
         return response.data.branches
     } catch (error) {
-        const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
-        showToast(errorMessage, toastTypes.DANGER);
+        handleException(error);
     }
 }
 
 async function loadProductsFromNearestBranch(branchToConsult) {
     try {
-        let response = await axios.get(`${API_URL}products/${branchToConsult}`)
+        let token = getInstance().token
+        let response = await axios.get(`${API_URL}products/${branchToConsult}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
         if (response.status < 300 && response.status > 199) {
             branch = response.data.branch
             branchNameLabel.innerHTML = branch.name
@@ -207,8 +222,7 @@ async function loadProductsFromNearestBranch(branchToConsult) {
         }
 
     } catch (error) {
-        const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
-        showToast(errorMessage, toastTypes.DANGER);
+        handleException(error);
     }
 }
 
@@ -291,6 +305,7 @@ function createProductCard(element) {
 
 async function addProductToCart(product, number) {
     try {
+        let token = getInstance().token
         const response = await axios.post(API_URL + 'carts', {
             userId: USER_ID,
             productForCart: {
@@ -299,7 +314,11 @@ async function addProductToCart(product, number) {
                 price: Number(product.unitPrice) * Number(number)
             },
             branchId: branch._id
-        });
+        },
+            {
+                headers: { 'Authorization': `Bearer ${token}` }
+            }
+        );
 
         if (response.status >= 200 && response.status < 300) {
             showToast(response.data.message, toastTypes.SUCCESS);
@@ -307,8 +326,7 @@ async function addProductToCart(product, number) {
             showToast(response.data.message, toastTypes.WARNING);
         }
     } catch (error) {
-        const errorMessage = error.response ? error.response.data.message : "No se pudo agregar el producto al carrito. Inténtelo de nuevo.";
-        showToast(errorMessage, toastTypes.DANGER);
+        handleException(error, "No se pudo agregar el producto al carrito. Inténtelo de nuevo.");
     }
 }
 

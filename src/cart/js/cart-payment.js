@@ -46,7 +46,7 @@ function getAllPaymentMethods() {
             });
         })
         .catch((error) => {
-            showToast("Error al cargar los métodos de pago", toastTypes.DANGER);
+            handleException(error, "Error al cargar los métodos de pago");
         });
 }
 
@@ -155,10 +155,15 @@ function clearAllSelections() {
 }
 
 function loadOrderSummary() {
+    let token = getInstance().token;
+
     axios
         .get(`${API_URL}carts/${userId}/total`, {
             params: {
                 status: CART_STATUS
+            },
+            headers: {
+                'Authorization': `Bearer ${token}`
             }
         })
         .then((response) => {
@@ -182,7 +187,7 @@ function loadOrderSummary() {
             }
         })
         .catch((error) => {
-            showToast("Error al cargar el resumen de la compra", toastTypes.DANGER);
+            handleException(error, "Error al cargar el resumen de la compra");
             window.location.replace('./cart.html');
         });
 }
@@ -293,24 +298,29 @@ function cancelOrder() {
 }
 
 async function deleteCart(orderId) {
+    let token = getInstance().token;
     axios
         .delete(`${API_URL}carts/${orderId}`, {
             params: {
                 status: CART_STATUS
+            },
+            headers: {
+                'Authorization': `Bearer ${token}`
             }
         })
         .then((response) => {
             showToast(response.data.message, toastTypes.SUCCESS);
         })
         .catch((error) => {
-            const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
-            showToast(errorMessage, toastTypes.DANGER);
+            handleException(error, "Error al eliminar el carrito");
         });
 }
 
 
 async function reserveCartProducts() {
     const paymentMethodSelected = paymentMethodId;
+    let token = getInstance().token;
+    
     try {
         const response = await axios.put(
             `${API_URL}orders/${orderId}`,
@@ -322,6 +332,9 @@ async function reserveCartProducts() {
             {
                 params: {
                     status: CART_STATUS
+                },
+                headers: {
+                    'Authorization': `Bearer ${token}`
                 }
             }
         );
@@ -347,6 +360,6 @@ async function reserveCartProducts() {
             }, 4000);
             return false;
         }
-        showToast(error.response.data.message, toastTypes.WARNING);
+        handleException(error, "Error al realizar la orden");
     }
 }

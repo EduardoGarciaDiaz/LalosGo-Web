@@ -33,10 +33,15 @@ function loadProducts() {
 }
 
 function getProductsFromCart() {
+    let token = getInstance().token;
+
     axios
         .get(`${API_URL}carts/${userId}`, {
             params: {
                 status: CART_STATUS
+            },
+            headers: {
+                'Authorization': `Bearer ${token}`
             }
         })
         .then((response) => {
@@ -65,8 +70,7 @@ function getProductsFromCart() {
             }
         })
         .catch((error) => {
-            const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
-            showToast(errorMessage, toastTypes.DANGER);
+            handleException(error);
         });
 }
 
@@ -161,7 +165,7 @@ async function goToPayment() {
         }
 
     } catch (error) {
-        showToast("Ocurrió un error al validar el inventario", toastTypes.ERROR);
+        handleException(error, "Ocurrió un error al validar el inventario");
     }
 }
 
@@ -170,10 +174,15 @@ function clearCart() {
 }
 
 function deleteProductsFromCart() {
+    let token = getInstance().token;
+
     axios
         .delete(`${API_URL}carts/${orderId}`, {
             params: {
                 status: CART_STATUS
+            },
+            headers: {
+                'Authorization': `Bearer ${token}`
             }
         })
         .then((response) => {
@@ -181,8 +190,7 @@ function deleteProductsFromCart() {
             clearCartUI();
         })
         .catch((error) => {
-            const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
-            showToast(errorMessage, toastTypes.DANGER);
+            handleException(error);
         });
 }
 
@@ -209,6 +217,8 @@ function updatePrices() {
 }
 
 async function validateAvailability(productId, newQuantity) {
+    let token = getInstance().token;
+
     try {
         const response = await axios.patch(
             `${API_URL}carts/${orderId}`,
@@ -220,6 +230,9 @@ async function validateAvailability(productId, newQuantity) {
             {
                 params: {
                     status: CART_STATUS
+                },
+                headers: {
+                    'Authorization': `Bearer ${token}`
                 }
             }
         );
@@ -249,8 +262,7 @@ async function validateAvailability(productId, newQuantity) {
 
         return hasStock;
     } catch (error) {
-        const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
-        showToast(errorMessage, toastTypes.DANGER);
+        handleException(error, "Ocurrió un error al validar el inventario");
         return false;
     }
 }

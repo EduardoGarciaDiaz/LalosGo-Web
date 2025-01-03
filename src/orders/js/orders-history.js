@@ -33,7 +33,9 @@ function loadOrders(orderTemplatePath, ordersContainerId, orders) {
                 }
             });
         })
-        .catch(error => console.error('Error al cargar órdenes:', error))
+        .catch((error) => {
+            handleException(error);
+        })
         .finally(() => {
             if (loading) {
                 loading.style.display = 'none';
@@ -49,7 +51,7 @@ async function cancelOrder(button) {
         const confirmCancel = window.confirm(`¿Está seguro que desea cancelar el pedido con código ${orderCode}?`);
         if (confirmCancel) {
             alert(`Pedido con código ${orderCode} ha sido cancelado.`);
-            const modal =  button.closest('.modal');
+            const modal = button.closest('.modal');
             const modalInstance = bootstrap.Modal.getInstance(modal);
             modalInstance.hide();
             clearCancelOrderForm(button);
@@ -61,7 +63,7 @@ async function cancelOrder(button) {
 
 function clearCancelOrderForm(button) {
     const modal = button.closest('.modal');
-    
+
     if (modal) {
         const cancelReasonInput = modal.querySelector('.cancelReason');
         if (cancelReasonInput) {

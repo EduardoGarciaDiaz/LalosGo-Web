@@ -63,7 +63,7 @@ async function updateClientAccount(dataClientUpdate){
             throw new Error("Error al modificar la cuenta. Inténtelo de nuevo.");
         }
     }catch(error) {
-        showToast("Ha ocurrido un error", toastTypes.DANGER);
+        handleException(error, "Ocurrió un error al modificar la cuenta. Inténtelo de nuevo.");
         throw error;   
     }
 }
