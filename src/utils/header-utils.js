@@ -47,7 +47,9 @@ async function loadHeaderByRole() {
     }
 
     loadHTML(headerPath, CONTAINER_ID, () => {
+        if (role === 'Customer') {
         createCategoriesListBoxItems();
+        }
     });
 }
 
