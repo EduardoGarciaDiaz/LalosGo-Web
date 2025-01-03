@@ -29,8 +29,6 @@ function initMap() {
 
     geocoder = new google.maps.Geocoder();
 
-
-    //Si la acción es editar o mostrar dirección, se llenan los campos con la información de la dirección
     if (ACTION_TYPE === 'EditDeliveryAddress' || ACTION_TYPE === 'ShowDeliveryAddress') {
         const customLocation = new google.maps.LatLng(initialLocation.lat, initialLocation.lng);
         getAddressFromCoordinates(customLocation);
@@ -38,7 +36,6 @@ function initMap() {
         document.getElementById("interior_number").value = deliveryAddressData.internalNumber;
     }
 
-    //Si la acción es mostrar dirección, se deshabilita la acción de seleccionar en el mapa
     if (ACTION_TYPE !== 'ShowDeliveryAddress') {
         map.addListener("click", (event) => {
             const clickedLocation = event.latLng;
@@ -129,16 +126,18 @@ async function registerDeliveryAddress(event) {
 
         if (ACTION_TYPE === 'RegisterDeliveryAddress') {
             newDeliveryAddress.isCurrentAddress = false;
-            let succes = await registerNewDeliveryAddress(newDeliveryAddress);
+            await registerNewDeliveryAddress(newDeliveryAddress);
 
         } else if (ACTION_TYPE === 'EditDeliveryAddress') {
             editDeliveryAddress(newDeliveryAddress);
 
         } else if (ACTION_TYPE === 'CreateClientAccount') {
             newDeliveryAddress.isCurrentAddress = true;
-            let succes = await registerClientAccount(newDeliveryAddress)
-            if (succes) {
-                window.location.href = "http://127.0.0.1:5500/src/login/login.html"
+            let success = await registerClientAccount(newDeliveryAddress)
+            if (success) {
+                setTimeout(() => {
+                    window.location.href = "/src/login/login.html";
+                }, 2000);
             }
         }
     }
@@ -146,7 +145,10 @@ async function registerDeliveryAddress(event) {
 
 async function editDeliveryAddress(newDeliveryAddress) {
     try {
-        await axios.put(`${API_URL}/users/${USER_ID}/addresses/${deliveryAddressData._id}`, newDeliveryAddress);
+        let token = getInstance().token;
+        await axios.put(`${API_URL}/users/${USER_ID}/addresses/${deliveryAddressData._id}`, newDeliveryAddress, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         showToast("Se ha actualizado la dirección", toastTypes.SUCCESS);
         return true;
     } catch (error) {
@@ -157,7 +159,10 @@ async function editDeliveryAddress(newDeliveryAddress) {
 
 async function registerNewDeliveryAddress(newDeliveryAddress) {
     try {
-        await axios.post(`${API_URL}/users/${USER_ID}/addresses`, newDeliveryAddress);
+        let token = getInstance().token;
+        await axios.post(`${API_URL}/users/${USER_ID}/addresses`, newDeliveryAddress, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         showToast("Se ha registrado la dirección", toastTypes.SUCCESS);
         return true;
     } catch (error) {

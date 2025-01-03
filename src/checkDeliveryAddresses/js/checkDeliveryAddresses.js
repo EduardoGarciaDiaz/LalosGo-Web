@@ -1,5 +1,5 @@
 const ADDRESS_LIMIT = 3;
-const DELIVERY_ADDRESS_WINDOW = "http://127.0.0.1:5500/src/RegisterDeliveryAddress/registerDeliveryAddress.html";
+const DELIVERY_ADDRESS_WINDOW = "/src/RegisterDeliveryAddress/registerDeliveryAddress.html";
 // Elemento contenedor de tarjetas
 const addressContainer = document.getElementById("addressContainer");
 let USER_ID
@@ -65,30 +65,57 @@ function renderAddresses() {
   }
   
   // Eliminar dirección
-  function deleteAddress(index) {
-    const MODAL_TITLE = 'Eliminar dirección';
-    const MODAL_MESSAGE = `¿Estás seguro que deseas eliminar la dirección?`;
-    const MODAL_PRIMARY_BTN_TEXT = 'Eliminar';
+  function deleteAddress(index) {    
+    if(addresses.length > 1) {
+      let MODAL_TITLE = 'Eliminar dirección';
+      let MODAL_MESSAGE = `¿Estás seguro que deseas eliminar la dirección?`;
+      let MODAL_PRIMARY_BTN_TEXT = 'Eliminar';
 
-    const { modalInstance, primaryBtn, secondaryBtn } = createConfirmationModal(
+      if(addresses[index].isCurrentAddress) {
+        MODAL_TITLE = 'Eliminar dirección preferida';
+        MODAL_MESSAGE = `¿Estás seguro que deseas eliminar tu dirección preferida?, se podrían perder los productos de tu carrito.`;
+        MODAL_PRIMARY_BTN_TEXT = 'Eliminar';
+      }
+
+      const { modalInstance, primaryBtn, secondaryBtn } = createConfirmationModal(
         MODAL_TITLE, 
         MODAL_MESSAGE, 
         modalTypes.DANGER, 
         MODAL_PRIMARY_BTN_TEXT
-    );
-    modalInstance.show();
+      );
 
-    //Este método debe ser async
-    primaryBtn.onclick = function() {
-      //Falta método para llamar al API y que elimine la dirección
-        modalInstance.hide();
-        addresses.splice(index, 1);
-        renderAddresses();
+      modalInstance.show();
+      
+        primaryBtn.onclick = async function() {
+        const result = await deleteAddressById(USER_ID, addresses[index]._id);
+        if(result) {
+          modalInstance.hide();
+          addresses.splice(index, 1);
+          renderAddresses();
+        }
+      }
+
+      secondaryBtn.onclick = function() {
+      modalInstance.hide();
+      }  
+
+    } else {
+      showToast("No se puede eliminar la única dirección, debe haber al menos una dirección registrada.", toastTypes.DANGER);
+    }  
+  }
+
+  function deleteAddressById(userId, addressId) {
+    try {
+      let token = getInstance().token;
+      axios.delete(`${API_URL}/users/${userId}/addresses/${addressId}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+      });
+      showToast("La dirección se ha eliminado", toastTypes.SUCCESS);
+      return true;
+    } catch (error) {
+      alert(error);
+      showToast("Error al eliminar la dirección. Inténtelo más tarde", toastTypes.DANGER);
     }
-
-    secondaryBtn.onclick = function() {
-        modalInstance.hide();
-    }    
   }
   
 

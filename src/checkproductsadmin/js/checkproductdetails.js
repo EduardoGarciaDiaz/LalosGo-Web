@@ -85,6 +85,7 @@ function convertUnitMeasure(unitMeasure){
 }
 
 async function changeProductStatus(){
+    let token = getInstance().token;
     try{ 
         let token = getInstance().token
         const status =  {newStatus: !productData.productStatus};
