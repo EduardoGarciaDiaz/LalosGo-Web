@@ -96,13 +96,13 @@ function showCategorieProducts(selectedCategoryId) {
 }
 
 function addNewProduct(){
-    window.location.href = "http://127.0.0.1:5500/src/products/productsForm.html";
+    window.location.href = "/src/products/productsForm.html";
 }
 
 function viewProduct(productId) {
     sessionStorage.removeItem('productData');
     sessionStorage.setItem('productData', JSON.stringify(allProducts.find(product => product._id === productId)));
-    window.location.href = "http://127.0.0.1:5500/src/checkproductsadmin/checkproductdetails.html";
+    window.location.href = "/src/checkproductsadmin/checkproductdetails.html";
 }
 
 function searchProduct(){

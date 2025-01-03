@@ -134,56 +134,62 @@ async function registerDeliveryAddress(event) {
         } else if (ACTION_TYPE === 'EditDeliveryAddress') {
             editDeliveryAddress(newDeliveryAddress);
 
-        } else if (ACTION_TYPE === 'CreateClientAccount') {
-            newDeliveryAddress.isCurrentAddress = true;
-            let succes = await registerClientAccount(newDeliveryAddress)
-            if (succes) {
-                window.location.href = "http://127.0.0.1:5500/src/login/login.html"
+            } else if(ACTION_TYPE === 'CreateClientAccount'){
+                newDeliveryAddress.isCurrentAddress = true;
+                let succes = await registerClientAccount(newDeliveryAddress)
+                if(succes) {
+                    window.location.href = "/src/login/login.html"
+                }
             }
-        }
+        } 
     }
-}
 
-async function editDeliveryAddress(newDeliveryAddress) {
-    try {
-        await axios.put(`${API_URL}/users/${USER_ID}/addresses/${deliveryAddressData._id}`, newDeliveryAddress);
-        showToast("Se ha actualizado la dirección", toastTypes.SUCCESS);
-        return true;
-    } catch (error) {
-        handleException(error);
-        return false;
-    }
-}
-
-async function registerNewDeliveryAddress(newDeliveryAddress) {
-    try {
-        await axios.post(`${API_URL}/users/${USER_ID}/addresses`, newDeliveryAddress);
-        showToast("Se ha registrado la dirección", toastTypes.SUCCESS);
-        return true;
-    } catch (error) {
-        handleException(error);
-        return false;
-    }
-}
-
-async function registerClientAccount(newDeliveryAddress) {
-    try {
-        if (creationAccountData) {
-            creationAccountData.client = {
-                addresses: [newDeliveryAddress],
-            };
-
-            await axios.post(`${API_URL}/users/`, creationAccountData);
-            showToast("Se ha registrado la cuenta", toastTypes.SUCCESS);
-            sessionStorage.removeItem('creationAccountData');
+    async function editDeliveryAddress(newDeliveryAddress){
+        try{
+            let token = getInstance().token;
+            await axios.put(`${API_URL}/users/${USER_ID}/addresses/${deliveryAddressData._id}`, newDeliveryAddress, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+            });
+            showToast("Se ha actualizado la dirección", toastTypes.SUCCESS);
             return true;
+        } catch (error) {
+            handleException(error);
+            return false;
         }
-    } catch (error) {
-        handleException(error);
-        return false;
     }
-}
 
+   async function registerNewDeliveryAddress(newDeliveryAddress){
+        try{
+            let token = getInstance().token;
+            await axios.post(`${API_URL}/users/${USER_ID}/addresses`, newDeliveryAddress, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            showToast("Se ha registrado la dirección", toastTypes.SUCCESS);
+            return true;
+        } catch (error) {
+            handleException(error);
+            return false;
+        }
+    }
+
+    async function registerClientAccount(newDeliveryAddress) {
+        try {
+            if (creationAccountData) {
+                creationAccountData.client = {
+                    addresses: [newDeliveryAddress],
+                };
+    
+                await axios.post(`${API_URL}/users/`, creationAccountData);
+                showToast("Se ha registrado la cuenta", toastTypes.SUCCESS);
+                sessionStorage.removeItem('creationAccountData');
+                return true;
+            }
+        } catch (error) {
+            handleException(error);
+            return false;
+        }
+    }
+    
 
 function isExternalNumberValid(exterior_number) {
     return VALID_EXTERNAL_NUMBER.test(exterior_number);
