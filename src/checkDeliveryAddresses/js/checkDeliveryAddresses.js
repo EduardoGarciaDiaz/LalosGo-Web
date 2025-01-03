@@ -5,15 +5,30 @@ const addressContainer = document.getElementById("addressContainer");
 let USER_ID
 let addresses = [];
 
-document.addEventListener("DOMContentLoaded", async () => {
+window.onload = async function() {
+  clearCards();
+  verifyRole(getInstance().role);
   USER_ID = getInstance().id
   await getUserAddress()
   renderAddresses()
-})
+}
+
+function verifyRole(role) {
+  if (role !== roles.CUSTOMER) {
+    window.history.back();
+  }
+}
+
+function clearCards() {
+  addressContainer.innerHTML = ""; 
+}
 
 async function getUserAddress() {
   try {
-      const response = await axios.get(`${API_URL}users/${USER_ID}/addresses`);
+      let token = getInstance().token;
+      const response = await axios.get(`${API_URL}users/${USER_ID}/addresses`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+      });
       addresses = response.data.addresses;
   } catch (error) {
       handleException(error, "Error al obtener la dirección");

@@ -10,6 +10,10 @@ var creationAccountData = JSON.parse(sessionStorage.getItem('creationAccountData
 var deliveryAddressData = JSON.parse(sessionStorage.getItem('deliveryAddressData'));
 
 function initMap() {
+    if (ACTION_TYPE != 'CreateClientAccount') {
+        verifyRole(getInstance().role);
+        USER_ID = getInstance().id;
+    }
 
     const initialLocation = { lat: 19.541186809084778, lng: -96.92744610055618 };
     if (deliveryAddressData) {
@@ -58,9 +62,11 @@ function initMap() {
     } else {
         fillData();
     }
+}
 
-    if (ACTION_TYPE != 'CreateClientAccount') {
-        USER_ID = getInstance().id;
+function verifyRole(role) {
+    if (role !== roles.CUSTOMER) {
+        window.history.back();
     }
 }
 
@@ -129,17 +135,14 @@ async function registerDeliveryAddress(event) {
 
         if (ACTION_TYPE === 'RegisterDeliveryAddress') {
             newDeliveryAddress.isCurrentAddress = false;
-            let succes = await registerNewDeliveryAddress(newDeliveryAddress);
+            await registerNewDeliveryAddress(newDeliveryAddress);
 
         } else if (ACTION_TYPE === 'EditDeliveryAddress') {
             editDeliveryAddress(newDeliveryAddress);
 
             } else if(ACTION_TYPE === 'CreateClientAccount'){
                 newDeliveryAddress.isCurrentAddress = true;
-                let succes = await registerClientAccount(newDeliveryAddress)
-                if(succes) {
-                    window.location.href = "/src/login/login.html"
-                }
+                await registerClientAccount(newDeliveryAddress)
             }
         } 
     }
@@ -151,7 +154,9 @@ async function registerDeliveryAddress(event) {
                     headers: { 'Authorization': `Bearer ${token}` }
             });
             showToast("Se ha actualizado la dirección", toastTypes.SUCCESS);
-            return true;
+            setTimeout(() => {
+                window.location.href = "/src/checkDeliveryAddresses/checkDeliveryAddresses.html";
+            }, 2000);
         } catch (error) {
             handleException(error);
             return false;
@@ -165,7 +170,9 @@ async function registerDeliveryAddress(event) {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             showToast("Se ha registrado la dirección", toastTypes.SUCCESS);
-            return true;
+            setTimeout(() => {
+                window.location.href = "/src/checkDeliveryAddresses/checkDeliveryAddresses.html";
+            }, 2000);
         } catch (error) {
             handleException(error);
             return false;
@@ -182,7 +189,9 @@ async function registerDeliveryAddress(event) {
                 await axios.post(`${API_URL}/users/`, creationAccountData);
                 showToast("Se ha registrado la cuenta", toastTypes.SUCCESS);
                 sessionStorage.removeItem('creationAccountData');
-                return true;
+                setTimeout(() => {
+                    window.location.href = "/src/login/login.html";
+                }, 2000);
             }
         } catch (error) {
             handleException(error);
