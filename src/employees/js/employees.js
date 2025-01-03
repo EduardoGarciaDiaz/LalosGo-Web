@@ -149,8 +149,9 @@ async function toggleEmployeeStatus(employeeId) {
     modalInstance.show();
 
     primaryBtn.onclick = async function () {
-        showCancelEmployeeModal(employeeId);
+        await changeEmployeeStatus(employeeId);
         modalInstance.hide();
+        loadEmployees();
 
     }
 
