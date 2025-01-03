@@ -155,10 +155,15 @@ function clearAllSelections() {
 }
 
 function loadOrderSummary() {
+    let token = getInstance().token;
+
     axios
         .get(`${API_URL}carts/${userId}/total`, {
             params: {
                 status: CART_STATUS
+            },
+            headers: {
+                'Authorization': `Bearer ${token}`
             }
         })
         .then((response) => {
@@ -293,10 +298,14 @@ function cancelOrder() {
 }
 
 async function deleteCart(orderId) {
+    let token = getInstance().token;
     axios
         .delete(`${API_URL}carts/${orderId}`, {
             params: {
                 status: CART_STATUS
+            },
+            headers: {
+                'Authorization': `Bearer ${token}`
             }
         })
         .then((response) => {
@@ -310,6 +319,8 @@ async function deleteCart(orderId) {
 
 async function reserveCartProducts() {
     const paymentMethodSelected = paymentMethodId;
+    let token = getInstance().token;
+    
     try {
         const response = await axios.put(
             `${API_URL}orders/${orderId}`,
@@ -321,6 +332,9 @@ async function reserveCartProducts() {
             {
                 params: {
                     status: CART_STATUS
+                },
+                headers: {
+                    'Authorization': `Bearer ${token}`
                 }
             }
         );

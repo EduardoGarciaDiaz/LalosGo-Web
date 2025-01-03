@@ -93,15 +93,21 @@ function createProductCard(product) {
 }
 
 function deleteItemFromCart(productId) {
+    let token = getInstance().token;
+
     axios
         .patch(`${API_URL}carts/${orderId}`, 
             {
                 productId: productId,
-                quantity: DELETE_QUANTITY
+                quantity: DELETE_QUANTITY,
+                branchId: branchId
             },
             {
                 params: {
                     status: CART_STATUS
+                },
+                headers: {
+                    'Authorization': `Bearer ${token}`
                 }
             }
         )
