@@ -55,7 +55,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function loadProductsOfCategory(){
     try {
-        let response = await axios.get(`${API_URL}products/${branchId}/${categoryId}`)
+        let token = getInstance().token
+        let response = await axios.get(`${API_URL}products/${branchId}/${categoryId}`,{
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
         if (response.status < 300 && response.status > 199) {
             if(response.data.branch.length == 0){
                 showToast("No hay productos disponibles en esta sucursal", toastTypes.SUCCESS)
@@ -71,9 +74,7 @@ async function loadProductsOfCategory(){
             showToast(response.data.message, toastTypes.WARNING)
         }
     } catch (error) {    
-        console.log(error)   
-        const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
-        showToast(errorMessage, toastTypes.DANGER);
+        handleException(error)
     }
 }
 
@@ -136,6 +137,7 @@ function createProductCard(element) {
 
 async function addProductToCart(product, number) {
     try {
+        let token = getInstance().token
         const response = await axios.post(API_URL + 'carts', {
             userId: USER_ID,
             productForCart: {
@@ -144,6 +146,8 @@ async function addProductToCart(product, number) {
                 price: Number(product.unitPrice) * Number(number)
             },
             branchId: branchId
+        },{
+            headers: { 'Authorization': `Bearer ${token}` }
         });
 
         if (response.status >= 200 && response.status < 300) {
@@ -152,8 +156,7 @@ async function addProductToCart(product, number) {
             showToast(response.data.message, toastTypes.WARNING);
         }
     } catch (error) {
-        const errorMessage = error.response ? error.response.data.message : "No se pudo agregar el producto al carrito. Inténtelo de nuevo.";
-        showToast(errorMessage, toastTypes.DANGER);
+        handleException(error, "No se pudo agregar el producto al carrito. Inténtelo de nuevo.");
     }
 }
 

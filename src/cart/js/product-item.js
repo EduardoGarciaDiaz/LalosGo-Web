@@ -93,15 +93,21 @@ function createProductCard(product) {
 }
 
 function deleteItemFromCart(productId) {
+    let token = getInstance().token;
+
     axios
         .patch(`${API_URL}carts/${orderId}`, 
             {
                 productId: productId,
-                quantity: DELETE_QUANTITY
+                quantity: DELETE_QUANTITY,
+                branchId: branchId
             },
             {
                 params: {
                     status: CART_STATUS
+                },
+                headers: {
+                    'Authorization': `Bearer ${token}`
                 }
             }
         )
@@ -114,7 +120,6 @@ function deleteItemFromCart(productId) {
             updatePrices();
         })
         .catch((error) => {
-            const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
-            showToast(errorMessage, toastTypes.DANGER);
+            handleException(error);
         });
 }

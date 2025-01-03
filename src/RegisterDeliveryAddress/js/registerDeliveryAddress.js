@@ -138,9 +138,7 @@ async function registerDeliveryAddress(event) {
             newDeliveryAddress.isCurrentAddress = true;
             let succes = await registerClientAccount(newDeliveryAddress)
             if (succes) {
-                setTimeout(() => {
-                    window.location.href = "/src/login/login.html";
-                }, 2000);
+                window.location.href = "/src/login/login.html"
             }
         }
     }
@@ -148,23 +146,28 @@ async function registerDeliveryAddress(event) {
 
 async function editDeliveryAddress(newDeliveryAddress) {
     try {
-        await axios.put(`${API_URL}/users/${USER_ID}/addresses/${deliveryAddressData._id}`, newDeliveryAddress);
+        let token = getInstance().token;
+        await axios.put(`${API_URL}/users/${USER_ID}/addresses/${deliveryAddressData._id}`, newDeliveryAddress, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         showToast("Se ha actualizado la dirección", toastTypes.SUCCESS);
         return true;
     } catch (error) {
-        alert(error);
-        showToast(error.response.data.message, toastTypes.DANGER);
+        handleException(error);
         return false;
     }
 }
 
 async function registerNewDeliveryAddress(newDeliveryAddress) {
     try {
-        await axios.post(`${API_URL}/users/${USER_ID}/addresses`, newDeliveryAddress);
+        let token = getInstance().token;
+        await axios.post(`${API_URL}/users/${USER_ID}/addresses`, newDeliveryAddress, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         showToast("Se ha registrado la dirección", toastTypes.SUCCESS);
         return true;
     } catch (error) {
-        showToast(error.response.data.message, toastTypes.DANGER);
+        handleException(error);
         return false;
     }
 }
@@ -182,7 +185,7 @@ async function registerClientAccount(newDeliveryAddress) {
             return true;
         }
     } catch (error) {
-        showToast(error.response.data.message, toastTypes.DANGER);
+        handleException(error);
         return false;
     }
 }

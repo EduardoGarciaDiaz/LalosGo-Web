@@ -85,16 +85,15 @@ function convertUnitMeasure(unitMeasure){
 }
 
 async function changeProductStatus(){
+    let token = getInstance().token;
     try{ 
         const status =  {newStatus: !productData.productStatus};
-        await axios.patch(`${API_URL}/products/${productData._id}`, status);
+        await axios.patch(`${API_URL}/products/${productData._id}`, status, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         showToast("Estado del producto cambiado exitosamente", toastTypes.SUCCESS);
         changeButton(!productData.productStatus);
     }catch (error){
-        alert(error);
-        showToast(
-            "Ocurrió algo inesperado al cambiar el estado del producto. Verifique su conexión e inténtelo más tarde.",
-            toastTypes.DANGER
-        );
+        handleException(error);
     }
 }

@@ -1,5 +1,5 @@
 var USER_ID = sessionStorage.getItem('userId');
-const VALID_PASSWORD = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&_])[A-Za-z\d@$!%*?&_]{8,}$/;
+const VALID_PASSWORD = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&_])[A-Za-z\d@$!%*?&_]{8,13}$/;
 
 function sendAuthenticationCode() {
     clearErrors();
@@ -20,8 +20,7 @@ async function updatedPassword(newPassword, confirmPassword) {
         showToast("Se ha actualizado la contraseña", toastTypes.SUCCESS);
         return true;
     } catch (error) {
-        alert(error);
-        showToast("Error al cambiar la contraseña. Inténtelo más tarde", toastTypes.DANGER);
+        handleException(error, "Error al cambiar la contraseña. Inténtelo más tarde");
     }
 }
 

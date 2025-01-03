@@ -26,7 +26,7 @@ let userId;
             if(error.response.status == 404){
                 showToast("El email ingresado no se encuentra registrado", toastTypes.DANGER)
             } else {
-                showToast("Ha ocurrido un error, por favor intente nuevamente", toastTypes.DANGER)
+                handleException(error);
             }
         }
     }
@@ -35,7 +35,7 @@ let userId;
         const code = document.getElementById('authenticationCodeInput').value;
         if(code == authenticationCode){
             sessionStorage.setItem('userId', userId);
-            window.location.href = "http://127.0.0.1:5500/src/forgotPassword/changePassword.html";
+            window.location.href = "/src/forgotPassword/changePassword.html";
         } else {
             showToast("Código incorrecto", toastTypes.DANGER)
         }

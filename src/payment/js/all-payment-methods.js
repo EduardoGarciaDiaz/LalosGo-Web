@@ -38,7 +38,7 @@ function getAllPaymentMethods() {
             });
         })
         .catch((error) => {
-            showToast("Error al cargar los métodos de pago", toastTypes.DANGER);
+            handleException(error, "Error al cargar los métodos de pago");
         });
 }
 
@@ -198,7 +198,7 @@ async function deletePaymentMethod(paymentMethodId) {
             return true;
         })
         .catch((error) => {
-            showToast("No se pudo eliminar el método de pago. Inténtelo de nuevo.", toastTypes.DANGER);
+            handleException(error, "No se pudo eliminar el método de pago. Inténtelo de nuevo.");
             return false;
         });
 }

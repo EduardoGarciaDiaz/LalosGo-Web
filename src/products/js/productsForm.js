@@ -48,8 +48,12 @@ fetch('/src/shared/footer.html')
     });
 
 async function loadCategories() {
-    axios.get(API_URL + 'categories/'
-    ).then((response) => {
+    let token = getInstance().token
+    axios.get(API_URL + 'categories/', {    
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    }).then((response) => {
         response.data.category.forEach((category) => {
             const option = document.createElement('option')
             option.value = category.name
@@ -58,9 +62,8 @@ async function loadCategories() {
             productCategory.appendChild(option)
         })
     }).catch((error) => {
-        showToast("Ocurrio algo inesperado al cargar las categorías. Verirfique su conexión e inténtelo mas tarde.", toastTypes.DANGER);
+        handleException(error, "Ocurrió algo inesperado al cargar las categorías. Verirfique su conexión e inténtelo mas tarde.")
     })
-
 }
 
 async function loadBranches() {
@@ -80,8 +83,7 @@ async function loadBranches() {
             branchesList.appendChild(branchCard)
         });
     }).catch((error) => {
-
-        showToast("Ocurrio algo inesperado al cargar las sucursales. Verirfique su conexión e inténtelo mas tarde", toastTypes.DANGER)
+        handleException(error, "Ocurrió algo inesperado al cargar las sucursales. Verirfique su conexión e inténtelo mas tarde.")
     })
 }
 
@@ -100,7 +102,7 @@ async function saveProduct() {
     if (!checkBranchesSelected(selectedBranches)) {
         return
     }
-
+    let token = getInstance().token
     try {
         let response = await axios.post(API_URL + 'products/', {
             barCode: productCode.value,
@@ -114,11 +116,20 @@ async function saveProduct() {
             unitMeasure: productUnit.value,
             category: productCategory.options[productCategory.selectedIndex].id,
             branches: selectedBranches
+        },
+        {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
         })
         if (response.status < 300 && response.status > 199) {
 
             showToast(response.data.message, toastTypes.SUCCESS)
-            let responseImage = await axios.post(`${API_URL}products/${response.data.product._id}/images`, imageData)
+            let responseImage = await axios.post(`${API_URL}products/${response.data.product._id}/images`, imageData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
             if (responseImage.status < 300 && responseImage.status > 199) {
                 showToast(responseImage.data.message, toastTypes.SUCCESS)
             }
@@ -131,7 +142,7 @@ async function saveProduct() {
             showToast(response.data.message, toastTypes.WARNING)
         }
     } catch (error) {
-        showToast("Ocurrio algo inesperado al realizar la petición. Revise su conexión a internet e inténtelo mas tarde", toastTypes.WARNING)
+        handleException(error)
     }
 }
 

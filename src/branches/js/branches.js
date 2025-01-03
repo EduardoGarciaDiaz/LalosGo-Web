@@ -50,8 +50,7 @@ function getAllBranches() {
 
         })
         .catch((error) => {
-            const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
-            showToast(errorMessage, toastTypes.DANGER);
+            handleException(error, 'Error al cargar las sucursales');
         });
 }
 
@@ -116,8 +115,7 @@ function toggleBranchStatus(branchId) {
                 loadBranches();
             })
             .catch((error) => {
-                const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
-                showToast(errorMessage, toastTypes.DANGER);
+                handleException(error, 'Error al actualizar el estado de la sucursal');
             });
     }
 }

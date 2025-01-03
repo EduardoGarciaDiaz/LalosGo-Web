@@ -20,14 +20,17 @@ fetch('/src/shared/footer.html')
 
 async function getProducts() {
     try {
-        const response = await axios.get(`${API_URL}/products`);
+        let token = getInstance().token
+        const response = await axios.get(`${API_URL}/products`,{
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         allProducts = response.data.products.map(product => ({
             ...product,
             simpleName: removeAccents(product.name)
         }));
         return response.data.products;
     } catch (error) {
-        showToast("No se ha podido obtener ningun producto", toastTypes.WARNING);
+        handleException(error, "Error al obtener los productos");
     }
 } 
 
@@ -36,10 +39,9 @@ async function loadCategories() {
     categoriesDropdown.innerHTML = '<option value="" selected>Todas las categorías</option>';
 
     try {
+        let token = getInstance().token
         const response = await axios.get(API_URL + 'categories/', {
-            params: {
-                api_key: "00000"
-            },
+            headers: { 'Authorization': `Bearer ${token}` }
         });
 
         response.data.category.forEach((category) => {
@@ -49,17 +51,13 @@ async function loadCategories() {
             categoriesDropdown.appendChild(option); 
         });
     } catch (error) {
-        showToast(
-            "Ocurrió algo inesperado al cargar las categorías. Verifique su conexión e inténtelo más tarde.",
-            toastTypes.DANGER
-        );
+        handleException(error,  "Ocurrió algo inesperado al cargar las categorías. Verifique su conexión e inténtelo más tarde.");
     }
 
     categoriesDropdown.addEventListener("change", onCategoryChange);
 }
 
 function onCategoryChange(event) {
-    // Obtener el valor de la opción seleccionada
     const selectedCategoryId = event.target.value;
     
     if (selectedCategoryId) {
@@ -69,7 +67,6 @@ function onCategoryChange(event) {
     }
 }
 
-// Generar tarjetas dinámicamente
 function renderProducts(products) {
     productContainer.innerHTML = "";
     products.forEach((product, index) => {
@@ -99,13 +96,13 @@ function showCategorieProducts(selectedCategoryId) {
 }
 
 function addNewProduct(){
-    window.location.href = "http://127.0.0.1:5500/src/products/productsForm.html";
+    window.location.href = "/src/products/productsForm.html";
 }
 
 function viewProduct(productId) {
     sessionStorage.removeItem('productData');
     sessionStorage.setItem('productData', JSON.stringify(allProducts.find(product => product._id === productId)));
-    window.location.href = "http://127.0.0.1:5500/src/checkproductsadmin/checkproductdetails.html";
+    window.location.href = "/src/checkproductsadmin/checkproductdetails.html";
 }
 
 function searchProduct(){

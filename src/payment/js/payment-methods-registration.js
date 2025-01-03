@@ -217,8 +217,7 @@ function addPaymentMethod(newPaymentMethod) {
             paymentMethodsNumber++;
         })
         .catch((error) => {
-            const errorMessage = error.response ? error.response.data.message : "No se pudo agregar el método de pago. Inténtelo de nuevo.";
-            showToast(errorMessage, toastTypes.DANGER);
+            handleException(error, "No se pudo agregar el método de pago. Inténtelo de nuevo.");
         });
 }
 
