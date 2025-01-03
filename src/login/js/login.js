@@ -28,7 +28,7 @@ async function getLogin(loginData) {
         if (user.status === 'Active') {
             if (role === 'Customer') {
                 //Mandar a la pantlla principal
-                window.location.href = "/src/categories/consultCategories.html";
+                window.location.href = "/src/products/consultProductClient.html";
             } else if (role === 'Manager') {
                 //Mandar a la pantalla de manager
             } else if (role === 'Delivery Person') {
@@ -46,8 +46,10 @@ async function getLogin(loginData) {
             showToast("La cuenta está inactiva", toastTypes.DANGER);
         }
     } catch (error) {
-        if (error.response.status === 401) {
-            showToast("Usuario y/o Contraseña incorrectos", toastTypes.DANGER);
+        if (error.response && error.response.status === 401) {
+            showToast("Credenciales incorrectas. Verifique su usuario y contraseña.", toastTypes.DANGER);
+        } else if (error.response && error.response.status === 404) {
+            showToast("Usuario no registrado.", toastTypes.DANGER);
         } else {
             handleException(error);
         }

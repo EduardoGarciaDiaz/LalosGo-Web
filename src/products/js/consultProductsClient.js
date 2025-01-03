@@ -193,7 +193,7 @@ async function loadProductsFromNearestBranch(branchToConsult) {
             branch = response.data.branch
             branchNameLabel.innerHTML = branch.name
             if (response.data.branch.branchProducts.length == 0) {
-                showToast("No hay productos disponibles en esta sucursal", toastTypes.SUCCESS)
+                showToast("No hay productos disponibles en esta sucursal", toastTypes.WARNING)
             }
             response.data.branch.branchProducts.forEach(element => {
                 if (!categories.some(category => category._id === element.product.category._id)) {
@@ -214,7 +214,6 @@ async function loadProductsFromNearestBranch(branchToConsult) {
                 document.getElementById("main-container").appendChild(categorySection)
             });
             createCategoriesListBoxItems(categories, branch)
-            showToast(response.data.message, toastTypes.SUCCESS)
 
         }
         else {
