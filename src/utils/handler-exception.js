@@ -1,4 +1,4 @@
-const DEFAULT_ERROR_MESSAGE = 'Ocurrió un error en el servidor. Revisé su conexión e inténtelo más tarde.';
+const DEFAULT_ERROR_MESSAGE = 'Ocurrió un error en el servidor. Revise su conexión e inténtelo más tarde.';
 const DEFAULT_UNAUTHORIZED_MESSAGE = 'No tiene permisos para realizar esta acción.';
 const DEFAULT_NOT_FOUND_MESSAGE = 'No se encontró el recurso solicitado.';
 const DEFAULT_CODE = 500;

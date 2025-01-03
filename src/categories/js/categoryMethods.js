@@ -83,28 +83,25 @@ function createCard(category) {
                 <h5 class="card-title">${category.name}</h5>
                 <p class="card-text">
                     <strong>ID:</strong> ${category.identifier}<br>
-                    <strong>Estado:</strong> ${category.categoryStatus}
+                    <strong>Estado:</strong> ${category.categoryStatus ? "Activo" : "Inactivo"}
                 </p>
-                <div class="d-flex justify-content-end">
-                    <i class="bi bi-three-dots" style="cursor: pointer;"></i>
-                    <!-- Menú oculto -->
-                    <div class="dropdown-menu" style="display: none; position: absolute; right: 0; background-color: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000;">
+                <div class="d-flex justify-content-end dropdown">
+                <button class="btn btn-link p-0" 
+                        type="button" 
+                        data-bs-toggle="dropdown" 
+                        aria-expanded="false">
+                    <i class="bi bi-three-dots"></i>
+                </button>
+                    <div class="dropdown-menu">
                         <a href="#" class="dropdown-item edit-option" >Editar</a>
-                        <a href="#" class="dropdown-item change-status-option">Desactivar</a>
+                        <a href="#" class="dropdown-item change-status-option">${category.categoryStatus ? "Desactivar" : "Activar"}</a>
                     </div>
                 </div>
             </div>
         </div>
     `;
 
-    const threeDotsIcon = categoryCard.querySelector(".bi-three-dots");
     const dropdownMenu = categoryCard.querySelector(".dropdown-menu");
-
-    threeDotsIcon.addEventListener("click", (event) => {
-        event.stopPropagation();
-        const isVisible = dropdownMenu.style.display === "block";
-        dropdownMenu.style.display = isVisible ? "none" : "block";
-    });
 
     const editOption = categoryCard.querySelector(".edit-option");
     const changeStatisOption = categoryCard.querySelector(".change-status-option");
@@ -114,18 +111,10 @@ function createCard(category) {
         modalRegistryCategoryBtn.onclick = function () {
             saveCategory(true)
         }
-        dropdownMenu.style.display = "none";
     });
 
     changeStatisOption.addEventListener("click", () => {
         changeCategoryStatus(category)
-        dropdownMenu.style.display = "none";
-    });
-
-    document.addEventListener("click", (event) => {
-        if (!categoryCard.contains(event.target)) {
-            dropdownMenu.style.display = "none";
-        }
     });
 
     categoryContainer.appendChild(categoryCard);
@@ -155,9 +144,9 @@ async function changeCategoryStatus(categoryToChange) {
 
     } else {
         categoryStatus = true
-
     }
-    let token = getInstance().token
+
+    let token = getInstance().token;
     try {
         const response = await axios.put(`${API_URL}categories/${categoryToChange._id}`,
             {
@@ -168,9 +157,7 @@ async function changeCategoryStatus(categoryToChange) {
             {
                 params: {
                     changeStatus: categoryStatus
-                }
-            },
-            {
+                },
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }

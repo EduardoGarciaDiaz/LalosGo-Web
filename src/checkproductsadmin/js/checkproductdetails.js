@@ -85,6 +85,7 @@ function convertUnitMeasure(unitMeasure){
 }
 
 async function changeProductStatus(){
+    let token = getInstance().token;
     try{ 
         const status =  {newStatus: !productData.productStatus};
         await axios.patch(`${API_URL}/products/${productData._id}`, status, {

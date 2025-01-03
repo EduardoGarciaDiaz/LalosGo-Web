@@ -25,7 +25,7 @@ async function getLogin(loginData) {
         const role = response.data.role;
         clearSession();
         let user = getInstance(response.data);
-        if(user.status === 'Active'){
+        if (user.status === 'Active') {
             if (role === 'Customer') {
                 //Mandar a la pantlla principal
                 window.location.href = "/src/products/consultProductClient.html";
@@ -42,11 +42,15 @@ async function getLogin(loginData) {
             } else {
                 showToast("No hemos podido enviarlo a la pantalla principal. Inténtelo de nuevo", toastTypes.WARNING);
             }
-        }else{ 
+        } else {
             showToast("La cuenta está inactiva", toastTypes.DANGER);
         }
     } catch (error) {
-        handleException(error);
+        if (error.response.status === 401) {
+            showToast("Usuario y/o Contraseña incorrectos", toastTypes.DANGER);
+        } else {
+            handleException(error);
+        }
     }
 }
 
