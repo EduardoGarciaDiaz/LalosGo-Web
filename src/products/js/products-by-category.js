@@ -156,7 +156,7 @@ async function addProductToCart(product, number) {
             showToast(response.data.message, toastTypes.WARNING);
         }
     } catch (error) {
-        handleException(error, "No se pudo agregar el producto al carrito. Inténtelo de nuevo.");
+        handleException(error);
     }
 }
 

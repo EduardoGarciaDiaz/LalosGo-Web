@@ -5,7 +5,7 @@ const DEFAULT_CODE = 500;
 
 function handleException(error, customMessage) {
     if (error !== undefined && error) {
-        let errorMessage = error.response?.data?.message || DEFAULT_ERROR_MESSAGE;
+        let errorMessage = error.response?.data?.message ?? DEFAULT_ERROR_MESSAGE;
         let errorCode = error.response?.status || DEFAULT_CODE;
 
         switch (errorCode) {
