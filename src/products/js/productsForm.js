@@ -363,7 +363,7 @@ function uploadImage(event) {
         };
 
         img.onload = () => {
-            if (img.width !== 225 || img.height !== 225) {
+            if (img.width <= 225 || img.height <= 225) {
                 errorImageSpan.textContent = "El tamaño de la imagen debe de ser de 225x225.";
                 errorImageSpan.className = "text-danger"
                 errorImageSpan.classList.add("is-invalid")
@@ -376,7 +376,6 @@ function uploadImage(event) {
                 productImg.src = img.src
                 productImg.style.display = "block"
                 imageData.append('image', file)
-                console.log(imageData)
             }
         };
         reader.readAsDataURL(file)

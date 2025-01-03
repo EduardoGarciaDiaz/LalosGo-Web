@@ -9,6 +9,13 @@
     align-content: center;
     border-color: transparent;
 }
+
+.card-img-top {
+    max-width: 255px;
+    max-height: 255px;
+    object-fit: cover;
+}
+
 .flex-grow-1 {
     margin-left: 10%;
 }

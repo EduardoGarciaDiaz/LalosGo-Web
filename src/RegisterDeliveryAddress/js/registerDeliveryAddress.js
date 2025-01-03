@@ -33,8 +33,6 @@ function initMap() {
 
     geocoder = new google.maps.Geocoder();
 
-
-    //Si la acción es editar o mostrar dirección, se llenan los campos con la información de la dirección
     if (ACTION_TYPE === 'EditDeliveryAddress' || ACTION_TYPE === 'ShowDeliveryAddress') {
         const customLocation = new google.maps.LatLng(initialLocation.lat, initialLocation.lng);
         getAddressFromCoordinates(customLocation);
@@ -42,7 +40,6 @@ function initMap() {
         document.getElementById("interior_number").value = deliveryAddressData.internalNumber;
     }
 
-    //Si la acción es mostrar dirección, se deshabilita la acción de seleccionar en el mapa
     if (ACTION_TYPE !== 'ShowDeliveryAddress') {
         map.addListener("click", (event) => {
             const clickedLocation = event.latLng;
@@ -144,7 +141,7 @@ async function registerDeliveryAddress(event) {
                 newDeliveryAddress.isCurrentAddress = true;
                 await registerClientAccount(newDeliveryAddress)
             }
-        } 
+        }
     }
 
     async function editDeliveryAddress(newDeliveryAddress){

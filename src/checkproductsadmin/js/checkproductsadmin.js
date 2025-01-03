@@ -5,8 +5,6 @@ let allProducts = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
     const products = await getProducts()
-    renderProducts(products);
-    await loadCategories();
 })
 
 fetch('/src/shared/footer.html')

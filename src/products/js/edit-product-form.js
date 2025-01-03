@@ -380,7 +380,7 @@ function loadImageFromUrl(url) {
     img.src = url;
 
     img.onload = () => {
-        if (img.width !== 225 || img.height !== 225) {
+        if (img.width <= 225 || img.height <= 225) {
             errorImageSpan.textContent = "El tamaño de la imagen debe de ser de 225x225.";
             errorImageSpan.className = "text-danger";
             errorImageSpan.classList.add("is-invalid");
