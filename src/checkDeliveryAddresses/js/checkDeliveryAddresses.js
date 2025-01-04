@@ -119,10 +119,10 @@ function renderAddresses() {
     }  
   }
 
-  function deleteAddressById(userId, addressId) {
+  async function deleteAddressById(userId, addressId) {
     try {
       let token = getInstance().token;
-      axios.delete(`${API_URL}/users/${userId}/addresses/${addressId}`, {
+      await axios.delete(`${API_URL}/users/${userId}/addresses/${addressId}`, {
           headers: { 'Authorization': `Bearer ${token}` }
       });
       showToast("La dirección se ha eliminado", toastTypes.SUCCESS);
