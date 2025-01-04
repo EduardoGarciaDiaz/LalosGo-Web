@@ -97,7 +97,6 @@ async function loadBranches(productid) {
             branchesList.appendChild(branchCard)
         });
     }).catch((error) => {
-        console.log(error)
         showToast("Ocurrio algo inesperado al cargar las sucursales. Verirfique su conexión e inténtelo mas tarde", toastTypes.DANGER)
     })
 }
@@ -179,7 +178,6 @@ async function saveEditedProduct() {
             history.back()
         }, 2000);
     } catch (error) {
-        console.log(error)
         showToast("Ocurrio algo inesperado al realizar la petición. Revise su conexión a internet e inténtelo mas tarde", toastTypes.WARNING)
     }
 }
@@ -397,7 +395,6 @@ function loadImageFromUrl(url) {
                     imageData.append('image', blob, "image-from-url.png");
                 })
                 .catch(err => {
-                    console.error("Error al cargar la imagen desde la URL:", err);
                     errorImageSpan.textContent = "No se pudo cargar la imagen desde la URL inicial.";
                     errorImageSpan.className = "text-danger";
                     errorImageSpan.classList.add("is-invalid");
