@@ -33,3 +33,10 @@ img {
         margin: 0 auto;
     }
 }
+.not-searched {
+    display: none;
+}
+
+.searched {
+    display: block;
+}

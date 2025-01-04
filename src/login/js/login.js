@@ -32,9 +32,9 @@ async function getLogin(loginData) {
             } else if (role === 'Manager') {
                 //Mandar a la pantalla de manager
             } else if (role === 'Delivery Person') {
+                window.location.href = '/src/orders/orders-history.html';
                 //Mandar a la pantalla de delivery person
             } else if (role === 'Sales Executive') {
-                //Mandar a la pantalla de sales executive
                 window.location.href = '/src/orders/orders-history.html';
             } else if (role === 'Administrator') {
                 //Mandar a la pantalla de administrador 

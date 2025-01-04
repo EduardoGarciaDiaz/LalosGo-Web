@@ -102,7 +102,6 @@ async function initMap(loadedLocation) {
         }
         const place = places[0];
         if (!place.geometry || !place.geometry.location) {
-            console.error("No se encontraron detalles de ubicación.");
             return;
         }
         map.setCenter(place.geometry.location);
