@@ -4,7 +4,6 @@ const VALID_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const VALID_USERNAME = /^[a-zA-Z][a-zA-Z0-9._]{1,11}[a-zA-Z0-9]$/;
 var SINGLETON;
 
-let role = getInstance().role;
 
 document.addEventListener("DOMContentLoaded", () => {
     const today = new Date();
@@ -15,9 +14,16 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("birthday_label").setAttribute("max", maxDate);
 
     SINGLETON = getInstance();
+    verifyRole(SINGLETON.role);
     fillClientData();
 
 });
+
+function verifyRole(role){
+    if(role !== roles.CUSTOMER){
+        window.history.back();
+    }
+}
 
 function fillClientData(){
     const formatteDate = SINGLETON.birthdate.substring(0, 10);
