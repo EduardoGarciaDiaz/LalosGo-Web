@@ -113,6 +113,7 @@ function getAllOrders() {
             });
         })
         .catch((error) => {
+            console.error(error);
             const message = error.response?.data?.message || 'Ocurrió un error al cargar los pedidos.';
             handleException(error, message);
         });
@@ -179,7 +180,23 @@ function createOrderCard(order) {
     descriptionContainer.appendChild(detailsButton);
     cardBody.appendChild(descriptionContainer);
 
-    // Botones de acción
+    let role = getInstance().role;
+    switch (role) {
+        case roles.CUSTOMER:
+            cardBody.appendChild(createCustomerActions(order));
+            break;
+        case roles.SALES_EXECUTIVE:
+            cardBody.appendChild(createSalesExecutiveActions(order));
+            break;
+        case roles.DELIVERY_PERSON:
+            cardBody.appendChild(createDeliveryPersonActions(order));
+            break;
+    }
+
+    return cardContainer;
+}
+
+function createCustomerActions(order) {
     const actionsContainer = document.createElement('div');
     actionsContainer.className = 'text-center text-md-end mt-3 mt-md-0';
     if (order.statusOrder === 'delivered') {
@@ -206,9 +223,51 @@ function createOrderCard(order) {
         actionsContainer.appendChild(cancelButton);
     }
 
-    cardBody.appendChild(actionsContainer);
+    return actionsContainer;
+}
 
-    return cardContainer;
+function createSalesExecutiveActions(order) {
+    const actionsContainer = document.createElement('div');
+    actionsContainer.className = 'text-center text-md-end mt-3 mt-md-0';
+    if (order.statusOrder === 'pending') {
+        const approveOrderButton = document.createElement('button');
+        approveOrderButton.className = 'btn btn-primary btn-sm rounded-pill mb-2 w-100 w-md-auto';
+        approveOrderButton.textContent = 'Aprobar pedido';
+        approveOrderButton.onclick = () => approveOrder(order._id);
+        actionsContainer.appendChild(approveOrderButton);
+        const denyOrderButton = document.createElement('button');
+        denyOrderButton.className = 'btn btn-outline-secondary btn-sm rounded-pill w-100 w-md-auto';
+        denyOrderButton.id = 'btn-cancel';
+        denyOrderButton.textContent = 'Denegar pedido';
+        denyOrderButton.onclick = () => denyOrder(order._id);
+        actionsContainer.appendChild(denyOrderButton);
+    }
+
+    return actionsContainer;
+}
+
+function createDeliveryPersonActions(order) {
+    const actionsContainer = document.createElement('div');
+    actionsContainer.className = 'text-center text-md-end mt-3 mt-md-0';
+    if (order.statusOrder === 'approved') {
+        const inTransitButton = document.createElement('button');
+        inTransitButton.className = 'btn btn-primary btn-sm rounded-pill mb-2 w-100 w-md-auto';
+        inTransitButton.textContent = 'En tránsito';
+        inTransitButton.onclick = () => changeOrderStatus(order._id, 'in transit');
+        actionsContainer.appendChild(inTransitButton);
+    } else if (order.statusOrder === 'in transit') {
+        const deliveredButton = document.createElement('button');
+        deliveredButton.className = 'btn btn-success btn-sm rounded-pill mb-2 w-100 w-md-auto';
+        deliveredButton.textContent = 'Entregado';
+        deliveredButton.onclick = () => changeOrderStatus(order._id, 'delivered');
+        actionsContainer.appendChild(deliveredButton);
+        const notDeliveredButton = document.createElement('button');
+        notDeliveredButton.className = 'btn btn-danger btn-sm rounded-pill mb-2 w-100 w-md-auto';
+        notDeliveredButton.textContent = 'No entregado';
+        notDeliveredButton.onclick = () => changeOrderStatus(order._id, 'not delivered');
+        actionsContainer.appendChild(notDeliveredButton);
+    }
+    return actionsContainer;
 }
 
 function getStatusText(status) {
