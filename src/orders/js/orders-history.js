@@ -239,7 +239,7 @@ function createSalesExecutiveActions(order) {
         denyOrderButton.className = 'btn btn-outline-secondary btn-sm rounded-pill w-100 w-md-auto';
         denyOrderButton.id = 'btn-cancel';
         denyOrderButton.textContent = 'Denegar pedido';
-        denyOrderButton.onclick = () => denyOrder(order._id);
+        denyOrderButton.onclick = () => changeOrderStatus(order._id, 'denied');
         actionsContainer.appendChild(denyOrderButton);
     }
 
