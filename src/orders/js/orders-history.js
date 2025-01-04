@@ -113,7 +113,6 @@ function getAllOrders() {
             });
         })
         .catch((error) => {
-            console.error(error);
             const message = error.response?.data?.message || 'Ocurrió un error al cargar los pedidos.';
             handleException(error, message);
         });
@@ -205,12 +204,6 @@ function createCustomerActions(order) {
         incidentButton.textContent = 'Reportar incidente';
         incidentButton.onclick = () => reportIncident(order);
         actionsContainer.appendChild(incidentButton);
-    } else if (order.statusOrder !== 'cancelled' && order.statusOrder !== 'reserved') {
-        const trackingButton = document.createElement('button');
-        trackingButton.className = 'btn btn-secondary btn-sm rounded-pill mb-2 w-100 w-md-auto';
-        trackingButton.textContent = 'Rastrear pedido';
-        trackingButton.onclick = () => trackOrder(order.id);
-        actionsContainer.appendChild(trackingButton);
     }
 
     if (order.statusOrder !== 'cancelled' && order.statusOrder !== 'delivered' && order.statusOrder !== 'reserved') {
@@ -312,12 +305,6 @@ function showOrderDetails(order) {
     // Aquí podrías abrir un modal con más información del pedido
 }
 
-// Función para hacer seguimiento del pedido (placeholder)
-function trackOrder(orderId) {
-    console.log('Seguimiento del pedido:', orderId);
-    // Aquí podrías redirigir a una página de seguimiento
-}
-
 
 function filterOrders(status) {
     let ordersContainer = document.getElementById('orders-container');
@@ -328,7 +315,6 @@ function filterOrders(status) {
 
     Array.from(ordersContainer.children).forEach(orderCard => {
         let isMatch = false;
-        console.log(orderCard);
 
         const orderStatus = orderCard.querySelector('#status-badge').textContent;
         isMatch = orderStatus === status;
