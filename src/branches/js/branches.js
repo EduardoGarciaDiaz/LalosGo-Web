@@ -171,11 +171,12 @@ function createBranchCard(branchData) {
 
     const statusP = document.createElement('p');
     statusP.classList.add('branch-status', 'branch-details', 'mb-0');
-    statusP.textContent = 'Estado: ';
 
+    const isActive = branchData.branchStatus;
     const statusSpan = document.createElement('span');
-    statusSpan.classList.add(`status-${branchData.branchStatus ? 'active' : 'inactive'}`);
-    statusSpan.textContent = branchData.branchStatus ? 'Activo' : 'Inactivo';
+    statusSpan.classList.add(`status-${isActive ? 'active' : 'inactive'}`);
+    statusSpan.textContent = isActive ? 'Activo' : 'Inactivo';
+    statusSpan.classList.add('badge', isActive ? 'bg-success' : 'bg-danger');
     statusP.appendChild(statusSpan);
     infoDiv.appendChild(statusP);
 

@@ -18,7 +18,9 @@ async function updatedPassword(newPassword, confirmPassword) {
         };
         await axios.patch(`${API_URL}/users/${USER_ID}/password`, updatePassword);
         showToast("Se ha actualizado la contraseña", toastTypes.SUCCESS);
-        return true;
+        setTimeout(() => {
+            window.location.href = "/src/login/login.html";
+        }, 2000);
     } catch (error) {
         handleException(error, "Error al cambiar la contraseña. Inténtelo más tarde");
     }

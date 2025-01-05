@@ -1,3 +1,8 @@
+let role = getInstance().role;
+if (role !== roles.ADMIN) {
+    window.history.back();
+}
+
 window.onload = function () {
     setupEventListeners();
     loadInitialData();

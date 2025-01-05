@@ -32,7 +32,7 @@ function redirectToLogin() {
 }
 
 function clearSession() {
-    sessionStorage.removeItem(USER_SESSION_KEY);
+    sessionStorage.clear();
 }
 
 function updateSession(updatedData){

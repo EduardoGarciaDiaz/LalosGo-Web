@@ -1,3 +1,8 @@
+let role = getInstance().role;
+if (role !== roles.ADMIN) {
+    window.history.back();
+}
+
 const categoryIdentifierRegex = /^[A-Z]{4}\d{3}$/;
 
 let categorySearchBar
@@ -83,7 +88,9 @@ function createCard(category) {
                 <h5 class="card-title">${category.name}</h5>
                 <p class="card-text">
                     <strong>ID:</strong> ${category.identifier}<br>
-                    <strong>Estado:</strong> ${category.categoryStatus ? "Activo" : "Inactivo"}
+                    <span class="badge ${category.categoryStatus ? 'bg-success' : 'bg-danger'}">
+                        ${category.categoryStatus ? "Activo" : "Inactivo"}
+                    </span>
                 </p>
                 <div class="d-flex justify-content-end dropdown">
                 <button class="btn btn-link p-0" 
