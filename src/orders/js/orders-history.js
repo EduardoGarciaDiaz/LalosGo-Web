@@ -119,15 +119,13 @@ function getAllOrders() {
 }
 
 function createOrderCard(order) {
-    // Crear la tarjeta principal
     const cardContainer = document.createElement('div');
     cardContainer.className = 'container my-4';
 
     const card = document.createElement('div');
     card.className = 'card shadow-sm';
     cardContainer.appendChild(card);
-
-    // Header de la tarjeta
+    
     const cardHeader = document.createElement('div');
     cardHeader.className = 'card-header d-flex flex-column flex-md-row justify-content-between align-items-center';
     card.appendChild(cardHeader);
@@ -302,7 +300,12 @@ function getStatusColor(status) {
 // Función para mostrar detalles del pedido (placeholder)
 function showOrderDetails(order) {
     console.log('Detalles del pedido:', order);
-    // Aquí podrías abrir un modal con más información del pedido
+    window.location.href = `/src/orders/order.html?${order._id}`;
+}
+
+function reportIncident(order) {
+    console.log('Reportar incidente:', order);
+    window.location.href = `/src/orders/incident.html?${order._id}`;
 }
 
 
