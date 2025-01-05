@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
     branchLocality = document.getElementById("branch-locality")
     completeAddress = document.getElementById("complete-address")
     btnSave = document.getElementById("branch-save-btn")
+    btnCancel = document.getElementById("branch-cancel-btn")
     branchPageTitle = document.getElementById("branch-page-title")
 
     branchId = getBranchIdFromUrl();
@@ -49,6 +50,8 @@ document.addEventListener("DOMContentLoaded", () => {
         branchPageTitle.innerHTML = "Nueva sucursal";
         btnSave.addEventListener("click", () => saveBranch(false));
     }    
+
+    btnCancel.addEventListener("click", () => cancelSave());
 });
 
 fetch('/src/shared/footer.html')
@@ -421,4 +424,26 @@ function clearFields() {
     branchState.value = '';
     branchTown.value = '';
     branchLocality.value = '';
+}
+
+function cancelSave() {
+    const MODAL_TITLE = 'Cancelar guardado';
+    const MODAL_MESSAGE = `¿Estás seguro que deseas descartar los cambios realizados?`;
+
+    const { modalInstance, primaryBtn, secondaryBtn } = createConfirmationModal(
+        MODAL_TITLE,
+        MODAL_MESSAGE,
+        modalTypes.DANGER
+    );
+    modalInstance.show();
+
+    primaryBtn.onclick = async function () {
+        modalInstance.hide();
+        clearFields();
+        window.history.back();
+    }
+
+    secondaryBtn.onclick = function () {
+        modalInstance.hide();
+    }
 }
