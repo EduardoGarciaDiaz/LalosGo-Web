@@ -458,8 +458,6 @@ function uploadImage(event) {
     }
 }
 
-
-
 function createCheckboxWithNumber(branch) {
     const container = document.createElement("div");
     container.className = "checkbox-with-number mb-3";
@@ -511,7 +509,6 @@ function createCheckboxWithNumber(branch) {
     return container;
 }
 
-
 function clearFields() {
     productImg.src = ""
     inputImage.value = ""
@@ -535,9 +532,7 @@ function clearFields() {
         input.value = 0;
         input.disabled = true;
     });
-
 }
-
 
 function registryCancelation() {
     let { modalInstance, primaryBtn, secondaryBtn } = createConfirmationModal("Cuidado", "¿Estas seguro que deseass cancelar el registro?, esta acción no se puede desahcer.", modalTypes.DANGER, "Confirmar.")
