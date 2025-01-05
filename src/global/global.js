@@ -1,4 +1,4 @@
-const API_URL = 'http://50.16.78.206:3000/api/v1/';
+const API_URL = 'http://127.0.0.1:3000/api/v1/';
 const roles = {
     ADMIN: 'Administrator',
     MANAGER: 'Manager',

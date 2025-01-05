@@ -49,7 +49,7 @@ fetch('/src/shared/footer.html')
 
 async function loadCategories() {
     let token = getInstance().token
-    axios.get(API_URL + 'categories/', {    
+    axios.get(API_URL + 'categories/', {
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -117,11 +117,11 @@ async function saveProduct() {
             category: productCategory.options[productCategory.selectedIndex].id,
             branches: selectedBranches
         },
-        {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
         if (response.status < 300 && response.status > 199) {
 
             showToast(response.data.message, toastTypes.SUCCESS)
@@ -455,9 +455,8 @@ function clearFields() {
 
 }
 
-
 function registryCancelation() {
-    let { modalInstance, primaryBtn, secondaryBtn } = createConfirmationModal("Cuidado", "¿Estas seguro que deseass cancelar el registro?, esta acción no se puede desahcer.", modalTypes.DANGER, "Confirmar.")
+    let { modalInstance, primaryBtn, secondaryBtn } = createConfirmationModal("Cuidado", "¿Estas seguro que deseass cancelar el registro?, esta acción no se puede desahcer.", modalTypes.DANGER, "Confirmar")
     modalInstance.show()
     primaryBtn.onclick = function () {
         clearFields()
