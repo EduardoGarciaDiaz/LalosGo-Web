@@ -16,6 +16,7 @@
     <script src="/src/utils/header-utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="./js/order.js"></script>
+    <script src="./js/order-status.js"></script>
     <link rel="stylesheet" href="./styles/order.css">
 </head>
 
@@ -81,12 +82,44 @@
                     <button id="secondary-button" class="btn btn-outline-secondary d-none">Regresar</button>
                     <button id="primary-button" class="btn btn-primary d-none">Acción</button>
                 </div>
+
+                <div class="modal fade" id="deliveryPersonModal" tabindex="-1" aria-labelledby="deliveryPersonModal"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deliveryPersonModal">Asignar repartidor</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body d-flex">
+                                <div class="col-8 pe-4">
+                                    <form>
+                                        <div class="d-flex justify-content-between flex-wrap">
+                                            <div class="form-floating mb-3">
+                                                <select class="form-select" id="deliverySelect" required>
+                                                </select>
+                                                <label for="deliverySelect">Repartidor</label>
+                                                <div id="invalid-delivery" class="invalid-feedback"></div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="modal-footer mt-3">
+                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"
+                                    onclick="clearDeliveryPersonForm()">Cancelar</button>
+                                <button type="button" id="primary-form-btn" class="btn btn-primary"">Aprobar pedido</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <footer id="footer"></footer>
-
 </body>
+
+<footer id="footer"></footer>
 
 </html>

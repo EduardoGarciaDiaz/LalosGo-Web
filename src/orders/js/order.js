@@ -57,7 +57,6 @@ function getProductsFromOrder() {
                 loadButtons(order.statusOrder);
             })
             .catch((error) => {
-                console.error(error);
                 handleException(error);
             });
     }
@@ -80,7 +79,7 @@ function loadButtons(status) {
 function loadDeliveryButtons(status) {
     const primaryButton = document.getElementById('primary-button');
     const secondaryButton = document.getElementById('secondary-button');
-    
+
     const averageTime = document.getElementById('average-time');
 
     averageTime.textContent = 'Tiempo máximo de entrega de 50 minutos';
@@ -88,18 +87,18 @@ function loadDeliveryButtons(status) {
     if (status === 'approved') {
         primaryButton.textContent = 'En tránsito';
         primaryButton.addEventListener('click', () => {
-            updateOrderStatus(orderId,'in transit');
+            updateOrderStatus(orderId, 'in transit');
         });
         primaryButton.classList.remove('d-none');
     } else if (status === 'in transit') {
         primaryButton.textContent = 'Entregado';
         primaryButton.addEventListener('click', () => {
-            updateOrderStatus(orderId,'delivered');
+            updateOrderStatus(orderId, 'delivered');
         });
         primaryButton.classList.remove('d-none');
         secondaryButton.textContent = 'No entregado';
         secondaryButton.addEventListener('click', () => {
-            updateOrderStatus(orderId,'not delivered');
+            updateOrderStatus(orderId, 'not delivered');
         });
         secondaryButton.classList.remove('d-none');
     }
@@ -108,7 +107,7 @@ function loadDeliveryButtons(status) {
 function loadSalesExecutiveButtons(status) {
     const primaryButton = document.getElementById('primary-button');
     const secondaryButton = document.getElementById('secondary-button');
-    
+
     const averageTime = document.getElementById('average-time');
 
     averageTime.textContent = 'Tiempo máximo de entrega de 50 minutos';
@@ -118,12 +117,12 @@ function loadSalesExecutiveButtons(status) {
     if (status === 'pending') {
         primaryButton.textContent = 'Aprobar';
         primaryButton.addEventListener('click', () => {
-            approveOrder(orderId);
+            approveOrder(branchId, orderId);
         });
         primaryButton.classList.remove('d-none');
         secondaryButton.textContent = 'Denegar';
         secondaryButton.addEventListener('click', () => {
-            updateOrderStatus(orderId,'denied');
+            updateOrderStatus(orderId, 'denied');
         });
         secondaryButton.classList.remove('d-none');
     }

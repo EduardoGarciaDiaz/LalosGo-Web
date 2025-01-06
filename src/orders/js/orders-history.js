@@ -1,10 +1,10 @@
-fetch('/src/shared/footer.html')
-    .then(response => response.text())
-    .then(data => {
-        document.getElementById('footer').innerHTML = data;
-    });
-
 window.onload = function () {
+    fetch('/src/shared/footer.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('footer').innerHTML = data;
+        });
+
     loadInitialData();
 };
 
@@ -127,7 +127,7 @@ function createOrderCard(order) {
     const card = document.createElement('div');
     card.className = 'card shadow-sm';
     cardContainer.appendChild(card);
-    
+
     const cardHeader = document.createElement('div');
     cardHeader.className = 'card-header d-flex flex-column flex-md-row justify-content-between align-items-center';
     card.appendChild(cardHeader);
@@ -225,7 +225,7 @@ function createSalesExecutiveActions(order) {
         const approveOrderButton = document.createElement('button');
         approveOrderButton.className = 'btn btn-primary btn-sm rounded-pill mb-2 w-100 w-md-auto';
         approveOrderButton.textContent = 'Aprobar pedido';
-        approveOrderButton.onclick = () => approveOrder(order._id);
+        approveOrderButton.onclick = () => approveOrder(order.branch, order._id);
         actionsContainer.appendChild(approveOrderButton);
         const denyOrderButton = document.createElement('button');
         denyOrderButton.className = 'btn btn-outline-secondary btn-sm rounded-pill w-100 w-md-auto';
