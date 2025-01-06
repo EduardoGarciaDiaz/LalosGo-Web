@@ -3,11 +3,12 @@ var productData = JSON.parse(sessionStorage.getItem('productData'));
 
 document.addEventListener("DOMContentLoaded", async () => {
     fillProductData();
-    changeButton(productData.productStatus);
+    changeButton();
 
 })
 
-function changeButton(status){
+function changeButton(){
+    let status = productData.productStatus;
     if(!status){
         const button = document.getElementById("changeStatus");
         button.classList.remove("btn-danger");
@@ -93,7 +94,9 @@ async function changeProductStatus(){
             headers: { 'Authorization': `Bearer ${token}` }
         });
         showToast("Estado del producto cambiado exitosamente", toastTypes.SUCCESS);
-        changeButton(!productData.productStatus);
+        productData.productStatus = !productData.productStatus;
+        sessionStorage.setItem("productData", JSON.stringify(productData));
+        changeButton();
     }catch (error){
         handleException(error);
     }

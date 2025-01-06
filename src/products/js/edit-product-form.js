@@ -395,7 +395,6 @@ function loadImageFromUrl(url) {
                     imageData.append('image', blob, "image-from-url.png");
                 })
                 .catch(err => {
-                    console.error("Error al cargar la imagen desde la URL:", err);
                     errorImageSpan.textContent = "No se pudo cargar la imagen desde la URL inicial.";
                     errorImageSpan.className = "text-danger";
                     errorImageSpan.classList.add("is-invalid");
@@ -459,8 +458,6 @@ function uploadImage(event) {
     }
 }
 
-
-
 function createCheckboxWithNumber(branch) {
     const container = document.createElement("div");
     container.className = "checkbox-with-number mb-3";
@@ -512,7 +509,6 @@ function createCheckboxWithNumber(branch) {
     return container;
 }
 
-
 function clearFields() {
     productImg.src = ""
     inputImage.value = ""
@@ -536,9 +532,7 @@ function clearFields() {
         input.value = 0;
         input.disabled = true;
     });
-
 }
-
 
 function registryCancelation() {
     let { modalInstance, primaryBtn, secondaryBtn } = createConfirmationModal("Cuidado", "¿Estas seguro que deseass cancelar el registro?, esta acción no se puede desahcer.", modalTypes.DANGER, "Confirmar.")

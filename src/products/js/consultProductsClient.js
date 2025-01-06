@@ -230,7 +230,7 @@ async function loadProductsFromNearestBranch(branchToConsult) {
 function createCategorySection(category) {
     const categorySection = document.createElement("div")
     categorySection.id = category._id
-    categorySection.className = "container-fluid mt-4"
+    categorySection.className = "container-fluid mt-4 container-md"
 
     const categoryTitle = document.createElement("h2")
     categoryTitle.textContent = category.name

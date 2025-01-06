@@ -15,10 +15,10 @@
     <script src="/src/utils/header-utils.js"></script>
     <link rel="stylesheet" href="/src/employees/styles/employees.css">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="/src/employees/js/employees.js"></script>
-    <script src="/src/utils/toast-utils.js"></script>
     <script src="/src/global/singleton.js"></script>
     <script src="/src/global/global.js"></script>
+    <script src="/src/employees/js/employees.js"></script>
+    <script src="/src/utils/toast-utils.js"></script>
     <script src="/src/utils/modal-utils.js"></script>
 </head>
 
@@ -42,7 +42,7 @@
 
             <div class="col-12 col-md flex-grow-1">
                 <div class="input-group search-container">
-                    <input id="search-input" type="text" class="form-control" placeholder="Buscar empleado">
+                    <input id="search-input" type="text" class="form-control" placeholder="Buscar empleado" maxlength="200">
                     <button id="search-btn" class="btn btn-light" type="button">
                         <i class="bi bi-search"></i>
                     </button>

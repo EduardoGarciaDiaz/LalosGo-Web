@@ -41,6 +41,7 @@ async function loadHeaderByRole() {
             break;
         case 'Delivery Person':
             headerPath = '/src/shared/navbar/navbar-delivery.html';
+            break;
         default:
             headerPath = '/src/shared/navbar/navbar-default.html';
             break;

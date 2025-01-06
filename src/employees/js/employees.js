@@ -1,3 +1,8 @@
+let role = getInstance().role;
+if (role !== roles.ADMIN) {
+    window.history.back();
+}
+
 window.onload = function () {
     setupEventListeners();
     loadInitialData();
@@ -174,7 +179,7 @@ async function changeEmployeeStatus(employeeId) {
                 if (response.status < 300 && response.status > 199) {
                     showToast("Estado del empleado actualizado correctamente", toastTypes.SUCCESS);
                 } else {
-                    showToast("Error al actualizar el estado del empleado", toastTypes.WARNING);
+                    showToast("Error al actualizar el estado del empleado", toastTypes.DANGER);
                 }
             } catch (error) {
                 const errorMessage = error.response ? error.response.data.message : DEFAULT_ERROR_MESSAGE;
