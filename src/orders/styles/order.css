@@ -1,0 +1,24 @@
+.product-img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+
+@media (max-width: 576px) {
+    .product-img {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+.without-products {
+    display: block;
+    font-size: 1.5rem;
+    color: chocolate;
+}
+
+.with-products {
+    display: none;
+    margin: 0;
+    padding: 0;
+}

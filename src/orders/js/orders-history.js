@@ -1,10 +1,10 @@
-fetch('/src/shared/footer.html')
-    .then(response => response.text())
-    .then(data => {
-        document.getElementById('footer').innerHTML = data;
-    });
-
 window.onload = function () {
+    fetch('/src/shared/footer.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('footer').innerHTML = data;
+        });
+
     loadInitialData();
 };
 
@@ -118,6 +118,8 @@ function getAllOrders() {
         });
 }
 
+const IMAGE_PLACEHOLDER = 'https://archive.org/download/placeholder-image/placeholder-image.jpg';
+
 function createOrderCard(order) {
     const cardContainer = document.createElement('div');
     cardContainer.className = 'container my-4';
@@ -125,7 +127,7 @@ function createOrderCard(order) {
     const card = document.createElement('div');
     card.className = 'card shadow-sm';
     cardContainer.appendChild(card);
-    
+
     const cardHeader = document.createElement('div');
     cardHeader.className = 'card-header d-flex flex-column flex-md-row justify-content-between align-items-center';
     card.appendChild(cardHeader);
@@ -133,7 +135,6 @@ function createOrderCard(order) {
     const headerDetails = document.createElement('div');
     headerDetails.innerHTML = `
         <strong>Pedido realizado:</strong> ${new Date(order.orderDate).toLocaleDateString()}<br>
-        <strong>Fecha estimada de entrega:</strong> ${order.deliveryDate || 'N/A'}<br>
         <strong>Total a pagar:</strong> $${order.totalPrice.toFixed(2)}
     `;
     cardHeader.appendChild(headerDetails);
@@ -153,7 +154,7 @@ function createOrderCard(order) {
     const imageContainer = document.createElement('div');
     imageContainer.className = 'me-md-3 mb-3 mb-md-0';
     const productImage = document.createElement('img');
-    productImage.src = order.orderProducts[0]?.product.image || 'placeholder.jpg';
+    productImage.src = order.orderProducts[0]?.product.image || IMAGE_PLACEHOLDER;
     productImage.alt = 'Imagen del producto';
     productImage.style.width = '90px';
     productImage.style.height = 'auto';
@@ -204,7 +205,7 @@ function createCustomerActions(order) {
         actionsContainer.appendChild(incidentButton);
     }
 
-    if (order.statusOrder !== 'cancelled' && order.statusOrder !== 'delivered' && order.statusOrder !== 'reserved') {
+    if (order.statusOrder == 'pending') {
 
         const cancelButton = document.createElement('button');
         cancelButton.className = 'btn btn-outline-secondary btn-sm rounded-pill w-100 w-md-auto';
@@ -224,7 +225,7 @@ function createSalesExecutiveActions(order) {
         const approveOrderButton = document.createElement('button');
         approveOrderButton.className = 'btn btn-primary btn-sm rounded-pill mb-2 w-100 w-md-auto';
         approveOrderButton.textContent = 'Aprobar pedido';
-        approveOrderButton.onclick = () => approveOrder(order._id);
+        approveOrderButton.onclick = () => approveOrder(order.branch, order._id);
         actionsContainer.appendChild(approveOrderButton);
         const denyOrderButton = document.createElement('button');
         denyOrderButton.className = 'btn btn-outline-secondary btn-sm rounded-pill w-100 w-md-auto';
@@ -300,12 +301,18 @@ function getStatusColor(status) {
 // Función para mostrar detalles del pedido (placeholder)
 function showOrderDetails(order) {
     console.log('Detalles del pedido:', order);
-    window.location.href = `/src/orders/order.html?${order._id}`;
+    const params = new URLSearchParams({
+        orderId: order._id
+    });
+    window.location.href = `/src/orders/order.html?${params.toString()}`;
 }
 
 function reportIncident(order) {
     console.log('Reportar incidente:', order);
-    window.location.href = `/src/orders/incident.html?${order._id}`;
+    const params = new URLSearchParams({
+        orderId: order._id
+    });
+    window.location.href = `/src/incidents/incident.html?${params.toString()}`;
 }
 
 
