@@ -8,7 +8,7 @@ async function changeOrderStatus(orderId, status) {
         if (response.status < 300 && response.status >= 200) {
             showToast('El pedido se actualizó correctamente.', toastTypes.SUCCESS);
             setTimeout(() => {
-                location.reload();
+                window.location.reload();
             }, 2000);
         } else {
             showToast('Ocurrió un error al actualizar el pedido.', toastTypes.ERROR);
