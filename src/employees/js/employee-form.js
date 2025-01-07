@@ -5,7 +5,6 @@ if (role !== roles.ADMIN) {
 
 const employeeRoles = {
     ADMIN: 'Administrator',
-    MANAGER: 'Manager',
     SALES_EXECUTIVE: 'Sales Executive',
     DELIVERY_PERSON: 'Delivery Person'
 };

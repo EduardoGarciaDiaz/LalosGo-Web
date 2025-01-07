@@ -30,9 +30,6 @@ async function loadHeaderByRole() {
         case 'Administrator':
             headerPath = '/src/shared/navbar/navbar-admin.html';
             break;
-        case 'Manager':
-            headerPath = '/src/shared/navbar/navbar-manager.html';
-            break;
         case 'Customer':
             headerPath = '/src/shared/navbar/navbar-customer.html';
             break;
