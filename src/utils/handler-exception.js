@@ -16,7 +16,7 @@ function handleException(error, customMessage) {
                 manageUnauthorizedError();
                 break;
             case 404:
-                showToast(DEFAULT_NOT_FOUND_MESSAGE, toastTypes.DANGER);
+                showToast(errorMessage || DEFAULT_NOT_FOUND_MESSAGE, toastTypes.DANGER);
                 break;
             default:
                 showToast(customMessage || errorMessage, toastTypes.DANGER);
