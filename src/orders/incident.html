@@ -2,62 +2,63 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LalosGo - Reportar Incidente</title>
-    <link rel="icon" type="image/x-icon" href="../lalos-go-icon.ico">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="js/orders-history.js"></script>
-    <script src="/src/utils/header-utils.js"></script>
-    <script src="/src/global/global.js"></script>
-    <script src="/src/global/singleton.js"></script>
-    <script src="/src/utils/toast-utils.js"></script>
-    <script src="/src/utils/modal-utils.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LalosGo - Reportar Incidente</title>
+  <link rel="icon" type="image/x-icon" href="../lalos-go-icon.ico">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="/src/utils/header-utils.js"></script>
+  <script src="/src/global/global.js"></script>
+  <script src="/src/utils/handler-exception.js"></script>
+  <script src="/src/global/singleton.js"></script>
+  <script src="/src/utils/toast-utils.js"></script>
+  <script src="/src/utils/modal-utils.js"></script>
+  <script src="/src/orders/js/incident.js"></script>
+  <link href="/src/orders/styles/incident.css" rel="stylesheet">
 </head>
 
 <body>
-    <header id="header-container"></header>
-    <div class="container py-5">
-        <div class="row justify-content-center">
-          <div class="col-lg-6">
-            <h3 class="mb-3">Reporte de incidentes</h3>
-            <p id="order-title"></p>
-    
-            <!-- Comentario -->
-            <div class="mb-4">
-              <label for="comment" class="form-label">Agregar comentario escrito</label>
-              <textarea id="comment" class="form-control" rows="4" maxlength="128" placeholder="Escribe aquí tu comentario"></textarea>
-              <div class="text-end mt-1">
-                <small><span id="charCount">0</span>/128</small>
-              </div>
-            </div>
-    
-            <!-- Foto -->
-            <div class="mb-4">
-              <label for="incidentPhoto" class="form-label">Agrega foto del incidente descrito</label>
-              <div class="border rounded d-flex align-items-center justify-content-center" style="height: 150px; background-color: #f8f9fa;">
-                <label for="incidentPhoto" class="text-center w-100" style="cursor: pointer;">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="gray" class="bi bi-image" viewBox="0 0 16 16">
-                    <path d="M13.002 1H2.998A1.99 1.99 0 0 0 1 2.998v10.004c0 1.1.899 1.998 1.998 1.998h10.004A1.99 1.99 0 0 0 15 13.002V2.998A1.99 1.99 0 0 0 13.002 1zM2.998 0h10.004A2.99 2.99 0 0 1 16 2.998v10.004A2.99 2.99 0 0 1 13.002 16H2.998A2.99 2.99 0 0 1 0 13.002V2.998A2.99 2.99 0 0 1 2.998 0z"/>
-                    <path d="M10.648 7.646a.5.5 0 0 0-.707 0L8.002 9.585 6.756 8.34a.5.5 0 0 0-.707.707l1.5 1.5a.5.5 0 0 0 .707 0l2.5-2.5a.5.5 0 0 0 0-.707z"/>
-                    <path d="M4.502 5.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM4.502 4a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1z"/>
-                  </svg>
-                  <input type="file" id="incidentPhoto" class="d-none">
-                  <p class="mt-2 text-secondary">Cargar imagen</p>
-                </label>
-              </div>
-            </div>
-    
-            <!-- Botones -->
-            <div class="d-flex justify-content-between">
-              <button type="button" class="btn btn-outline-secondary">Cancelar</button>
-              <button type="button" class="btn btn-primary">Enviar</button>
+  <header id="header-container"></header>
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-6">
+        <h3 class="mb-3">Reporte de incidentes</h3>
+        <p id="order-title"></p>
+
+        <div class="mb-4">
+          <label for="comment" class="form-label">Agregar comentario escrito</label>
+          <textarea id="comment" class="form-control" rows="4" maxlength="128"
+            placeholder="Escribe aquí tu comentario"></textarea>
+          <div class="text-end mt-1">
+            <small><span id="charCount">0</span>/128</small>
+            <span class="text-danger d-none" id="comment-error"></span>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <div class="border rounded image-frame">
+            <label for="incidentPhotoInput" class="custom-file-button">Agrega foto del incidente descrito</label>
+            <input type="file" id="incidentPhotoInput" accept=".jpg, .jpeg, .png" style="display: none;">
+            <span class="text-danger d-none" id="image-error"></span>
+            <div class="image-container">
+              <img id="incidentPhotoPreview" class="img-fluid" src="#" alt="Vista previa de la imagen"
+                style="display: none;">
             </div>
           </div>
         </div>
       </div>
+
+      <div class="d-flex justify-content-between">
+        <button id="cancel-button" type="button" class="btn btn-outline-secondary">Cancelar</button>
+        <button id="submit-button" type="button" class="btn btn-primary">Enviar</button>
+      </div>
+    </div>
+  </div>
 </body>
+
+<footer id="footer"></footer>
 
 </html>

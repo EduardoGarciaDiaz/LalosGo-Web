@@ -55,11 +55,37 @@ function getProductsFromOrder() {
 
                 updatePrices();
                 loadButtons(order.statusOrder);
+                loadDeliveryPerson(order.deliveryPerson);
+                setEventListenerForBranch(order.branch);
+                setEventListerForAddress(clientAddress);
             })
             .catch((error) => {
                 handleException(error);
             });
     }
+}
+
+function setEventListenerForBranch(branch) {
+    const branchContainer = document.getElementById('branch-container');
+
+    branchContainer.addEventListener('click', () => {
+        const params = new URLSearchParams({
+            lat: branch.address.location.coordinates[0],
+            lng: branch.address.location.coordinates[1]
+        });
+        window.location.href = `/src/orders/location.html?${params.toString()}`;
+    });
+}
+
+function setEventListerForAddress(address) {
+    const clientAddressContainer = document.getElementById('client-address-container');
+    clientAddressContainer.addEventListener('click', () => {
+        const params = new URLSearchParams({
+            lat: address.latitude,
+            lng: address.longitude
+        });
+        window.location.href = `/src/orders/location.html?${params.toString()}`;
+    });
 }
 
 function loadButtons(status) {
@@ -74,6 +100,14 @@ function loadButtons(status) {
         default:
             break;
     }
+}
+
+function loadDeliveryPerson(deliveryPerson) {
+    const deliveryPersonContainer = document.getElementById('delivery-person-container');
+    deliveryPersonContainer.classList.remove('d-none');
+
+    const deliveryPersonElement = document.getElementById('delivery-person');
+    deliveryPersonElement.textContent = (deliveryPerson ? deliveryPerson.fullname : 'No asignado');
 }
 
 function loadDeliveryButtons(status) {

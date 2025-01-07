@@ -33,7 +33,7 @@
             <button id="search-category-btn" type="button" class="btn btn-secondary ms-2"
                 onclick="searchCategory()">Buscar</button>
             <button id="add-category-btn" type="button" class="btn btn-primary ms-3" data-bs-toggle="modal"
-                onclick="showModal()" data-bs-target="#register-new-category">Register Category</button>
+                onclick="showModal()" data-bs-target="#register-new-category">Nueva categoría</button>
         </div>
 
 
@@ -46,7 +46,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="register-category-label">Register Category</h5>
+                    <h5 class="modal-title" id="register-category-label">Registrar nueva categoría</h5>
                     <button type="button" onclick="clearModal()" class="btn-close" data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
@@ -55,28 +55,28 @@
                         <div class="form-floating mb-3">
                             <input type="text" class="form-control" id="category-id"
                                 placeholder="Enter unique identifier" maxlength="7" required>
-                            <label for="category-id">Unique Identifier: XXXX000</label>
+                            <label for="category-id">Identificador único (formato: XXXX000)</label>
                             <span class="d-none" id="error-category-id"></span>
                         </div>
 
                         <div class="form-floating mb-3">
                             <input type="text" class="form-control" id="category-name" placeholder="Enter category name"
                                 maxlength="50" required>
-                            <label for="category-name">Name</label>
+                            <label for="category-name">Nombre</label>
                             <span class="d-none" id="error-category-name"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label for="category-status">Category Status</label>
+                            <label for="category-status">Estado</label>
                             <br>
-                            <label for="category-status" id="category-status-label" class="form-label">Active</label>
+                            <label for="category-status" id="category-status-label" class="form-label">Activo</label>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" onclick="clearModal()" id="cancel-btn" class="btn btn-secondary"
-                        data-bs-dismiss="modal">Cancel Registration</button>
-                    <button type="button" class="btn btn-primary" id="register-btn">Register</button>
+                        data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="register-btn">Registrar</button>
                 </div>
             </div>
         </div>

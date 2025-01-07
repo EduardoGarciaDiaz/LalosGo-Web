@@ -1,0 +1,44 @@
+.custom-file-button {
+    color: black;
+    font-size: 14px;
+    border: 1px gray solid;
+    cursor: pointer;
+    border-radius: 5px;
+    text-align: center;
+    padding: 6px 10px; 
+    display: inline-block; 
+    margin-bottom: 10px;
+}
+
+.custom-file-button:hover {
+    background-color: #eeeeee;
+}
+
+.incidentPhotoInput {
+    display: none;
+}
+
+.image-container {
+    max-width: 80%; 
+    height: auto;
+    margin-top: 2%;
+    
+    justify-content: center;
+}
+
+.incidentPhotoPreview {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.image-frame{
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    height: fit-content;
+    padding-top: 2%;
+    padding-bottom: 3%;
+    flex-direction: column;
+}

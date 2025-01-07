@@ -298,9 +298,7 @@ function getStatusColor(status) {
     }
 }
 
-// Función para mostrar detalles del pedido (placeholder)
 function showOrderDetails(order) {
-    console.log('Detalles del pedido:', order);
     const params = new URLSearchParams({
         orderId: order._id
     });
@@ -308,11 +306,10 @@ function showOrderDetails(order) {
 }
 
 function reportIncident(order) {
-    console.log('Reportar incidente:', order);
     const params = new URLSearchParams({
         orderId: order._id
     });
-    window.location.href = `/src/incidents/incident.html?${params.toString()}`;
+    window.location.href = `/src/orders/incident.html?${params.toString()}`;
 }
 
 
