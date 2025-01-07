@@ -211,7 +211,20 @@ function clearModal() {
 }
 
 function searchProduct(){
+    let searchInput = removeAccents(document.getElementById("product-search-Bar").value.toLowerCase())
+    let products = document.querySelectorAll("#product-container .card")
+    products.forEach(productCard => {
+        let productName = removeAccents(productCard.querySelector(".card-title").textContent.toLocaleLowerCase())
+        if(productName.includes(searchInput)){
+            productCard.style.display = "block"
+        }else{
+            productCard.style.display = "none"
+        }
+    })
+}
 
+function removeAccents(str) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
 async function loadFooter(){
