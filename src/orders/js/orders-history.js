@@ -298,7 +298,6 @@ function getStatusColor(status) {
     }
 }
 
-// Función para mostrar detalles del pedido (placeholder)
 function showOrderDetails(order) {
     const params = new URLSearchParams({
         orderId: order._id
