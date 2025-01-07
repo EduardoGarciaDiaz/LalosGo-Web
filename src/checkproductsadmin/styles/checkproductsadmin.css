@@ -23,6 +23,19 @@ body {
     color: #000;
 }
 
+.search-container {
+    background-color: #f8f9fa;
+    border-radius: 25px;
+    padding: 8px 15px;
+}
+
+.search-container input {
+    border: none;
+    background: transparent;
+    width: 100%;
+    outline: none;
+}
+
 .btn-primary {
     background-color: #0033cc;
     border-color: #0033cc;
