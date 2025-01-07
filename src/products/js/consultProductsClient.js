@@ -134,7 +134,8 @@ function confirmChangeOfAddres(event) {
         let { modalInstance, primaryBtn, secondaryBtn } = createConfirmationModal("Cuidado", "¿Estas seguro que quieres cambiar la dirección de envio?, los productos en tu carrito se podrian perder.", modalTypes.DANGER, "Confirmar.")
         modalInstance.show()
         primaryBtn.onclick = function () {
-            updateCurrentAddress(userAddresses[selectValue])
+            updateCurrentAddress(userAddresses[selectValue])                   
+            modalInstance.hide()
         }
         secondaryBtn.onclick = function () {
             addressesComboBox.selectedIndex = 0
@@ -156,10 +157,11 @@ async function updateCurrentAddress(newAddress) {
                 }
             }
         )
-        showToast(response.data.message, toastTypes.SUCCESS)
-        window.location.reload()
+        showToast(response.data.message, toastTypes.SUCCESS)  
+        window.location.reload()    
     } catch (error) {
-        handleException(error);
+        handleException(error);         
+        window.location.reload()  
     }
 }
 
