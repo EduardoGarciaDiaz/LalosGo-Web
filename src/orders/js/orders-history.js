@@ -307,7 +307,6 @@ function showOrderDetails(order) {
 }
 
 function reportIncident(order) {
-    console.log('Reportar incidente:', order);
     const params = new URLSearchParams({
         orderId: order._id
     });
