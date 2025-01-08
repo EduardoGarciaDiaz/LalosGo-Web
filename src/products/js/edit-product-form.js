@@ -97,7 +97,7 @@ async function loadBranches(productid) {
             branchesList.appendChild(branchCard)
         });
     }).catch((error) => {
-        showToast("Ocurrio algo inesperado al cargar las sucursales. Verirfique su conexión e inténtelo mas tarde", toastTypes.DANGER)
+        handleException(error)
     })
 }
 
@@ -178,7 +178,7 @@ async function saveEditedProduct() {
             history.back()
         }, 2000);
     } catch (error) {
-        showToast("Ocurrio algo inesperado al realizar la petición. Revise su conexión a internet e inténtelo mas tarde", toastTypes.WARNING)
+        handleException(error)
     }
 }
 

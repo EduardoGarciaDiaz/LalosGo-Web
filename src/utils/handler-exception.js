@@ -5,7 +5,7 @@ const DEFAULT_CODE = 500;
 
 function handleException(error, customMessage) {
     if (error !== undefined && error) {
-        let errorMessage = error.response?.data?.message || DEFAULT_ERROR_MESSAGE;
+        let errorMessage = error.response?.data?.message ?? DEFAULT_ERROR_MESSAGE;
         let errorCode = error.response?.status || DEFAULT_CODE;
 
         switch (errorCode) {
@@ -16,7 +16,7 @@ function handleException(error, customMessage) {
                 manageUnauthorizedError();
                 break;
             case 404:
-                showToast(customMessage || DEFAULT_NOT_FOUND_MESSAGE, toastTypes.DANGER);
+                showToast(customMessage || customMessage ||  DEFAULT_NOT_FOUND_MESSAGE, toastTypes.DANGER);
                 break;
             default:
                 showToast(customMessage || errorMessage, toastTypes.DANGER);
