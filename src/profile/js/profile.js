@@ -24,5 +24,16 @@ function loadProfile() {
     emailItem.classList.add('list-group-item');
     emailItem.innerHTML = `<strong>Email:</strong> ${getInstance().email}`;
     listGroup.appendChild(emailItem);
+
+    let role = getInstance().role;
+
+    if(role != roles.CUSTOMER){
+        const buttonContainer = document.getElementById('ModifyButton');
+        buttonContainer.style.display = 'none';
     }
+    }
+}
+
+function redirectToModify(){
+    window.location.href = '/src/modifyClientAccount/modifyClientAccount.html';
 }
